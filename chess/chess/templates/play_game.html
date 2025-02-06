@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Devinettes d'Échecs</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .chessboard {
+            white-space: pre;
+            margin: 20px auto;
+            display: inline-block;
+            text-align: left;
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .move-form input {
+            padding: 10px;
+            font-size: 16px;
+            width: 100px;
+        }
+        .message {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .chessboard {
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        .chessboard td {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .white-square {
+            background-color: #f0d9b5;
+        }
+        .black-square {
+            background-color: #b58863;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jeu de Devinettes d'Échecs</h1>
+    
+    <div class="score">Score : {{ score }} / {{ total_moves }}</div>
+
+    <div>{{ board | safe }}</div>
+
+    {% if is_player_turn %}
+        <div class="message">Le {{ 'blanc' if user_side == 'white' else 'noir' }} a joué {{ last_move if last_move else 'le premier coup' }}</div>
+        <form class="move-form" method="post" onsubmit="return submitMove(event)">
+            <input type="hidden" name="game_id" value="{{ game_id }}">
+            <label>Entrez ce que vous pensez être le prochain coup des {{ 'Noirs' if user_side == 'white' else 'Blancs' }} :</label>
+            <input type="text" name="move" required>
+            <button type="submit">Soumettre</button>
+        </form>
+    {% else %}
+        <p>En attente du prochain coup...</p>
+    {% endif %}
+
+    <script>
+    function submitMove(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+
+        fetch('/submit-move', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.is_correct 
+                ? "Bravo ! Coup correct." 
+                : `Désolé, le bon coup était : ${data.correct_move}.`);
+            
+            // Recharger la page pour mettre à jour l'état
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue.');
+        });
+    }
+    </script>
+</body>
+</html>

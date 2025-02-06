@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration du Jeu d'Échecs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        .radio-group label {
+            margin: 0 10px;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Configuration de la Partie d'Échecs</h1>
+    
+    <form id="gameConfigForm" action="{{ url_for('start_game') }}" method="post">
+        <div class="form-group">
+            <label>De quel côté voulez-vous deviner les coups ?</label>
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="user_side" value="white" required>
+                    Blancs
+                </label>
+                <label>
+                    <input type="radio" name="user_side" value="black" required>
+                    Noirs
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="game-select">Sélectionnez une partie :</label>
+            <select id="game-select" name="game_file" required>
+                <option value="">-- Choisissez une partie --</option>
+                {% for game in games %}
+                <option value="{{ game.file }}">
+                    {{ game.event }} - {{ game.white }} vs {{ game.black }} ({{ game.result }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn">Commencer la Partie</button>
+        </div>
+    </form>
+
+    <script>
+        document.getElementById('gameConfigForm').addEventListener('submit', function(e) {
+            const userSide = document.querySelector('input[name="user_side"]:checked');
+            const gameSelect = document.getElementById('game-select');
+
+            if (!userSide) {
+                alert('Veuillez choisir un côté (Blancs ou Noirs)');
+                e.preventDefault();
+            }
+
+            if (!gameSelect.value) {
+                alert('Veuillez sélectionner une partie');
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
