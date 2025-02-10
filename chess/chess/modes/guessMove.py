@@ -43,66 +43,90 @@ class ChessGame:
         self.score = 0
         self.total_moves = len(self.moves)
         
-        # print(f"Debug: Total moves: {len(self.all_moves)}")
-        # print(f"Debug: White moves: {len(self.white_moves)}")
-        # print(f"Debug: Black moves: {len(self.black_moves)}")
-        # print(f"Debug: Selected moves for {user_side}: {self.moves}")
-
-    def is_player_turn(self):
-        return True 
-    
+        # Si le joueur est noir, jouer automatiquement le premier coup des blancs
+        if user_side == 'black' and len(self.white_moves) > 0:
+            first_move = self.white_moves[0]
+            # D'abord obtenir la notation SAN
+            self.last_opponent_move = self.board.san(first_move)
+            # Puis jouer le coup
+            self.board.push(first_move)
+        else:
+            self.last_opponent_move = None
     
     def get_game_state(self):
         return {
-            
             'board_fen': self.board.fen(),
-            
             'user_side': self.user_side,
             'current_move_index': self.current_move_index,
             'score': self.score,
             'total_moves': self.total_moves,
-            'is_player_turn': True  
-    }
-
+            'is_player_turn': True,
+            'last_opponent_move': self.last_opponent_move
+        }
+    
     def submit_move(self, move):
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
         
-        # Pour les noirs, jouer d'abord le coup des blancs
-        if self.user_side == 'black' and self.current_move_index < len(self.white_moves):
-            self.board.push(self.white_moves[self.current_move_index])
-        
-        correct_move_uci = self.moves[self.current_move_index]
-        correct_move_san = self.board.san(correct_move_uci)
-        
-        submitted_move = move.strip().lower()
-        correct_san = correct_move_san.lower()
-        correct_uci = str(correct_move_uci).lower()
-        
+        # Si on joue les noirs
         if self.user_side == 'black':
-            # Simplifier seulement en retirant les caractères spéciaux
-            correct_san = correct_san.replace('x', '').replace('+', '')
-        
-        is_correct = (
-            submitted_move == correct_san or
-            submitted_move == correct_uci or
-            submitted_move == correct_san.replace('x', '')
-        )
-        
-        if is_correct:
-            self.score += 1
-        
-        # Pour les blancs, appliquer le coup directement
-        if self.user_side == 'white':
-            self.board.push(correct_move_uci)
-            # Jouer le coup des noirs après
-            if self.current_move_index < len(self.black_moves):
-                self.board.push(self.black_moves[self.current_move_index])
+            # Obtenir le coup des noirs à deviner
+            black_move_uci = self.moves[self.current_move_index]
+            black_move_san = self.board.san(black_move_uci)
+            
+            # Vérifier si le coup soumis est correct
+            submitted_move = move.strip().lower()
+            correct_san = black_move_san.lower().replace('x', '').replace('+', '')
+            correct_uci = str(black_move_uci).lower()
+            
+            is_correct = (
+                submitted_move == correct_san or
+                submitted_move == correct_uci or
+                submitted_move == correct_san.replace('x', '')
+            )
+            
+            if is_correct:
+                self.score += 1
+            
+            # Jouer le coup noir
+            self.board.push(black_move_uci)
+            
+            # Si ce n'est pas le dernier coup, jouer le prochain coup blanc
+            self.current_move_index += 1
+            if self.current_move_index < len(self.moves):
+                next_white_move = self.white_moves[self.current_move_index]
+                # Sauvegarder la notation SAN avant de jouer le coup
+                self.last_opponent_move = self.board.san(next_white_move)
+                self.board.push(next_white_move)
+            
+        # Si on joue les blancs
         else:
-            # Pour les noirs, le coup des blancs est déjà joué, appliquer le coup des noirs
-            self.board.push(correct_move_uci)
-        
-        self.current_move_index += 1
+            white_move_uci = self.moves[self.current_move_index]
+            white_move_san = self.board.san(white_move_uci)
+            
+            submitted_move = move.strip().lower()
+            correct_san = white_move_san.lower()
+            correct_uci = str(white_move_uci).lower()
+            
+            is_correct = (
+                submitted_move == correct_san or
+                submitted_move == correct_uci or
+                submitted_move == correct_san.replace('x', '')
+            )
+            
+            if is_correct:
+                self.score += 1
+            
+            # Jouer le coup blanc
+            self.board.push(white_move_uci)
+            
+            # Jouer le coup noir correspondant
+            if self.current_move_index < len(self.black_moves):
+                black_move = self.black_moves[self.current_move_index]
+                self.last_opponent_move = self.board.san(black_move)
+                self.board.push(black_move)
+            
+            self.current_move_index += 1
         
         return {
             'is_correct': is_correct,
@@ -110,30 +134,6 @@ class ChessGame:
             'board_fen': self.board.fen(),
             'score': self.score,
             'game_over': self.current_move_index >= len(self.moves),
-            'is_player_turn': True
+            'is_player_turn': True,
+            'last_opponent_move': self.last_opponent_move
         }
-
-    def generate_board_html(board):
-        """Génère une représentation HTML du plateau d'échecs avec des pièces Unicode."""
-        pieces_map = {
-            chess.PAWN: {'w': '♙', 'b': '♟'},
-            chess.KNIGHT: {'w': '♘', 'b': '♞'},
-            chess.BISHOP: {'w': '♗', 'b': '♝'},
-            chess.ROOK: {'w': '♖', 'b': '♜'},
-            chess.QUEEN: {'w': '♕', 'b': '♛'},
-            chess.KING: {'w': '♔', 'b': '♚'}
-        }
-        
-        board_html = '<table class="chessboard">'
-        for rank in range(7, -1, -1):  # Parcours les rangées de 8 à 1
-            board_html += '<tr>'
-            for file in range(8):  # Parcours les colonnes de a à h
-                square = chess.square(file, rank)
-                piece = board.piece_at(square)
-                color_class = 'white-square' if (rank + file) % 2 == 0 else 'black-square'
-                piece_symbol = pieces_map.get(piece.piece_type, {}).get(piece.color, '') if piece else ''
-                board_html += f'<td class="{color_class}">{piece_symbol}</td>'
-            board_html += '</tr>'
-        board_html += '</table>'
-        
-        return board_html

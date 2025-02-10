@@ -77,9 +77,11 @@
     
     <div class="game-info">
         <h2>Score: <span id="score">{{ game_state['score'] }}</span> / {{ game_state['total_moves'] }}</h2>
+        {% if game_state['last_opponent_move'] %}
+            <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
+        {% endif %}
         <p id="status">C'est à vous de jouer !</p>
     </div>
-
     <div id="board"></div>
 
     <div class="move-input">
@@ -148,7 +150,6 @@
             // Redimensionner l'échiquier quand la fenêtre change de taille
             window.addEventListener('resize', board.resize);
         }
-
         function submitMove() {
             var moveInput = document.getElementById("move-input");
             var submitBtn = document.getElementById("submit-btn");
@@ -181,18 +182,41 @@
                     return;
                 }
 
-                if (board) {
-                    board.position(data.board_fen);
-                }
-                
+                // Mise à jour du score immédiatement
                 document.getElementById("score").textContent = data.score;
                 
-                showMessage(
-                    data.is_correct ? 
-                    "✅ Bravo ! Coup correct." : 
-                    "❌ Incorrect. Le bon coup était : " + data.correct_move,
-                    data.is_correct
-                );
+                // Fonction pour afficher le message de résultat
+                const showResult = () => {
+                    showMessage(
+                        data.is_correct ? 
+                        "✅ Bravo ! Coup correct." : 
+                        "❌ Incorrect. Le bon coup était : " + data.correct_move,
+                        data.is_correct
+                    );
+                };
+
+                // Si on joue les noirs
+                if ('{{ game_state["user_side"] }}' === 'black') {
+                    // Mettre à jour immédiatement le plateau avec le coup du joueur
+                    board.position(data.board_fen);
+                    showResult();
+                    
+                    // Après 500ms, afficher le coup des blancs si disponible
+                    if (data.last_opponent_move) {
+                        setTimeout(() => {
+                            document.getElementById("last-move").textContent = 
+                                "Dernier coup joué par les blancs : " + data.last_opponent_move;
+                        }, 500);
+                    }
+                } else {
+                    // Pour les blancs, tout afficher immédiatement
+                    board.position(data.board_fen);
+                    showResult();
+                    if (data.last_opponent_move) {
+                        document.getElementById("last-move").textContent = 
+                            "Dernier coup joué par les noirs : " + data.last_opponent_move;
+                    }
+                }
 
                 moveInput.value = '';
 
@@ -211,14 +235,10 @@
                     submitBtn.disabled = false;
                 }
             });
-        }
+}
 
-        document.getElementById("move-input").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                submitMove();
-            }
-        });
+// Mettre à jour le HTML aussi pour inclure l'élément last-move
+document.body.querySelector('.game-info').innerHTML += '<p id="last-move"></p>';
     </script>
 </body>
 </html>
