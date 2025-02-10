@@ -64,12 +64,13 @@ class ChessGame:
             'is_player_turn': True  
     }
 
-
-    
-
     def submit_move(self, move):
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
+        
+        # Pour les noirs, jouer d'abord le coup des blancs
+        if self.user_side == 'black' and self.current_move_index < len(self.white_moves):
+            self.board.push(self.white_moves[self.current_move_index])
         
         correct_move_uci = self.moves[self.current_move_index]
         correct_move_san = self.board.san(correct_move_uci)
@@ -78,17 +79,9 @@ class ChessGame:
         correct_san = correct_move_san.lower()
         correct_uci = str(correct_move_uci).lower()
         
-        
         if self.user_side == 'black':
-            
-            correct_san = (correct_san
-                .replace('x', '')
-                .replace('e', '', 1)
-                .replace('+', '')
-                .replace('a', '', 1))
-            
-            if len(correct_san) > 2 and correct_san[0] == correct_san[1]:
-                correct_san = correct_san[1:]
+            # Simplifier seulement en retirant les caractères spéciaux
+            correct_san = correct_san.replace('x', '').replace('+', '')
         
         is_correct = (
             submitted_move == correct_san or
@@ -99,14 +92,17 @@ class ChessGame:
         if is_correct:
             self.score += 1
         
-        self.board.push(correct_move_uci)
-        self.current_move_index += 1
+        # Pour les blancs, appliquer le coup directement
+        if self.user_side == 'white':
+            self.board.push(correct_move_uci)
+            # Jouer le coup des noirs après
+            if self.current_move_index < len(self.black_moves):
+                self.board.push(self.black_moves[self.current_move_index])
+        else:
+            # Pour les noirs, le coup des blancs est déjà joué, appliquer le coup des noirs
+            self.board.push(correct_move_uci)
         
-        if self.current_move_index - 1 < len(self.moves):
-            opponent_move_index = self.all_moves.index(correct_move_uci)
-            if opponent_move_index + 1 < len(self.all_moves):
-                opponent_move = self.all_moves[opponent_move_index + 1]
-                self.board.push(opponent_move)
+        self.current_move_index += 1
         
         return {
             'is_correct': is_correct,

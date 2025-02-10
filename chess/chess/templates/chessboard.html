@@ -135,6 +135,20 @@
             }, 3000);
         }
 
+        function initializeBoard() {
+            console.log('Initialisation du plateau...');
+            board = Chessboard('board', {
+                position: '{{ game_state["board_fen"] }}',
+                pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
+                showNotation: true,
+                draggable: false,
+                orientation: '{{ game_state["user_side"] }}'
+            });
+
+            // Redimensionner l'échiquier quand la fenêtre change de taille
+            window.addEventListener('resize', board.resize);
+        }
+
         function submitMove() {
             var moveInput = document.getElementById("move-input");
             var submitBtn = document.getElementById("submit-btn");
