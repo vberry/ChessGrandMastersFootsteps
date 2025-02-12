@@ -46,10 +46,8 @@ class ChessGame:
         # Si le joueur est noir, jouer automatiquement le premier coup des blancs
         if user_side == 'black' and len(self.white_moves) > 0:
             first_move = self.white_moves[0]
-            # D'abord obtenir la notation SAN
-            self.last_opponent_move = self.board.san(first_move)
-            # Puis jouer le coup
-            self.board.push(first_move)
+            self.last_opponent_move = self.board.san(first_move)  # Obtenir SAN avant de jouer le coup
+            self.board.push(first_move)  # Puis jouer le coup
         else:
             self.last_opponent_move = None
     
@@ -64,75 +62,66 @@ class ChessGame:
             'last_opponent_move': self.last_opponent_move
         }
     
+    def is_pawn_move(self, move_san):
+        """Détermine si un coup est un coup de pion."""
+        return not (move_san[0].isupper() or 'O' in move_san)
+    
     def submit_move(self, move):
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
+            
+        correct_move = self.moves[self.current_move_index]
+        correct_move_san = self.board.san(correct_move)  # Obtenir SAN avant de jouer
         
-        # Si on joue les noirs, jouer d'abord le coup des blancs
-        if self.user_side == 'black':
-            white_move = self.white_moves[self.current_move_index]
-            self.last_opponent_move = self.board.san(white_move)
-            self.board.push(white_move)
+        # Vérifier si c'est un coup de pion
+        is_pawn = self.is_pawn_move(correct_move_san)
         
-        correct_move_uci = self.moves[self.current_move_index]
-        correct_move_san = self.board.san(correct_move_uci)
-        
-        # Déterminer si c'est un coup de pion
-        is_pawn_move = True
-        if correct_move_san[0].isupper() or 'O' in correct_move_san:  # Si le coup commence par une majuscule ou est un roque
-            is_pawn_move = False
-        
+        # Pour les coups de pion, comparer en UCI
         submitted_move = move.strip().lower()
-        correct_san = correct_move_san.lower()
-        correct_uci = str(correct_move_uci).lower()
-        
-        # Simplifier la notation pour les non-pions
-        if not is_pawn_move:
-            if self.user_side == 'black':
-                correct_san = correct_san.replace('x', '').replace('+', '')
-        
-        # Pour les pions, on exige la notation UCI (ex: e2e4)
         is_correct = False
-        if is_pawn_move:
+        
+        if is_pawn:
+            # Pour les pions, comparer en UCI
+            correct_uci = correct_move.uci()
             is_correct = submitted_move == correct_uci
-            correct_move_display = correct_uci  # Pour l'affichage en cas d'erreur
+            correct_move_display = correct_uci
         else:
-            is_correct = (
-                submitted_move == correct_san or
-                submitted_move == correct_san.replace('x', '') or
-                submitted_move == correct_uci
-            )
+            # Pour les autres pièces, comparer en SAN
+            correct_san = correct_move_san.lower().replace('x', '').replace('+', '')
+            is_correct = (submitted_move == correct_san or 
+                         submitted_move == correct_move.uci())
             correct_move_display = correct_san
         
         if is_correct:
             self.score += 1
+            
+        # Jouer le coup correct sur le plateau
+        self.board.push(correct_move)
         
-        # Jouer le coup
-        if self.user_side == 'white':
-            self.board.push(correct_move_uci)
-            if self.current_move_index < len(self.black_moves):
-                black_move = self.black_moves[self.current_move_index]
-                self.last_opponent_move = self.board.san(black_move)
-                self.board.push(black_move)
-        else:
-            self.board.push(correct_move_uci)
+        # Jouer le coup de l'adversaire si nécessaire
+        opponent_move = None
+        if self.user_side == 'white' and self.current_move_index < len(self.black_moves):
+            opponent_move = self.black_moves[self.current_move_index]
+        elif self.user_side == 'black' and (self.current_move_index + 1) < len(self.white_moves):
+            opponent_move = self.white_moves[self.current_move_index + 1]
+            
+        if opponent_move:
+            self.last_opponent_move = self.board.san(opponent_move)  # Obtenir SAN avant de jouer
+            self.board.push(opponent_move)  # Puis jouer le coup
             
         self.current_move_index += 1
         
-        # Préparer le message d'aide
-        hint_message = ""
-        if not is_correct:
-            if is_pawn_move:
-                hint_message = "Pour les pions, entrez la case de départ et d'arrivée (ex: e2e4)"
+        # Message d'aide pour les coups de pion
+        hint_message = "Pour les pions, entrez la case de départ et d'arrivée (ex: e2e4)" if (not is_correct and is_pawn) else ""
         
         return {
             'is_correct': is_correct,
-            'correct_move': submitted_move if is_correct else correct_move_display,
+            'correct_move': correct_move_display,
             'board_fen': self.board.fen(),
             'score': self.score,
             'game_over': self.current_move_index >= len(self.moves),
             'is_player_turn': True,
             'last_opponent_move': self.last_opponent_move,
             'hint': hint_message,
-            'is_pawn_move': is_pawn_move
+            'is_pawn_move': is_pawn
         }
