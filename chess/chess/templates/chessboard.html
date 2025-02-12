@@ -127,16 +127,6 @@
         // Démarrer la vérification quand le DOM est chargé
         document.addEventListener('DOMContentLoaded', checkJQuery);
 
-        function showMessage(text, isSuccess) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.className = 'message ' + (isSuccess ? 'success' : 'error');
-            messageDiv.textContent = text;
-            messageDiv.style.display = 'block';
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 3000);
-        }
-
         function initializeBoard() {
             console.log('Initialisation du plateau...');
             board = Chessboard('board', {
@@ -170,38 +160,29 @@
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur réseau');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.error) {
                     showMessage(data.error, false);
                     return;
                 }
 
-                // Mise à jour du score immédiatement
                 document.getElementById("score").textContent = data.score;
                 
-                // Fonction pour afficher le message de résultat
-                const showResult = () => {
-                    showMessage(
-                        data.is_correct ? 
-                        "✅ Bravo ! Coup correct." : 
-                        "❌ Incorrect. Le bon coup était : " + data.correct_move,
-                        data.is_correct
-                    );
-                };
-
-                // Si on joue les noirs
-                if ('{{ game_state["user_side"] }}' === 'black') {
-                    // Mettre à jour immédiatement le plateau avec le coup du joueur
-                    board.position(data.board_fen);
-                    showResult();
+                // Message personnalisé en fonction du type de coup
+                let message = data.is_correct ? 
+                    "✅ Bravo ! Coup correct." : 
+                    `❌ Incorrect. Le bon coup était : ${data.correct_move}`;
                     
-                    // Après 500ms, afficher le coup des blancs si disponible
+                if (!data.is_correct && data.hint) {
+                    message += `\n${data.hint}`;
+                }
+                
+                showMessage(message, data.is_correct);
+
+                if ('{{ game_state["user_side"] }}' === 'black') {
+                    board.position(data.board_fen);
+                    
                     if (data.last_opponent_move) {
                         setTimeout(() => {
                             document.getElementById("last-move").textContent = 
@@ -209,9 +190,7 @@
                         }, 500);
                     }
                 } else {
-                    // Pour les blancs, tout afficher immédiatement
                     board.position(data.board_fen);
-                    showResult();
                     if (data.last_opponent_move) {
                         document.getElementById("last-move").textContent = 
                             "Dernier coup joué par les noirs : " + data.last_opponent_move;
@@ -235,7 +214,19 @@
                     submitBtn.disabled = false;
                 }
             });
-}
+        }
+
+// Mettre à jour la fonction showMessage pour gérer les sauts de ligne
+        function showMessage(text, isSuccess) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = 'message ' + (isSuccess ? 'success' : 'error');
+            messageDiv.innerHTML = text.replace('\n', '<br>');
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
 
 // Mettre à jour le HTML aussi pour inclure l'élément last-move
 document.body.querySelector('.game-info').innerHTML += '<p id="last-move"></p>';
