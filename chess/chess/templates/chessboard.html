@@ -140,6 +140,18 @@
             // Redimensionner l'échiquier quand la fenêtre change de taille
             window.addEventListener('resize', board.resize);
         }
+        
+
+        function showMessage(text, isSuccess) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = 'message ' + (isSuccess ? 'success' : 'error');
+            messageDiv.innerHTML = text.replace('\n', '<br>');
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
         function submitMove() {
             var moveInput = document.getElementById("move-input");
             var submitBtn = document.getElementById("submit-btn");
@@ -164,12 +176,16 @@
             .then(data => {
                 if (data.error) {
                     showMessage(data.error, false);
+                    if (!data.is_valid_format) {
+                        moveInput.value = '';  // Effacer l'entrée invalide
+                        submitBtn.disabled = false;  // Réactiver le bouton
+                        return;  // Ne pas continuer avec le reste du traitement
+                    }
                     return;
                 }
 
                 document.getElementById("score").textContent = data.score;
                 
-                // Message personnalisé en fonction du type de coup
                 let message = data.is_correct ? 
                     "✅ Bravo ! Coup correct." : 
                     `❌ Incorrect. Le bon coup était : ${data.correct_move}`;
@@ -214,18 +230,7 @@
                     submitBtn.disabled = false;
                 }
             });
-        }
-
-// Mettre à jour la fonction showMessage pour gérer les sauts de ligne
-        function showMessage(text, isSuccess) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.className = 'message ' + (isSuccess ? 'success' : 'error');
-            messageDiv.innerHTML = text.replace('\n', '<br>');
-            messageDiv.style.display = 'block';
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 5000);
-        }
+}
 
 
 // Mettre à jour le HTML aussi pour inclure l'élément last-move

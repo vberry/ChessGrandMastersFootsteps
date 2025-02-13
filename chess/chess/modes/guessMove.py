@@ -43,11 +43,10 @@ class ChessGame:
         self.score = 0
         self.total_moves = len(self.moves)
         
-        # Si le joueur est noir, jouer automatiquement le premier coup des blancs
         if user_side == 'black' and len(self.white_moves) > 0:
             first_move = self.white_moves[0]
-            self.last_opponent_move = self.board.san(first_move)  # Obtenir SAN avant de jouer le coup
-            self.board.push(first_move)  # Puis jouer le coup
+            self.last_opponent_move = self.board.san(first_move)
+            self.board.push(first_move)
         else:
             self.last_opponent_move = None
     
@@ -66,27 +65,59 @@ class ChessGame:
         """Détermine si un coup est un coup de pion."""
         return not (move_san[0].isupper() or 'O' in move_san)
     
+    def validate_input(self, move):
+        """Valide le format de l'entrée utilisateur."""
+        move = move.strip().lower()
+        
+        # Cas spécial pour le roque
+        if move in ['o-o', 'o-o-o']:
+            return True, move, None
+        
+        # Format pour les pièces: [pièce][colonne][ligne] ex: nf3, qe4
+        piece_move_pattern = "^[nbrqk][a-h][1-8]$"
+        
+        # Format pour les pions: [colonne1][ligne1][colonne2][ligne2] ex: e2e4
+        pawn_move_pattern = "^[a-h][1-8][a-h][1-8]$"
+        
+        import re
+        if re.match(piece_move_pattern, move):
+            return True, move, None
+        elif re.match(pawn_move_pattern, move):
+            return True, move, None
+        else:
+            return False, None, "Format incorrect pour un coup de pion utilisez le format 'e2e4'; pour un coup de pièce utilisez le format 'Nf3' ou 'Qe4'"
+ 
+    
     def submit_move(self, move):
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
+        
+        # Valider le format de l'entrée
+        is_valid, validated_move, error_message = self.validate_input(move)
+        if not is_valid:
+            return {
+                'error': error_message,
+                'is_valid_format': False,
+                'board_fen': self.board.fen(),
+                'score': self.score,
+                'game_over': False,
+                'is_player_turn': True,
+                'last_opponent_move': self.last_opponent_move
+            }
             
         correct_move = self.moves[self.current_move_index]
-        correct_move_san = self.board.san(correct_move)  # Obtenir SAN avant de jouer
+        correct_move_san = self.board.san(correct_move)
         
-        # Vérifier si c'est un coup de pion
         is_pawn = self.is_pawn_move(correct_move_san)
         
-        # Pour les coups de pion, comparer en UCI
-        submitted_move = move.strip().lower()
+        submitted_move = validated_move
         is_correct = False
         
         if is_pawn:
-            # Pour les pions, comparer en UCI
             correct_uci = correct_move.uci()
             is_correct = submitted_move == correct_uci
             correct_move_display = correct_uci
         else:
-            # Pour les autres pièces, comparer en SAN
             correct_san = correct_move_san.lower().replace('x', '').replace('+', '')
             is_correct = (submitted_move == correct_san or 
                          submitted_move == correct_move.uci())
@@ -94,11 +125,9 @@ class ChessGame:
         
         if is_correct:
             self.score += 1
-            
-        # Jouer le coup correct sur le plateau
+        
         self.board.push(correct_move)
         
-        # Jouer le coup de l'adversaire si nécessaire
         opponent_move = None
         if self.user_side == 'white' and self.current_move_index < len(self.black_moves):
             opponent_move = self.black_moves[self.current_move_index]
@@ -106,13 +135,17 @@ class ChessGame:
             opponent_move = self.white_moves[self.current_move_index + 1]
             
         if opponent_move:
-            self.last_opponent_move = self.board.san(opponent_move)  # Obtenir SAN avant de jouer
-            self.board.push(opponent_move)  # Puis jouer le coup
+            self.last_opponent_move = self.board.san(opponent_move)
+            self.board.push(opponent_move)
             
         self.current_move_index += 1
         
-        # Message d'aide pour les coups de pion
-        hint_message = "Pour les pions, entrez la case de départ et d'arrivée (ex: e2e4)" if (not is_correct and is_pawn) else ""
+        hint_message = ""
+        if not is_correct:
+            if is_pawn:
+                hint_message = "Pour les pions, entrez la case de départ et d'arrivée (ex: e2e4)"
+            else:
+                hint_message = "Pour les pièces, entrez la pièce et la case d'arrivée (ex: Nf3)"
         
         return {
             'is_correct': is_correct,
@@ -123,5 +156,6 @@ class ChessGame:
             'is_player_turn': True,
             'last_opponent_move': self.last_opponent_move,
             'hint': hint_message,
-            'is_pawn_move': is_pawn
+            'is_pawn_move': is_pawn,
+            'is_valid_format': True
         }
