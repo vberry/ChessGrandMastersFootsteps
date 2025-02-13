@@ -70,6 +70,70 @@
             color: #a94442;
             border: 1px solid #ebccd1;
         }
+        /* Styles pour l'historique des coups */
+        #move-history {
+            width: 250px;
+            height: 400px;
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .history-header {
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .history-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-content > div {
+            background-color: white;
+            border-radius: 6px;
+            padding: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .history-content .comment {
+            color: #666;
+            font-style: italic;
+            margin-top: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Style scrollbar pour WebKit (Chrome, Safari, etc.) */
+        .history-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .history-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .history-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
     </style>
 </head>
 <body>
@@ -82,6 +146,13 @@
 
     <div id="board"></div>
 
+    <!-- Modification de la structure HTML de l'historique -->
+    <div id="move-history">
+        <div class="history-header">Historique des coups</div>
+        <div class="history-content"></div>
+    </div>
+
+
     <div class="move-input">
         <input type="text" id="move-input" placeholder="Entrez votre coup (ex: e4 ou Nf3)">
         <button id="submit-btn" onclick="submitMove()">Soumettre</button>
@@ -92,7 +163,34 @@
     <script>
         let board = null;
         
-        
+        function updateMoveHistory(playerMove, correctMove, opponentMove, comment, opponentComment) {
+            const moveHistory = document.querySelector('#move-history .history-content');
+            const moveEntry = document.createElement('div');
+            
+            let moveContent = `<div><em>Vous:</em> <strong>${playerMove}</strong>`;
+            if (playerMove !== correctMove) {
+                moveContent += ` (correct: ${correctMove})`;
+            }
+            if (comment) {
+                moveContent += `<div class="comment">${comment}</div>`;
+            }
+            moveContent += '</div>';
+            
+            if (opponentMove) {
+                moveContent += `<div><em>Adversaire:</em> <strong>${opponentMove}</strong>`;
+                if (opponentComment) {
+                    moveContent += `<div class="comment">${opponentComment}</div>`;
+                }
+                moveContent += '</div>';
+            }
+
+            moveEntry.innerHTML = moveContent;
+            moveHistory.appendChild(moveEntry);
+            moveHistory.scrollTop = moveHistory.scrollHeight;
+        }
+
+
+
         function initializeBoard() {
             console.log('Initialisation du plateau...');
             board = Chessboard('board', {
@@ -184,9 +282,18 @@
                 if (board) {
                     board.position(data.board_fen);
                 }
-                
+
                 document.getElementById("score").textContent = data.score;
-                
+
+                // Met à jour l'historique avec le coup du joueur, celui de l'adversaire et les commentaires
+                updateMoveHistory(
+                    move, 
+                    data.correct_move, 
+                    data.opponent_move,
+                    data.comment,
+                    data.opponent_comment
+                );
+
                 showMessage(
                     data.is_correct ? 
                     "✅ Bravo ! Coup correct." : 
