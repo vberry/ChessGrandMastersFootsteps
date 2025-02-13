@@ -27,6 +27,25 @@ def get_game_from_file(file_path):
         moves = list(game.mainline_moves())
         print(f"Moves loaded: {moves}")
         return game
+    
+def convertir_notation_francais_en_anglais(move_fr):
+        """
+        Convertit une notation SAN française (ex: Cf3) en notation SAN anglaise (ex: Nf3).
+        """
+        conversion_pieces = {
+            "C": "N",  # Cavalier -> Knight
+            "F": "B",  # Fou -> Bishop
+            "T": "R",  # Tour -> Rook
+            "D": "Q",  # Dame -> Queen
+            "R": "K",  # Roi -> King
+        }
+        
+        # Remplace les lettres françaises par les lettres anglaises
+        move_en = move_fr
+        for fr, en in conversion_pieces.items():
+            move_en = move_en.replace(fr, en)
+
+        return move_en
 
 class ChessGame:
     def __init__(self, game, user_side):
@@ -65,6 +84,7 @@ class ChessGame:
         """Détermine si un coup est un coup de pion."""
         return not (move_san[0].isupper() or 'O' in move_san)
     
+
     def validate_input(self, move):
         """Valide le format de l'entrée utilisateur."""
         move = move.strip().lower()
@@ -93,7 +113,7 @@ class ChessGame:
             return {'error': 'La partie est terminée'}
         
         # Valider le format de l'entrée
-        is_valid, validated_move, error_message = self.validate_input(move)
+        is_valid, validated_move, error_message = self.validate_input(convertir_notation_francais_en_anglais(move.strip()).lower())
         if not is_valid:
             return {
                 'error': error_message,
@@ -111,6 +131,7 @@ class ChessGame:
         is_pawn = self.is_pawn_move(correct_move_san)
         
         submitted_move = validated_move
+
         is_correct = False
         
         if is_pawn:
