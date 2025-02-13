@@ -1,0 +1,147 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+}
+
+#board {
+    width: 400px;
+    margin: 20px 0;
+}
+
+.game-info {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.move-input {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.instructions {
+    max-width: 250px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-left: 5px solid #4CAF50;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.success {
+    background-color: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+}
+
+.error {
+    background-color: #f2dede;
+    color: #a94442;
+    border: 1px solid #ebccd1;
+}
+
+/* Styles pour l'historique des coups */
+#move-history {
+    width: 250px;
+    height: 400px;
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.history-header {
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+    text-align: center;
+}
+
+.history-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.history-content > div {
+    background-color: white;
+    border-radius: 6px;
+    padding: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.history-content .comment {
+    color: #666;
+    font-style: italic;
+    margin-top: 4px;
+    font-size: 0.9em;
+}
+
+.history-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.history-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.history-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.history-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

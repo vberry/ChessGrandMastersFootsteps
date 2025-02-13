@@ -6,8 +6,32 @@
 [Black "Boris Spassky"]
 [Result "1-0"]
 
-1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 
-8. c3 O-O 9. h3 Nb8 10. d4 Nbd7 11. c4 c6 12. Nc3 Qc7 13. cxb5 axb5 
-14. Bg5 h6 15. Bh4 Re8 16. Rc1 Qb8 17. d5 Bb7 18. dxc6 Bxc6 19. Nd5 Bxd5 
-20. exd5 Rc8 21. Nd4 exd4 22. Rxc8+ Qxc8 23. Rxe7 Qd8 24. Bxf6 Nxf6 
-25. Rb7 Qa5 26. Qxd4 Qe1+ 27. Kh2 Ne4 28. Re7 f5 29. Qxg7# 1-0
+1. e4 e5 {Ouverture classique avec le pion du roi, favorisant une position centrale ouverte.}
+2. Nf3 Nc6 {Le développement des cavaliers pour exercer un contrôle sur le centre.}
+3. Bb5 a6 {L'ouverture espagnole commence ici avec le coup Bb5. Spassky répond avec a6 pour attaquer le fou de Fischer et l'obliger à se déplacer.}
+4. Ba4 Nf6 {Fischer recule le fou avec Ba4, préservant la pression sur le cavalier c6. Spassky développe son cavalier pour attaquer le pion e4.}
+5. O-O Be7 {Fischer roque pour assurer la sécurité de son roi, tandis que Spassky développe son fou.}
+6. Re1 b5 {Fischer place la tour sur une colonne centrale, avec une vue sur le pion e4. Spassky avance son pion b pour repousser le fou et renforcer le contrôle sur le côté.}
+7. Bb3 d6 {Le fou de Fischer se déplace pour maintenir sa pression sur le centre, et Spassky prépare son développement avec d6 pour soutenir son pion e5.}
+8. c3 O-O {Fischer prépare le coup d4 pour renforcer le centre, et Spassky roque pour mettre son roi en sécurité.}
+9. h3 Nb8 {Fischer prévient un éventuel échec du fou ou du cavalier avec h3, et Spassky déplace son cavalier vers Nb8 pour éventuellement le réorienter vers un meilleur emplacement.}
+10. d4 Nbd7 {Fischer lance une offensive au centre avec d4. Spassky réoriente son cavalier vers d7 pour soutenir la poussée du pion.}
+11. c4 c6 {Fischer continue avec une pression au centre avec c4, et Spassky répond avec c6 pour soutenir son pion d5.}
+12. Nc3 Qc7 {Fischer développe son cavalier pour renforcer le contrôle sur le centre. Spassky place sa dame sur c7 pour soutenir le pion c6 et préparer une future attaque.}
+13. cxb5 axb5 {Fischer prend le pion sur b5, et Spassky capture avec son pion a pour maintenir la structure.}
+14. Bg5 h6 {Fischer développe son fou sur g5 pour menacer le cavalier de Spassky. Spassky réagit avec h6 pour repousser le fou.}
+15. Bh4 Re8 {Fischer place son fou sur h4, maintenant la pression sur le cavalier f6. Spassky prépare le développement de sa tour avec Re8.}
+16. Rc1 Qb8 {Fischer place sa tour sur la colonne ouverte c pour attaquer le pion c6. Spassky déplace sa dame pour soutenir le pion b5 et préparer une attaque.}
+17. d5 Bb7 {Fischer avance son pion d5 pour créer une percée dans le camp de Spassky. Spassky déplace son fou pour défendre et maintenir le contrôle sur les cases noires.}
+18. dxc6 Bxc6 {Fischer prend le pion c6, forçant Spassky à capturer avec le fou et à ouvrir davantage la position.} 
+19. Nd5 Bxd5 {Fischer place son cavalier sur d5 pour exercer une pression maximale sur les pièces noires. Spassky capture ce cavalier avec le fou.}
+20. exd5 Rc8 {Fischer prend avec le pion, créant une forte présence centrale. Spassky déplace sa tour sur c8 pour activer ses pièces.}
+21. Nd4 exd4 {Fischer réorganise ses pièces pour renforcer la pression. Spassky prend avec le pion, ouvrant la colonne pour Fischer.}
+22. Rxc8+ Qxc8 {Fischer capture la tour de Spassky avec Rxc8, et Spassky reprend avec sa dame.}
+23. Rxe7 Qd8 {Fischer capture la tour sur e7, forçant la dame de Spassky à se déplacer. Spassky place sa dame sur d8 pour se défendre.}
+24. Bxf6 Nxf6 {Fischer capture le cavalier sur f6 avec son fou, et Spassky reprend avec le cavalier pour renforcer la défense.}
+25. Rb7 Qa5 {Fischer déplace sa tour sur la septième rangée pour mettre une pression sur Spassky. Spassky essaie de contre-attaquer en déplaçant sa dame sur a5.}
+26. Qxd4 Qe1+ {Fischer capture le pion d4 et impose un échec avec Qe1+.}
+27. Kh2 Ne4 {Fischer déplace son roi sur h2 pour éviter l'échec, et Spassky place son cavalier sur e4 pour attaquer.}
+28. Re7 f5 {Fischer développe sa tour pour contrôler davantage la position, et Spassky pousse son pion f pour essayer de créer des contre-jeux.}
+29. Qxg7# {Fischer lance l'attaque décisive avec Qxg7, échec et mat. Spassky ne peut plus se défendre et la partie est terminée.}

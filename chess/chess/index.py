@@ -2,8 +2,6 @@ import os
 from modes.guessMove import load_pgn_games, get_game_from_file, replay_game
 
 
-
-
 # Définir le dossier contenant les fichiers PGN
 PGN_FOLDER = os.path.join(os.path.dirname(__file__), "dossierPgn")
 

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu d'Échecs</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <link rel="stylesheet" href="../static/css/deviner_prochain_coupCss.css">
+</head>
+<body>
+    <h1>Jeu de Devinettes d'Échecs</h1>
+
+    <div class="container">
+        <div class="instructions">
+            <h3>Comment entrer un coup valide ?</h3>
+            <p><strong>Pour un pion :</strong> Tapez <code>e2e4</code> (colonne1 + ligne1 + colonne2 + ligne2).</p>
+            <p><strong>Pour une pièce :</strong> Tapez <code>Cf3</code> (lettre de la pièce + case de destination).</p>
+            <p><strong>Roque :</strong> Tapez <code>O-O</code> (petit roque) ou <code>O-O-O</code> (grand roque).</p>
+        </div>
+    
+        <div class="game-info">
+            <h2>Score: <span id="score">{{ game_state['score'] }}</span> / {{ game_state['total_moves'] }}</h2>
+            {% if game_state['last_opponent_move'] %}
+                <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
+            {% endif %}
+            <p id="status">C'est à vous de jouer !</p>
+        </div>
+        <div id="board"></div>
+
+        <!-- Historique des coups -->
+        <div id="move-history">
+            <div class="history-header">Historique des coups</div>
+            <div class="history-content"></div>
+        </div>
+    </div>
+
+    <div class="move-input">
+        <input type="text" id="move-input" placeholder="Entrez votre coup (ex: e4 ou Nf3)">
+        <button id="submit-btn" onclick="submitMove()">Soumettre</button>
+    </div>
+
+    <div id="message" class="message" style="display: none;"></div>
+</body>
+<script>
+    var boardFen = "{{ game_state['board_fen'] }}";
+    var userSide = "{{ game_state['user_side'] }}";
+    var gameId = "{{ game_id }}";
+</script>
+<script src="{{ url_for('static', filename='javascript/deviner_prochain_coupJs.js') }}"></script>
+</html>

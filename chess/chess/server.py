@@ -14,7 +14,7 @@ PGN_FOLDER = os.path.join(os.path.dirname(__file__), "dossierPgn")
 def home():
     """Affiche la page d'accueil avec la liste des parties disponibles."""
     pgn_games = load_pgn_games(PGN_FOLDER)
-    return render_template("start.html", pgn_games=pgn_games)
+    return render_template("menu.html", pgn_games=pgn_games)
 
 @app.route('/start-game', methods=["POST"])
 def start_game():
@@ -33,7 +33,7 @@ def start_game():
     game_id = str(len(games) + 1)
     games[game_id] = ChessGame(game, user_side)
 
-    return render_template("chessboard.html", game_id=game_id, game_state=games[game_id].get_game_state())
+    return render_template("deviner_prochain_coup.html", game_id=game_id, game_state=games[game_id].get_game_state())
 
 @app.route('/submit-move', methods=["POST"])
 def submit_move():
