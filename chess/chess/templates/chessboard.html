@@ -13,27 +13,48 @@
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            padding: 20px;
+       body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        padding: 20px;
         }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+        }
+
         #board {
             width: 400px;
             margin: 20px 0;
         }
+
         .game-info {
             margin: 20px 0;
             text-align: center;
         }
+
         .move-input {
             margin: 20px 0;
             display: flex;
             gap: 10px;
             align-items: center;
         }
+
+        .instructions {
+            max-width: 250px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 5px solid #4CAF50;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
         button {
             padding: 8px 16px;
             background-color: #4CAF50;
@@ -42,48 +63,63 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #45a049;
         }
+
         button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
+
         input[type="text"] {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
         }
+
         .message {
             margin: 10px 0;
             padding: 10px;
             border-radius: 4px;
         }
+
         .success {
             background-color: #dff0d8;
             color: #3c763d;
             border: 1px solid #d6e9c6;
         }
+
         .error {
             background-color: #f2dede;
             color: #a94442;
             border: 1px solid #ebccd1;
         }
+
     </style>
 </head>
 <body>
     <h1>Jeu de Devinettes d'Échecs</h1>
-    
-    <div class="game-info">
-        <h2>Score: <span id="score">{{ game_state['score'] }}</span> / {{ game_state['total_moves'] }}</h2>
-        {% if game_state['last_opponent_move'] %}
-            <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
-        {% endif %}
-        <p id="status">C'est à vous de jouer !</p>
-    </div>
-    <div id="board"></div>
 
+    <div class="container">
+        <div class="instructions">
+            <h3>Comment entrer un coup valide ?</h3>
+            <p><strong>Pour un pion :</strong> Tapez <code>e2e4</code> (colonne1 + ligne1 + colonne2 + ligne2).</p>
+            <p><strong>Pour une pièce :</strong> Tapez <code>Cf3</code> (lettre de la pièce + case de destination).</p>
+            <p><strong>Roque :</strong> Tapez <code>O-O</code> (petit roque) ou <code>O-O-O</code> (grand roque).</p>
+        </div>
+    
+        <div class="game-info">
+            <h2>Score: <span id="score">{{ game_state['score'] }}</span> / {{ game_state['total_moves'] }}</h2>
+            {% if game_state['last_opponent_move'] %}
+                <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
+            {% endif %}
+            <p id="status">C'est à vous de jouer !</p>
+        </div>
+        <div id="board"></div>
+    </div>
     <div class="move-input">
         <input type="text" id="move-input" placeholder="Entrez votre coup (ex: e4 ou Nf3)">
         <button id="submit-btn" onclick="submitMove()">Soumettre</button>
