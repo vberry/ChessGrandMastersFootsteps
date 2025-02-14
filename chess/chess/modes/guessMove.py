@@ -166,7 +166,7 @@ class ChessGame:
             is_correct = submitted_move == correct_uci
             correct_move_display = correct_uci
         else:
-            correct_san = correct_move_san.lower().replace('x', '').replace('+', '')
+            correct_san = correct_move_san.lower().replace('x', '').replace('+', '').replace('#', '')
             is_correct = (submitted_move == correct_san or 
                          submitted_move == correct_move.uci())
             correct_move_display = correct_san

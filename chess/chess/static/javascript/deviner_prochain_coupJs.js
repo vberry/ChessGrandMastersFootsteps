@@ -32,12 +32,98 @@ function initializeBoard() {
         position: boardFen, 
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
         showNotation: true,
-        draggable: false,
-        orientation: userSide
+        draggable: true,  // Permet de déplacer les pièces avec la souris
+        orientation: userSide,
+        onDrop: handleMove  // Fonction appelée quand une pièce est déplacée
     });
 
     window.addEventListener('resize', board.resize);
 }
+
+
+function handleMove(source, target) {
+    let uciMove = source + target;  // Format UCI (ex: "g1f3")
+    
+    // Obtenir la position actuelle du plateau
+    const currentPosition = board.position();
+    const piece = currentPosition[source];
+    
+    // Détecter le roque
+    let moveToSubmit = uciMove;
+    if (piece && piece.charAt(1) === 'K') {  // Si c'est un roi
+        // Petit roque
+        if ((source === 'e1' && target === 'g1') || (source === 'e8' && target === 'g8')) {
+            moveToSubmit = 'O-O';
+        }
+        // Grand roque
+        else if ((source === 'e1' && target === 'c1') || (source === 'e8' && target === 'c8')) {
+            moveToSubmit = 'O-O-O';
+        } else {
+            moveToSubmit = 'k' + target;
+        }
+    }
+
+    // Si ce n'est pas un roque, appliquer la logique précédente
+    else {
+        const isPawn = piece && piece.charAt(1).toLowerCase() === 'P';
+        if (!isPawn) {
+            const pieceToSAN = {
+                'N': 'n',  // Cavalier
+                'B': 'b',  // Fou
+                'R': 'r',  // Tour
+                'Q': 'q',  // Dame
+                'K': 'k'   // Roi
+            };
+            
+            const pieceType = piece.charAt(1);
+            if (pieceToSAN[pieceType]) {
+                moveToSubmit = pieceToSAN[pieceType] + target;
+            }
+        }
+    }
+    
+    console.log("Coup à soumettre:", moveToSubmit);
+    
+    var formData = new FormData();
+    formData.append("game_id", gameId);
+    formData.append("move", moveToSubmit);
+
+    fetch('/submit-move', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            showMessage(data.error, false);
+            board.position(boardFen);  // Réinitialiser le plateau si erreur
+            return;
+        }
+
+        // Mettre à jour le plateau avec la nouvelle position
+        board.position(data.board_fen);
+        
+        updateMoveHistory(
+            moveToSubmit,
+            data.correct_move,
+            data.opponent_move,
+            data.comment,
+            data.opponent_comment
+        );
+
+        if (data.game_over) {
+            document.getElementById("status").textContent = "🎉 Partie terminée !";
+        }
+    })
+    .catch(error => {
+        console.error('Erreur complète:', error);
+        showMessage("Une erreur est survenue", false);
+        board.position(boardFen);
+    });
+
+    return false;
+}
+
 
 function checkJQuery() {
     if (window.jQuery) {
