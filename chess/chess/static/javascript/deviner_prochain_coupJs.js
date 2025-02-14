@@ -51,20 +51,14 @@ function handleMove(source, target) {
     // Détecter le roque
     let moveToSubmit = uciMove;
     if (piece && piece.charAt(1) === 'K') {  // Si c'est un roi
-        // Petit roque
         if ((source === 'e1' && target === 'g1') || (source === 'e8' && target === 'g8')) {
-            moveToSubmit = 'O-O';
-        }
-        // Grand roque
-        else if ((source === 'e1' && target === 'c1') || (source === 'e8' && target === 'c8')) {
-            moveToSubmit = 'O-O-O';
+            moveToSubmit = 'o-o'; // Petit roque
+        } else if ((source === 'e1' && target === 'c1') || (source === 'e8' && target === 'c8')) {
+            moveToSubmit = 'o-o-o'; // Grand roque
         } else {
-            moveToSubmit = 'k' + target;
+            moveToSubmit = 'k' + target; // Autre coup du roi
         }
-    }
-
-    // Si ce n'est pas un roque, appliquer la logique précédente
-    else {
+    } else {
         const isPawn = piece && piece.charAt(1).toLowerCase() === 'P';
         if (!isPawn) {
             const pieceToSAN = {
@@ -74,7 +68,6 @@ function handleMove(source, target) {
                 'Q': 'q',  // Dame
                 'K': 'k'   // Roi
             };
-            
             const pieceType = piece.charAt(1);
             if (pieceToSAN[pieceType]) {
                 moveToSubmit = pieceToSAN[pieceType] + target;
@@ -100,9 +93,15 @@ function handleMove(source, target) {
             return;
         }
 
-        // Mettre à jour le plateau avec la nouvelle position
+        // ✅ Mise à jour du score
+        if (data.score !== undefined) {
+            document.getElementById("score").textContent = data.score;
+        }
+
+        // ✅ Mise à jour du plateau
         board.position(data.board_fen);
-        
+
+        // ✅ Mettre à jour l'historique des coups
         updateMoveHistory(
             moveToSubmit,
             data.correct_move,
@@ -111,6 +110,7 @@ function handleMove(source, target) {
             data.opponent_comment
         );
 
+        // ✅ Vérifier si la partie est terminée
         if (data.game_over) {
             document.getElementById("status").textContent = "🎉 Partie terminée !";
         }
@@ -123,6 +123,7 @@ function handleMove(source, target) {
 
     return false;
 }
+
 
 
 function checkJQuery() {

@@ -52,9 +52,6 @@ h1 {
     transition: transform 0.3s ease;
 }
 
-#board:hover {
-    transform: perspective(1000px) rotateX(5deg);
-}
 
 /* Cases de l'échiquier */
 .white-1e1d7 {
