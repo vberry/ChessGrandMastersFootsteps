@@ -79,6 +79,8 @@ class ChessGame:
             self.board.push(first_move)
         else:
             self.last_opponent_move = None
+        
+        self.save_board_fen()
 
     def get_game_state(self):
         return {
@@ -173,11 +175,13 @@ class ChessGame:
         if is_pawn:
             correct_uci = correct_move.uci()
             is_correct = submitted_move == correct_uci
-            correct_move_display = correct_uci
+            submitted_move_san = self.board.san(self.board.parse_uci(submitted_move))
+            correct_move_display = correct_move_san
         else:
             correct_san = correct_move_san.lower().replace('x', '').replace('+', '').replace('#', '')
             is_correct = (submitted_move == correct_san or 
-                         submitted_move == correct_move.uci())
+                        submitted_move == correct_move.uci())
+            submitted_move_san = self.board.san(self.board.parse_uci(submitted_move))
             correct_move_display = correct_san
 
         if is_correct:
@@ -196,12 +200,14 @@ class ChessGame:
             opponent_move_san = self.board.san(opponent_move)
             opponent_comment = self.get_comment_for_opponent_move()
             self.board.push(opponent_move)
+            self.save_board_fen()
             self.last_opponent_move = opponent_move_san
         elif self.user_side == 'black' and (self.current_move_index + 1) < len(self.white_moves):
             opponent_move = self.white_moves[self.current_move_index + 1]
             opponent_move_san = self.board.san(opponent_move)
             opponent_comment = self.get_comment_for_opponent_move()
             self.board.push(opponent_move)
+            self.save_board_fen()
             self.last_opponent_move = opponent_move_san
 
         self.current_move_index += 1
@@ -209,13 +215,13 @@ class ChessGame:
         hint_message = ""
         if not is_correct:
             if is_pawn:
-                hint_message = "Pour les pions, entrez la case de départ et d'arrivée (ex: e2e4)"
+                hint_message = "Pour les pions, entrez simplement la case d'arrivée (ex: e4)"
             else:
                 hint_message = "Pour les pièces, entrez la pièce et la case d'arrivée (ex: Nf3)"
 
         return {
             'is_correct': is_correct,
-            'correct_move': correct_move_display,
+            'correct_move': correct_move_san,
             'opponent_move': opponent_move_san,
             'board_fen': self.board.fen(),
             'score': self.score,
@@ -226,5 +232,6 @@ class ChessGame:
             'is_pawn_move': is_pawn,
             'is_valid_format': True,
             'comment': current_comment,
-            'opponent_comment': opponent_comment
+            'opponent_comment': opponent_comment,
+            'submitted_move': submitted_move_san  # Affichage du coup soumis en notation SAN
         }
