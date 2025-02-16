@@ -10,19 +10,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/deviner_prochain_coupCss.css') }}">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 </head>
 <body>
 
     <div class="game-layout">
-        <!-- Instructions à gauche -->
-        <div class="instructions">
-            <h3>Comment entrer un coup valide ?</h3>
-            <p><strong>Pour un pion :</strong> Tapez <code>e2e4</code> (colonne1 + ligne1 + colonne2 + ligne2).</p>
-            <p><strong>Pour une pièce :</strong> Tapez <code>Cf3</code> (lettre de la pièce + case de destination).</p>
-            <p><strong>Roque :</strong> Tapez <code>O-O</code> (petit roque) ou <code>O-O-O</code> (grand roque).</p>
-        </div>
-    
-        <!-- Centre : Score + Échiquier + Entrée des coups -->
+        <!-- Centre : Score + Échiquier -->
         <div class="center-container">
             <div class="game-info">
                 <h2>Score: <span id="score">{{ game_state['score'] }}</span> / {{ game_state['total_moves'] }}</h2>
@@ -32,12 +25,6 @@
                 <p id="status">C'est à vous de jouer !</p>
             </div>
             <div id="board"></div>
-            
-            <!-- Entrée des coups sous l'échiquier -->
-            <div class="move-input">
-                <input type="text" id="move-input" placeholder="Entrez votre coup (ex: e4 ou Nf3)">
-                <button id="submit-btn" onclick="submitMove()">Soumettre</button>
-            </div>
         </div>
     
         <!-- Historique des coups à droite -->
@@ -58,3 +45,4 @@
 
 <script src="{{ url_for('static', filename='javascript/deviner_prochain_coupJs.js') }}"></script>
 </html>
+

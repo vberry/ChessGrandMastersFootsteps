@@ -1,6 +1,11 @@
 import os
 import chess
 import chess.pgn
+import chess.engine
+from stockfish import Stockfish
+
+# Chemin vers Stockfish (vérifie qu'il est bien installé à cet emplacement)
+STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
 
 def load_pgn_games(pgn_folder):
     """Charge les parties PGN depuis le dossier et retourne la liste des parties disponibles."""
@@ -46,6 +51,59 @@ def convertir_notation_francais_en_anglais(move_fr):
 
     return move_en
 
+
+def get_best_moves_from_fen(fen_file_path, num_moves=3):
+    try:
+        with open(fen_file_path, "r") as f:
+            fen = f.read().strip()
+            
+        stockfish = Stockfish(STOCKFISH_PATH)
+        stockfish.set_fen_position(fen)
+        stockfish.set_depth(12)
+        
+        # Créer un objet Board pour vérifier la légalité des coups
+        board = chess.Board(fen)
+        
+        best_moves_info = stockfish.get_top_moves(num_moves * 3)
+        
+        best_moves = []
+        for move in best_moves_info:
+            move_uci = move["Move"]
+            try:
+                # Vérifier si le coup est légal
+                chess_move = chess.Move.from_uci(move_uci)
+                if chess_move in board.legal_moves:
+                    score = move.get("Centipawn", None)
+                    
+                    # Vérifier si c'est un mat et afficher le nombre de coups nécessaires pour le mat
+                    if score is None:
+                        # Si c'est un mat, vérifier la clé 'mate' et afficher le nombre de coups nécessaires
+                        if "mate" in move:
+                            mate_in = move["mate"]
+                            score = f"#{mate_in}"  # Affichage du mat en 1 coup
+                    else:
+                        score = score / 100
+                    
+                    # Ajouter le coup à la liste des meilleurs coups
+                    best_moves.append((move_uci, score))
+                    
+                    if len(best_moves) >= num_moves:
+                        break
+            except ValueError:
+                continue
+
+        # ✅ Afficher immédiatement les meilleurs coups initiaux
+        print("🔍 Meilleurs coups proposés par Stockfish :")
+        for move, score in best_moves:
+            print(f"➡ {move} ({score})")
+                
+        return best_moves
+
+    except Exception as e:
+        print(f"Erreur lors de l'analyse Stockfish : {e}")
+        return []
+
+
 class ChessGame:
     def __init__(self, game, user_side):
         self.board = game.board()
@@ -78,6 +136,10 @@ class ChessGame:
             self.board.push(first_move)
         else:
             self.last_opponent_move = None
+        
+        self.save_board_fen()
+        # ✅ Obtenir les meilleurs coups dès le début
+        self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
 
     def get_game_state(self):
         return {
@@ -111,27 +173,35 @@ class ChessGame:
         """Détermine si un coup est un coup de pion."""
         return not (move_san[0].isupper() or 'O' in move_san)
 
+
+
     def validate_input(self, move):
-        """Valide le format de l'entrée utilisateur."""
+        """Valide le format UCI des coups."""
         move = move.strip().lower()
-        
-        # Cas spécial pour le roque
-        if move in ['o-o', 'o-o-o']:
-            return True, move, None
-        
-        # Format pour les pièces: [pièce][colonne][ligne] ex: nf3, qe4
-        piece_move_pattern = "^[nbrqk][a-h][1-8]$"
-        
-        # Format pour les pions: [colonne1][ligne1][colonne2][ligne2] ex: e2e4
-        pawn_move_pattern = "^[a-h][1-8][a-h][1-8]$"
-        
-        import re
-        if re.match(piece_move_pattern, move):
-            return True, move, None
-        elif re.match(pawn_move_pattern, move):
-            return True, move, None
-        else:
-            return False, None, "Format incorrect. Pour un pion: 'e2e4', pour une pièce: 'Nf3' ou pour un roque: 'O-O'"
+
+        try:
+            chess_move = chess.Move.from_uci(move)  # Convertir UCI
+            if chess_move in self.board.legal_moves:
+                return True, move, None  # Coup valide
+            else:
+                return False, None, "Coup illégal sur l'échiquier"
+        except ValueError:
+            return False, None, "Format UCI invalide"
+
+
+    def save_board_fen(self):
+        """Sauvegarde l'état actuel du plateau sous forme de FEN dans un fichier."""
+        try:
+            # Sauvegarde dans le dossier de l'utilisateur ou le dossier du projet
+            file_path = os.path.join(os.getcwd(), "fichierFenAjour.fen")  # Sauvegarde dans le dossier du projet
+            # file_path = os.path.expanduser("~/fichierFenAjour.fen")  # Sauvegarde dans le dossier personnel de l'utilisateur
+            
+            with open(file_path, "w") as f:
+                f.write(self.board.fen())  # Écrit la FEN actuelle
+            print(f"FEN sauvegardée : {file_path}")
+        except Exception as e:
+            print(f"Erreur lors de la sauvegarde FEN : {e}")
+
 
     def submit_move(self, move):
         if self.current_move_index >= len(self.moves):
@@ -164,11 +234,13 @@ class ChessGame:
         if is_pawn:
             correct_uci = correct_move.uci()
             is_correct = submitted_move == correct_uci
-            correct_move_display = correct_uci
+            submitted_move_san = self.board.san(self.board.parse_uci(submitted_move))
+            correct_move_display = correct_move_san
         else:
             correct_san = correct_move_san.lower().replace('x', '').replace('+', '').replace('#', '')
             is_correct = (submitted_move == correct_san or 
-                         submitted_move == correct_move.uci())
+                        submitted_move == correct_move.uci())
+            submitted_move_san = self.board.san(self.board.parse_uci(submitted_move))
             correct_move_display = correct_san
 
         if is_correct:
@@ -187,12 +259,18 @@ class ChessGame:
             opponent_move_san = self.board.san(opponent_move)
             opponent_comment = self.get_comment_for_opponent_move()
             self.board.push(opponent_move)
+            self.save_board_fen()
+            # ✅ Obtenir les meilleurs coups dès le début
+            self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
             self.last_opponent_move = opponent_move_san
         elif self.user_side == 'black' and (self.current_move_index + 1) < len(self.white_moves):
             opponent_move = self.white_moves[self.current_move_index + 1]
             opponent_move_san = self.board.san(opponent_move)
             opponent_comment = self.get_comment_for_opponent_move()
             self.board.push(opponent_move)
+            self.save_board_fen()
+            # ✅ Obtenir les meilleurs coups dès le début
+            self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
             self.last_opponent_move = opponent_move_san
 
         self.current_move_index += 1
@@ -200,13 +278,13 @@ class ChessGame:
         hint_message = ""
         if not is_correct:
             if is_pawn:
-                hint_message = "Pour les pions, entrez la case de départ et d'arrivée (ex: e2e4)"
+                hint_message = "Pour les pions, entrez simplement la case d'arrivée (ex: e4)"
             else:
                 hint_message = "Pour les pièces, entrez la pièce et la case d'arrivée (ex: Nf3)"
 
         return {
             'is_correct': is_correct,
-            'correct_move': correct_move_display,
+            'correct_move': correct_move_san,
             'opponent_move': opponent_move_san,
             'board_fen': self.board.fen(),
             'score': self.score,
@@ -217,5 +295,6 @@ class ChessGame:
             'is_pawn_move': is_pawn,
             'is_valid_format': True,
             'comment': current_comment,
-            'opponent_comment': opponent_comment
+            'opponent_comment': opponent_comment,
+            'submitted_move': submitted_move_san  # Affichage du coup soumis en notation SAN
         }
