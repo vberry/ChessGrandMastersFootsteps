@@ -2,6 +2,10 @@ import os
 import chess
 import chess.pgn
 import chess.engine
+from stockfish import Stockfish
+
+# Chemin vers Stockfish (vérifie qu'il est bien installé à cet emplacement)
+STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
 
 def load_pgn_games(pgn_folder):
     """Charge les parties PGN depuis le dossier et retourne la liste des parties disponibles."""
@@ -47,6 +51,59 @@ def convertir_notation_francais_en_anglais(move_fr):
 
     return move_en
 
+
+def get_best_moves_from_fen(fen_file_path, num_moves=3):
+    try:
+        with open(fen_file_path, "r") as f:
+            fen = f.read().strip()
+            
+        stockfish = Stockfish(STOCKFISH_PATH)
+        stockfish.set_fen_position(fen)
+        stockfish.set_depth(12)
+        
+        # Créer un objet Board pour vérifier la légalité des coups
+        board = chess.Board(fen)
+        
+        best_moves_info = stockfish.get_top_moves(num_moves * 3)
+        
+        best_moves = []
+        for move in best_moves_info:
+            move_uci = move["Move"]
+            try:
+                # Vérifier si le coup est légal
+                chess_move = chess.Move.from_uci(move_uci)
+                if chess_move in board.legal_moves:
+                    score = move.get("Centipawn", None)
+                    
+                    # Vérifier si c'est un mat et afficher le nombre de coups nécessaires pour le mat
+                    if score is None:
+                        # Si c'est un mat, vérifier la clé 'mate' et afficher le nombre de coups nécessaires
+                        if "mate" in move:
+                            mate_in = move["mate"]
+                            score = f"#{mate_in}"  # Affichage du mat en 1 coup
+                    else:
+                        score = score / 100
+                    
+                    # Ajouter le coup à la liste des meilleurs coups
+                    best_moves.append((move_uci, score))
+                    
+                    if len(best_moves) >= num_moves:
+                        break
+            except ValueError:
+                continue
+
+        # ✅ Afficher immédiatement les meilleurs coups initiaux
+        print("🔍 Meilleurs coups proposés par Stockfish :")
+        for move, score in best_moves:
+            print(f"➡ {move} ({score})")
+                
+        return best_moves
+
+    except Exception as e:
+        print(f"Erreur lors de l'analyse Stockfish : {e}")
+        return []
+
+
 class ChessGame:
     def __init__(self, game, user_side):
         self.board = game.board()
@@ -81,6 +138,8 @@ class ChessGame:
             self.last_opponent_move = None
         
         self.save_board_fen()
+        # ✅ Obtenir les meilleurs coups dès le début
+        self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
 
     def get_game_state(self):
         return {
@@ -201,6 +260,8 @@ class ChessGame:
             opponent_comment = self.get_comment_for_opponent_move()
             self.board.push(opponent_move)
             self.save_board_fen()
+            # ✅ Obtenir les meilleurs coups dès le début
+            self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
             self.last_opponent_move = opponent_move_san
         elif self.user_side == 'black' and (self.current_move_index + 1) < len(self.white_moves):
             opponent_move = self.white_moves[self.current_move_index + 1]
@@ -208,6 +269,8 @@ class ChessGame:
             opponent_comment = self.get_comment_for_opponent_move()
             self.board.push(opponent_move)
             self.save_board_fen()
+            # ✅ Obtenir les meilleurs coups dès le début
+            self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
             self.last_opponent_move = opponent_move_san
 
         self.current_move_index += 1

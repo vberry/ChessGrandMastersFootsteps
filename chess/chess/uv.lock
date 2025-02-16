@@ -182,6 +182,15 @@ wheels = [
 ]
 
 [[package]]
+name = "stockfish"
+version = "3.28.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/dc/bd/b06883b957530867179da3672fa3d8b87a08a1e3c11ca9737d94b60689d2/stockfish-3.28.0.tar.gz", hash = "sha256:8764127c00434aa85b7fca1c064800e7ea907bb3626ccd4b583f0e911b014070", size = 16264 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/95/b2/b3a204dd7754685fef5e62bf19b82d2572b321df619775502326cf7d383e/stockfish-3.28.0-py3-none-any.whl", hash = "sha256:e432e57112448fe1271dff402db3a4747bf00d1721815ce0a36cfa26582cf360", size = 13907 },
+]
+
+[[package]]
 name = "testchess"
 version = "0.1.0"
 source = { virtual = "." }
@@ -190,6 +199,7 @@ dependencies = [
     { name = "flask" },
     { name = "jsonfy" },
     { name = "python-chess" },
+    { name = "stockfish" },
 ]
 
 [package.metadata]
@@ -198,6 +208,7 @@ requires-dist = [
     { name = "flask", specifier = ">=3.1.0" },
     { name = "jsonfy", specifier = ">=0.4" },
     { name = "python-chess", specifier = ">=1.999" },
+    { name = "stockfish", specifier = ">=3.28.0" },
 ]
 
 [[package]]

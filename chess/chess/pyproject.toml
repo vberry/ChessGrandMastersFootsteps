@@ -9,4 +9,5 @@ dependencies = [
     "flask>=3.1.0",
     "jsonfy>=0.4",
     "python-chess>=1.999",
+    "stockfish>=3.28.0",
 ]
