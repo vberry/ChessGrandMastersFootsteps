@@ -1,6 +1,7 @@
 import os
 import chess
 import chess.pgn
+import chess.engine
 
 def load_pgn_games(pgn_folder):
     """Charge les parties PGN depuis le dossier et retourne la liste des parties disponibles."""
@@ -111,27 +112,35 @@ class ChessGame:
         """Détermine si un coup est un coup de pion."""
         return not (move_san[0].isupper() or 'O' in move_san)
 
+
+
     def validate_input(self, move):
-        """Valide le format de l'entrée utilisateur."""
+        """Valide le format UCI des coups."""
         move = move.strip().lower()
-        
-        # Cas spécial pour le roque
-        if move in ['o-o', 'o-o-o']:
-            return True, move, None
-        
-        # Format pour les pièces: [pièce][colonne][ligne] ex: nf3, qe4
-        piece_move_pattern = "^[nbrqk][a-h][1-8]$"
-        
-        # Format pour les pions: [colonne1][ligne1][colonne2][ligne2] ex: e2e4
-        pawn_move_pattern = "^[a-h][1-8][a-h][1-8]$"
-        
-        import re
-        if re.match(piece_move_pattern, move):
-            return True, move, None
-        elif re.match(pawn_move_pattern, move):
-            return True, move, None
-        else:
-            return False, None, "Format incorrect. Pour un pion: 'e2e4', pour une pièce: 'Nf3' ou pour un roque: 'O-O'"
+
+        try:
+            chess_move = chess.Move.from_uci(move)  # Convertir UCI
+            if chess_move in self.board.legal_moves:
+                return True, move, None  # Coup valide
+            else:
+                return False, None, "Coup illégal sur l'échiquier"
+        except ValueError:
+            return False, None, "Format UCI invalide"
+
+
+    def save_board_fen(self):
+        """Sauvegarde l'état actuel du plateau sous forme de FEN dans un fichier."""
+        try:
+            # Sauvegarde dans le dossier de l'utilisateur ou le dossier du projet
+            file_path = os.path.join(os.getcwd(), "fichierFenAjour.fen")  # Sauvegarde dans le dossier du projet
+            # file_path = os.path.expanduser("~/fichierFenAjour.fen")  # Sauvegarde dans le dossier personnel de l'utilisateur
+            
+            with open(file_path, "w") as f:
+                f.write(self.board.fen())  # Écrit la FEN actuelle
+            print(f"FEN sauvegardée : {file_path}")
+        except Exception as e:
+            print(f"Erreur lors de la sauvegarde FEN : {e}")
+
 
     def submit_move(self, move):
         if self.current_move_index >= len(self.moves):
