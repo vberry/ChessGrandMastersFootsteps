@@ -73,16 +73,17 @@ def get_best_moves_from_fen(fen_file_path, num_moves=3):
                 # Vérifier si le coup est légal
                 chess_move = chess.Move.from_uci(move_uci)
                 if chess_move in board.legal_moves:
-                    score = move.get("Centipawn", None)
+                    # Debug print
+                    print(f"Structure du coup : {move}")
                     
-                    # Vérifier si c'est un mat et afficher le nombre de coups nécessaires pour le mat
-                    if score is None:
-                        # Si c'est un mat, vérifier la clé 'mate' et afficher le nombre de coups nécessaires
-                        if "mate" in move:
-                            mate_in = move["mate"]
-                            score = f"#{mate_in}"  # Affichage du mat en 1 coup
+                    # Si c'est un mat
+                    if move.get("Mate") is not None and move["Mate"] != 0:
+                        score = f"#{move['Mate']}"
+                    # Sinon, utiliser le score en centipawns
+                    elif move.get("Centipawn") is not None:
+                        score = move["Centipawn"] / 100
                     else:
-                        score = score / 100
+                        score = "?"
                     
                     # Ajouter le coup à la liste des meilleurs coups
                     best_moves.append((move_uci, score))
@@ -92,12 +93,20 @@ def get_best_moves_from_fen(fen_file_path, num_moves=3):
             except ValueError:
                 continue
 
-        # ✅ Afficher immédiatement les meilleurs coups initiaux
+        # Afficher immédiatement les meilleurs coups initiaux
         print("🔍 Meilleurs coups proposés par Stockfish :")
         for move, score in best_moves:
             print(f"➡ {move} ({score})")
                 
         return best_moves
+
+    except Exception as e:
+        print(f"Erreur lors de l'analyse Stockfish : {e}")
+        return []
+
+    except Exception as e:
+        print(f"Erreur lors de l'analyse Stockfish : {e}")
+        return []
 
     except Exception as e:
         print(f"Erreur lors de l'analyse Stockfish : {e}")
