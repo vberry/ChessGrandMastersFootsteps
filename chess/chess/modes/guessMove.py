@@ -73,17 +73,16 @@ def get_best_moves_from_fen(fen_file_path, num_moves=3):
                 # Vérifier si le coup est légal
                 chess_move = chess.Move.from_uci(move_uci)
                 if chess_move in board.legal_moves:
-                    # Debug print
-                    print(f"Structure du coup : {move}")
+                    score = move.get("Centipawn", None)
                     
-                    # Si c'est un mat
-                    if move.get("Mate") is not None and move["Mate"] != 0:
-                        score = f"#{move['Mate']}"
-                    # Sinon, utiliser le score en centipawns
-                    elif move.get("Centipawn") is not None:
-                        score = move["Centipawn"] / 100
+                    # Vérifier si c'est un mat et afficher le nombre de coups nécessaires pour le mat
+                    if score is None:
+                        # Si c'est un mat, vérifier la clé 'mate' et afficher le nombre de coups nécessaires
+                        if "mate" in move:
+                            mate_in = move["mate"]
+                            score = f"#{mate_in}"  # Affichage du mat en 1 coup
                     else:
-                        score = "?"
+                        score = score / 100
                     
                     # Ajouter le coup à la liste des meilleurs coups
                     best_moves.append((move_uci, score))
@@ -93,7 +92,7 @@ def get_best_moves_from_fen(fen_file_path, num_moves=3):
             except ValueError:
                 continue
 
-        # Afficher immédiatement les meilleurs coups initiaux
+        # ✅ Afficher immédiatement les meilleurs coups initiaux
         print("🔍 Meilleurs coups proposés par Stockfish :")
         for move, score in best_moves:
             print(f"➡ {move} ({score})")
@@ -103,14 +102,91 @@ def get_best_moves_from_fen(fen_file_path, num_moves=3):
     except Exception as e:
         print(f"Erreur lors de l'analyse Stockfish : {e}")
         return []
+    
+
+def evaluate_move_quality(correct_move, stockfish_moves, board):
+    """
+    Évalue la qualité d'un coup en le comparant avec les suggestions de Stockfish.
+    
+    Args:
+        correct_move: Le coup joué par le GM (objet chess.Move)
+        stockfish_moves: Liste des meilleurs coups suggérés par Stockfish [(move_uci, score)]
+        board: L'état actuel de l'échiquier (objet chess.Board)
+    
+    Returns:
+        tuple: (score, message) où score est un float et message explique l'évaluation
+    """
+    try:
+        # Convertir le coup du GM en UCI pour la comparaison
+        gm_move_uci = correct_move.uci()
+        
+        # Extraire les coups et scores de Stockfish
+        stockfish_uci_moves = [move for move, _ in stockfish_moves]
+        stockfish_scores = [score for _, score in stockfish_moves]
+        
+        # Initialiser le score et le message
+        score = 0
+        message = ""
+        
+        # 1. Vérifier si c'est un coup qui mène au mat
+        best_score = stockfish_scores[0]
+        if isinstance(best_score, str) and best_score.startswith('#'):
+            if gm_move_uci == stockfish_uci_moves[0]:
+                score = 100
+                message = "🌟 Brillant! Vous avez trouvé le mat comme le GM!"
+                return score, message
+        
+        # 2. Évaluer la position du coup dans les suggestions de Stockfish
+        if gm_move_uci in stockfish_uci_moves:
+            move_index = stockfish_uci_moves.index(gm_move_uci)
+            
+            # Attribution des points selon la position
+            if move_index == 0:
+                score = 100
+                message = "💫 Parfait! Le même coup que le meilleur choix de Stockfish!"
+            elif move_index == 1:
+                score = 80
+                message = "✨ Excellent! Le deuxième meilleur coup possible!"
+            elif move_index == 2:
+                score = 60
+                message = "👍 Bien! Un des trois meilleurs coups!"
+        else:
+            # 3. Le coup n'est pas dans les meilleurs, évaluer la différence de score
+            # Jouer le coup du GM pour obtenir l'évaluation
+            temp_board = board.copy()
+            temp_board.push(correct_move)
+            stockfish = Stockfish(STOCKFISH_PATH)
+            stockfish.set_fen_position(temp_board.fen())
+            current_eval = stockfish.get_evaluation()
+            
+            # Comparer avec le meilleur coup
+            if isinstance(best_score, str):  # Si le meilleur coup était un mat
+                score = 20
+                message = "😐 Coup jouable, mais il y avait un mat disponible!"
+            else:
+                # Convertir l'évaluation en score relatif
+                if isinstance(current_eval, dict):
+                    current_score = current_eval.get('value', 0) / 100
+                    score_diff = abs(best_score - current_score)
+                    
+                    if score_diff < 0.5:  # Différence < 0.5 pawn
+                        score = 50
+                        message = "👌 Bon coup! Presque aussi bon que la suggestion de Stockfish."
+                    elif score_diff < 1:  # Différence < 1 pawn
+                        score = 40
+                        message = "🤔 Coup acceptable, mais il y avait mieux."
+                    elif score_diff < 2:  # Différence < 2 pawns
+                        score = 30
+                        message = "😕 Coup imprécis. La position perd un peu de force."
+                    else:
+                        score = 20
+                        message = "⚠️ Coup faible. Il y avait de bien meilleures options."
+        
+        return score, message
 
     except Exception as e:
-        print(f"Erreur lors de l'analyse Stockfish : {e}")
-        return []
-
-    except Exception as e:
-        print(f"Erreur lors de l'analyse Stockfish : {e}")
-        return []
+        print(f"Erreur lors de l'évaluation du coup : {e}")
+        return 0, "Erreur lors de l'évaluation du coup"
 
 
 class ChessGame:
@@ -213,6 +289,7 @@ class ChessGame:
 
 
     def submit_move(self, move):
+        
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
 
@@ -235,6 +312,12 @@ class ChessGame:
         correct_move = self.moves[self.current_move_index]
         correct_move_san = self.board.san(correct_move)
         current_comment = self.get_comment_for_current_move()
+
+        # Évaluer la qualité du coup du GM
+        move_score, move_message = evaluate_move_quality(correct_move, self.best_moves, self.board)
+        
+        # Mettre à jour le score total
+        self.score += move_score
         
         is_pawn = self.is_pawn_move(correct_move_san)
         submitted_move = validated_move
