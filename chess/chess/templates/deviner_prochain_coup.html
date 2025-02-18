@@ -18,7 +18,7 @@
         <!-- Centre : Score + Échiquier -->
         <div class="center-container">
             <div class="game-info">
-                <h2>Score: <span id="score">{{ game_state['score'] }}</span> / {{ game_state['total_moves'] }}</h2>
+                <h2>Score: <span id="score">{{ game_state['score'] }}</span></h2>
                 {% if game_state['last_opponent_move'] %}
                     <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
                 {% endif %}
