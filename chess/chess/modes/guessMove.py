@@ -5,7 +5,7 @@ import chess.engine
 from stockfish import Stockfish
 
 # Chemin vers Stockfish (vérifie qu'il est bien installé à cet emplacement)
-STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
+STOCKFISH_PATH = "/usr/games/stockfish"
 
 def load_pgn_games(pgn_folder):
     """Charge les parties PGN depuis le dossier et retourne la liste des parties disponibles."""
@@ -62,10 +62,11 @@ def get_best_moves_from_fen(fen_file_path, num_moves=3):
             
         stockfish = Stockfish(STOCKFISH_PATH)
         stockfish.set_fen_position(fen)
-        stockfish.set_depth(15)
+        stockfish.set_depth(12)
         
         board = chess.Board(fen)
         best_moves_info = stockfish.get_top_moves(num_moves * 3)
+        best_move=stockfish.get_best_move_time(50)
         
         best_moves = []
         for move in best_moves_info:
@@ -224,6 +225,9 @@ class ChessGame:
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
 
+        # Stocker les meilleurs coups avant que le joueur ne joue
+        current_position_best_moves = self.best_moves.copy()
+
         is_valid, validated_move, error_message = self.validate_input(
             convertir_notation_francais_en_anglais(move.strip()).lower()
         )
@@ -342,23 +346,26 @@ class ChessGame:
             else:
                 hint_message = "Pour les pièces, entrez la pièce et la case d'arrivée (ex: Nf3)"
 
+        # Dans guessMove.py, ajoutez vers la fin de la méthode submit_move():
         return {
-            'is_correct': is_correct,
-            'correct_move': correct_move_san,
-            'opponent_move': opponent_move_san,
-            'board_fen': self.board.fen(),
-            'score': self.score,
-            'game_over': self.current_move_index >= len(self.moves),
-            'is_player_turn': True,
-            'last_opponent_move': self.last_opponent_move,
-            'hint': hint_message,
-            'is_pawn_move': is_pawn,
-            'is_valid_format': True,
-            'comment': current_comment,
-            'opponent_comment': opponent_comment,
-            'submitted_move': submitted_move_san,
-            'move_quality': move_quality_message,
-            'points_earned': points,
-            'is_checkmate': is_checkmate,
-            'checkmate_bonus': checkmate_bonus
-        }
+        'is_correct': is_correct,
+        'correct_move': correct_move_san,
+        'opponent_move': opponent_move_san,
+        'board_fen': self.board.fen(),
+        'score': self.score,
+        'game_over': self.current_move_index >= len(self.moves),
+        'is_player_turn': True,
+        'last_opponent_move': self.last_opponent_move,
+        'hint': hint_message,
+        'is_pawn_move': is_pawn,
+        'is_valid_format': True,
+        'comment': current_comment,
+        'opponent_comment': opponent_comment,
+        'submitted_move': submitted_move_san,
+        'move_quality': move_quality_message,
+        'points_earned': points,
+        'is_checkmate': is_checkmate,
+        'checkmate_bonus': checkmate_bonus,
+        'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
+        'previous_position_best_moves': current_position_best_moves  # Coups alternatifs pour la position précédente
+    }
