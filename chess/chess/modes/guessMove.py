@@ -5,7 +5,7 @@ import chess.engine
 from stockfish import Stockfish
 
 # Chemin vers Stockfish (vérifie qu'il est bien installé à cet emplacement)
-STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
+STOCKFISH_PATH = "/usr/games/stockfish"
 
 def load_pgn_games(pgn_folder):
     """Charge les parties PGN depuis le dossier et retourne la liste des parties disponibles."""
@@ -229,6 +229,9 @@ class ChessGame:
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
 
+        # Stocker les meilleurs coups avant que le joueur ne joue
+        current_position_best_moves = self.best_moves.copy()
+
         is_valid, validated_move, error_message = self.validate_input(
             convertir_notation_francais_en_anglais(move.strip()).lower()
         )
@@ -388,5 +391,7 @@ class ChessGame:
             'move_quality': move_quality_message,
             'points_earned': points,
             'is_checkmate': is_checkmate,
-            'checkmate_bonus': checkmate_bonus
+            'checkmate_bonus': checkmate_bonus,
+            'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
+            'previous_position_best_moves': current_position_best_moves  # Coups alternatifs pour la position précédente
         }

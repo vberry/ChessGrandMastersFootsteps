@@ -68,6 +68,11 @@ function handleMove(source, target) {
             return;
         }
 
+        // Afficher les coups alternatifs pour la position précédente
+        if (data.previous_position_best_moves && data.previous_position_best_moves.length > 0) {
+            displayAlternativeMoves(data.previous_position_best_moves, moveToSubmit);
+        }
+
         // ✅ Mise à jour du score
         if (data.score !== undefined) {
             document.getElementById("score").textContent = data.score;
@@ -180,6 +185,10 @@ function submitMove() {
             }
             return;
         }
+        // Afficher les coups alternatifs pour la position précédente
+        if (data.previous_position_best_moves && data.previous_position_best_moves.length > 0) {
+            displayAlternativeMoves(data.previous_position_best_moves, move);
+        }
 
         document.getElementById("score").textContent = data.score;
 
@@ -229,6 +238,73 @@ function submitMove() {
         if (!document.getElementById("status").textContent.includes("terminée")) {
             submitBtn.disabled = false;
         }
+    });
+}
+
+// Ajoutez cette fonction dans deviner_prochain_coupJs.js
+function displayAlternativeMoves(alternativeMoves, playerMove) {
+    const alternativeMovesContainer = document.getElementById('alternative-moves-container');
+    
+    // Si le conteneur n'existe pas encore, créez-le
+    if (!alternativeMovesContainer) {
+        const gameInfo = document.querySelector('.game-info');
+        const newContainer = document.createElement('div');
+        newContainer.id = 'alternative-moves-container';
+        newContainer.className = 'alternative-moves-section';
+        newContainer.innerHTML = '<h3>Coups alternatifs pour la position précédente:</h3><div class="alternative-moves-list"></div>';
+        gameInfo.appendChild(newContainer);
+    }
+    
+    const alternativeMovesList = document.querySelector('.alternative-moves-list');
+    alternativeMovesList.innerHTML = '';
+    
+    if (!alternativeMoves || alternativeMoves.length === 0) {
+        alternativeMovesList.innerHTML = '<p>Aucune analyse disponible</p>';
+        return;
+    }
+    
+    // Trouver le coup joué par le joueur parmi les alternatives
+    const playerMoveInfo = alternativeMoves.find(move => 
+        move.uci.toLowerCase() === playerMove.toLowerCase() || 
+        move.san.toLowerCase() === playerMove.toLowerCase()
+    );
+    
+    // Afficher le coup du joueur en premier avec une indication
+    if (playerMoveInfo) {
+        const moveElement = document.createElement('div');
+        moveElement.className = 'alternative-move-item player-move';
+        
+        moveElement.innerHTML = `
+            <div class="move-indicator">✓</div>
+            <div class="move-uci">${playerMoveInfo.uci}</div>
+            <div class="move-san">(${playerMoveInfo.san})</div>
+            <div class="move-score">${playerMoveInfo.display_score}</div>
+            <div class="move-comment">Votre coup</div>
+        `;
+        alternativeMovesList.appendChild(moveElement);
+    }
+    
+    // Afficher les autres alternatives
+    alternativeMoves.forEach((move) => {
+        // Ne pas réafficher le coup du joueur
+        if (playerMoveInfo && move.uci === playerMoveInfo.uci) {
+            return;
+        }
+        
+        const moveElement = document.createElement('div');
+        moveElement.className = 'alternative-move-item';
+        
+        moveElement.innerHTML = `
+            <div class="move-indicator"></div>
+            <div class="move-uci">${move.uci}</div>
+            <div class="move-san">(${move.san})</div>
+            <div class="move-score">${move.display_score}</div>
+            <div class="move-strength">
+                <div class="strength-bar" style="width: ${move.relative_strength}%"></div>
+                <span>${move.relative_strength}%</span>
+            </div>
+        `;
+        alternativeMovesList.appendChild(moveElement);
     });
 }
 
