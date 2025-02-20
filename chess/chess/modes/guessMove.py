@@ -259,8 +259,7 @@ class ChessGame:
             correct_move_display = correct_move_san
         else:
             correct_san = correct_move_san.lower().replace('x', '').replace('+', '').replace('#', '')
-            is_correct = (submitted_move == correct_san or 
-                        submitted_move == correct_move.uci())
+            is_correct = (submitted_move == correct_san or submitted_move == correct_move.uci())
             submitted_move_san = self.board.san(self.board.parse_uci(submitted_move))
             correct_move_display = correct_san
 
@@ -296,10 +295,10 @@ class ChessGame:
 
         # Attribution des points
         if is_correct:
-            if correct_move_rank < 3:  # Le coup du maître est dans le top 3
+            if correct_move_rank != -1 and correct_move_rank < 3:  # Coup du maître dans le top 3
                 points = 20
                 move_quality_message = f"Excellent ! C'est le coup historique et il est dans les 3 meilleurs coups. (+20 points)"
-            elif correct_move_analysis:  # Le coup du maître est analysé par Stockfish
+            elif correct_move_analysis:  # Coup du maître analysé par Stockfish
                 relative_strength = correct_move_analysis["relative_strength"]
                 if relative_strength >= 90:
                     points = 20
@@ -310,27 +309,23 @@ class ChessGame:
                 else:
                     points = 0
                     move_quality_message = f"C'est le coup historique, mais il y avait mieux selon Stockfish. (+0 points)"
-            else:  # Le coup du maître n'est pas dans les coups analysés
-                points = -10
-                move_quality_message = f"Le coup historique est considéré comme faible par Stockfish. (-10 points)"
-        elif submitted_move_analysis:
-            if submitted_move_rank < 3:  # Un des 3 meilleurs coups
-                if submitted_move_rank == 0:
-                    points = 15
-                elif submitted_move_rank == 1:
-                    points = 10
-                else:  # rank == 2
-                    points = 5
-                move_quality_message = f"Excellent choix ! {submitted_move_analysis['san']} ({submitted_move_analysis['display_score']}) est le coup #{submitted_move_rank+1} de Stockfish. (+{points} points)"
+            else:  # Si le coup du maître n'est pas dans les analyses
+                points = 0
+                move_quality_message = f"C'est le coup historique, mais il ne fait pas partie des meilleurs coups connus. (+0 points)"
+        elif submitted_move_analysis:  # Coup autre que le coup du maître
+            if submitted_move_rank == 0:
+                points = 15
+            elif submitted_move_rank == 1:
+                points = 10
+            elif submitted_move_rank == 2:
+                points = 5
             elif submitted_move_analysis["relative_strength"] >= 80:
                 points = 5
-                move_quality_message = f"Bon coup ! {submitted_move_analysis['san']} est un coup solide. (+5 points)"
             elif submitted_move_analysis["relative_strength"] >= 60:
                 points = 0
-                move_quality_message = f"Coup acceptable. {submitted_move_analysis['san']} n'est pas optimal mais reste jouable. (+0 points)"
             else:
                 points = -10
-                move_quality_message = f"Coup faible. {submitted_move_analysis['san']} n'est pas recommandé. (-10 points)"
+            move_quality_message = f"{submitted_move_analysis['san']} ({submitted_move_analysis['display_score']}) est classé #{submitted_move_rank+1} selon Stockfish. (+{points} points)"
         else:
             points = -10
             move_quality_message = "Ce coup n'est pas dans les coups recommandés par Stockfish. (-10 points)"
