@@ -5,7 +5,7 @@ import chess.engine
 from stockfish import Stockfish
 
 # Chemin vers Stockfish (vérifie qu'il est bien installé à cet emplacement)
-STOCKFISH_PATH = "/usr/games/stockfish"
+STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
 
 def load_pgn_games(pgn_folder):
     """Charge les parties PGN depuis le dossier et retourne la liste des parties disponibles."""
