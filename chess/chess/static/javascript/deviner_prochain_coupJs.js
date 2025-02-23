@@ -243,19 +243,19 @@ function submitMove() {
 
 // Ajoutez cette fonction dans deviner_prochain_coupJs.js
 function displayAlternativeMoves(alternativeMoves, playerMove) {
-    const alternativeMovesContainer = document.getElementById('alternative-moves-container');
+    // Chercher ou créer le conteneur principal
+    let alternativeMovesContainer = document.getElementById('alternative-moves-container');
     
-    // Si le conteneur n'existe pas encore, créez-le
     if (!alternativeMovesContainer) {
-        const gameInfo = document.querySelector('.game-info');
-        const newContainer = document.createElement('div');
-        newContainer.id = 'alternative-moves-container';
-        newContainer.className = 'alternative-moves-section';
-        newContainer.innerHTML = '<h3>Coups alternatifs pour la position précédente:</h3><div class="alternative-moves-list"></div>';
-        gameInfo.appendChild(newContainer);
+        // Créer le conteneur et l'ajouter directement au body
+        alternativeMovesContainer = document.createElement('div');
+        alternativeMovesContainer.id = 'alternative-moves-container';
+        alternativeMovesContainer.className = 'alternative-moves-section';
+        alternativeMovesContainer.innerHTML = '<h3>Coups alternatifs pour la position précédente:</h3><div class="alternative-moves-list"></div>';
+        document.body.appendChild(alternativeMovesContainer);
     }
     
-    const alternativeMovesList = document.querySelector('.alternative-moves-list');
+    const alternativeMovesList = alternativeMovesContainer.querySelector('.alternative-moves-list');
     alternativeMovesList.innerHTML = '';
     
     if (!alternativeMoves || alternativeMoves.length === 0) {
@@ -299,10 +299,7 @@ function displayAlternativeMoves(alternativeMoves, playerMove) {
             <div class="move-uci">${move.uci}</div>
             <div class="move-san">(${move.san})</div>
             <div class="move-score">${move.display_score}</div>
-            <div class="move-strength">
-                <div class="strength-bar" style="width: ${move.relative_strength}%"></div>
-                <span>${move.relative_strength}%</span>
-            </div>
+            <div class="move-comment"></div>
         `;
         alternativeMovesList.appendChild(moveElement);
     });

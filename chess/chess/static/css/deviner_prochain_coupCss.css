@@ -239,64 +239,100 @@ button:hover {
 }
 
 .alternative-moves-section {
-    margin-top: 20px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    max-height: 300px;
+    background: rgba(42, 42, 42, 0.95);
+    border-radius: 12px;
     padding: 15px;
-    background-color: #F2F2F2;
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
 }
 
 .alternative-moves-section h3 {
-    margin-top: 0;
-    color: #1A1A1A;
+    margin: 0 0 15px 0;
+    color: var(--text);
     font-size: 16px;
-    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.alternative-moves-list {
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 5px;
 }
 
 .alternative-move-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 20px 60px 80px 60px auto;
+    gap: 10px;
     align-items: center;
     margin-bottom: 8px;
     padding: 8px 10px;
-    background-color: white;
-    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
     border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
 .alternative-move-item.player-move {
-    background-color: #f0f8ff;
-    border-left: 3px solid #4a90e2;
+    background: rgba(138, 43, 226, 0.1);
+    border-left: 3px solid var(--primary);
 }
 
 .move-indicator {
-    width: 20px;
-    color: #4a90e2;
+    color: var(--primary);
     font-weight: bold;
 }
 
 .move-uci {
-    width: 60px;
     font-family: monospace;
     font-weight: bold;
-    color: #000000;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .move-san {
-    width: 60px;
-    color: #444;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .move-score {
-    width: 70px;
-    color: #777;
+    color: var(--text-secondary);
     text-align: right;
     padding-right: 10px;
 }
 
 .move-comment {
-    margin-left: 10px;
     font-style: italic;
-    color: #4a90e2;
+    color: var(--primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+.move-strength {
+    display: none;  /* Cache les pourcentages */
+}
 
+/* Personnalisation de la scrollbar */
+.alternative-moves-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.alternative-moves-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.alternative-moves-list::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
