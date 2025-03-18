@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu d'Échecs - Mode Normal</title>
+    <meta name="theme-color" content="#8a2be2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/deviner_prochain_coupCss.css') }}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+</head>
+<body>
+
+    <div class="game-layout">
+        <!-- Centre : Score + Échiquier -->
+        <div class="center-container">
+            <div class="game-info">
+                <h2>Score: <span id="score">{{ game_state['score'] }}</span></h2>
+                <h3>Essais restants: <span id="attempts">{{ game_state['remaining_attempts'] }}</span></h3>
+                {% if game_state['last_opponent_move'] %}
+                    <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
+                {% endif %}
+                <p id="status">C'est à vous de jouer !</p>
+            </div>
+            <div id="board"></div>
+        </div>
+    
+        <!-- Historique des coups à droite -->
+        <div id="move-history">
+            <div class="history-header">Historique des coups</div>
+            <div class="history-content"></div>
+        </div>
+    </div>
+    
+    <div id="message" class="message" style="display: none;"></div>
+
+</body>
+<script>
+    var gameId = "{{ game_id }}";
+    var boardFen = "{{ game_state['board_fen'] }}"; 
+    var userSide = "{{ game_state['user_side'] }}"; 
+</script>
+
+<script src="{{ url_for('static', filename='javascript/deviner_prochain_coup_normal.js') }}"></script>
+</html>
