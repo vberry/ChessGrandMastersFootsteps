@@ -53,11 +53,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 success: function(response) {
                     if (response.error) {
                         displayMessage(response.error, true);
-                        board.position(currentFen); // Remettre l'échiquier à sa position d'origine
+                        board.position(currentFen);
                         return;
                     }
                     
-                    $attempts.text(response.remaining_attempts);
+                    // Utiliser attempts_left au lieu de remaining_attempts
+                    $attempts.text(response.attempts_left || 0);
                     
                     if (response.is_correct) {
                         $score.text(response.score);
@@ -79,7 +80,8 @@ document.addEventListener("DOMContentLoaded", function() {
                             updateBoard(response.board_fen);
                         }
                     } else {
-                        if (response.remaining_attempts === 0) {
+                        // Utiliser attempts_left au lieu de remaining_attempts
+                        if ((response.attempts_left || 0) === 0) {
                             displayMessage(`Incorrect. Le coup correct était: ${response.correct_move}`, true);
                             
                             // Convertir le coup UCI en notation SAN pour l'historique
@@ -105,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 },
                 error: function() {
-                    displayMessage("Erreur lors de la soumission du coup", true);
+                    displayMessage(`Incorrect. Il vous reste ${response.attempts_left || 0} essai(s).`, true);
                     board.position(currentFen); // Remettre l'échiquier à sa position d'origine en cas d'erreur
                 }
             });
@@ -168,10 +170,12 @@ document.addEventListener("DOMContentLoaded", function() {
             success: function(response) {
                 if (response.error) {
                     displayMessage(response.error, true);
+                    board.position(currentFen);
                     return;
                 }
                 
-                $attempts.text(response.remaining_attempts);
+                // Utiliser attempts_left au lieu de remaining_attempts
+                $attempts.text(response.attempts_left || 0);
                 
                 if (response.is_correct) {
                     $score.text(response.score);
@@ -180,20 +184,21 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Convertir le coup UCI en notation SAN pour l'historique
                     var tempGame = new Chess(currentFen);
                     var tempMove = tempGame.move({
-                        from: move.substring(0, 2),
-                        to: move.substring(2, 4),
+                        from: source,
+                        to: target,
                         promotion: 'q'
                     });
-                    var sanMove = tempMove ? tempMove.san : move;
+                    var sanMove = tempMove ? tempMove.san : uciMove;
                     
                     addMoveToHistory(sanMove, sanMove, true);
                     
-                    // Mettre à jour l'échiquier
+                    // Mettre à jour l'échiquier avec la nouvelle position du serveur
                     if (response.board_fen) {
                         updateBoard(response.board_fen);
                     }
                 } else {
-                    if (response.remaining_attempts === 0) {
+                    // Utiliser attempts_left au lieu de remaining_attempts
+                    if ((response.attempts_left || 0) === 0) {
                         displayMessage(`Incorrect. Le coup correct était: ${response.correct_move}`, true);
                         
                         // Convertir le coup UCI en notation SAN pour l'historique
@@ -212,8 +217,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             updateBoard(response.board_fen);
                         }
                     } else {
-                        displayMessage(`Incorrect. Il vous reste ${response.remaining_attempts} essai(s).`, true);
-                        // Remettre l'échiquier à sa position d'origine
+                        displayMessage(`Incorrect. Il vous reste ${response.attempts_left || 0} essai(s).`, true);
                         board.position(currentFen);
                     }
                 }

@@ -46,25 +46,24 @@ def start_game():
         games[game_id] = ChessGame(game, user_side)
         return render_template("deviner_prochain_coup.html", game_id=game_id, game_state=games[game_id].get_game_state())
 
-@app.route('/submit-move', methods=["POST"])
+@app.route('/submit-move', methods=['POST'])
 def submit_move():
-    """Gère la soumission d'un coup par l'utilisateur et met à jour le jeu."""
-    game_id = request.form.get("game_id")
-    move = request.form.get("move")
-
-    if game_id not in games:
-        return jsonify({'error': 'Partie introuvable'}), 400
-
-    # Vérifier si le coup est valide et mettre à jour la partie
-    result = games[game_id].submit_move(move)
-
-    # Si result est un tuple, on le transforme en dictionnaire
-    if isinstance(result, tuple):
-        result = {"valid": result[0], "message": result[1]}
-
-    if result.get("game_over"):
-        del games[game_id]  # Supprime la partie terminée
-
+    game_id = request.form['game_id']
+    move = request.form['move']
+    
+    # Récupérer le jeu depuis la session
+    game = games.get(game_id)  # Changed from active_games to games
+    if not game:
+        return jsonify({'error': 'Jeu non trouvé'})
+    
+    # Soumettre le coup
+    result = game.submit_move(move)
+    
+    # Transformer attempts_left en remaining_attempts pour la cohérence avec le frontend
+    if 'attempts_left' in result:
+        result['remaining_attempts'] = result['attempts_left']
+        del result['attempts_left']
+    
     return jsonify(result)
 
 if __name__ == "__main__":

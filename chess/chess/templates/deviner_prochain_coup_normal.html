@@ -19,7 +19,15 @@
         <div class="center-container">
             <div class="game-info">
                 <h2>Score: <span id="score">{{ game_state['score'] }}</span></h2>
-                <h3>Essais restants: <span id="attempts">{{ game_state['remaining_attempts'] }}</span></h3>
+                <h3>Essais restants: <span id="attempts">
+                    {% if 'remaining_attempts' in game_state %}
+                        {{ game_state['remaining_attempts'] }}
+                    {% elif 'attempts_left' in game_state %}
+                        {{ game_state['attempts_left'] }}
+                    {% else %}
+                        3
+                    {% endif %}
+                </span></h3>
                 {% if game_state['last_opponent_move'] %}
                     <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
                 {% endif %}

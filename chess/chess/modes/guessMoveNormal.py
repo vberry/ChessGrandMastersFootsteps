@@ -387,25 +387,28 @@ class ChessGameNormal:
                     return
                     
                 result = chess_game.submit_move(user_input, attempt)
+                print(f"DEBUG - Résultat complet: {result}")  # Ajout pour déboguer
                 
                 if 'error' in result:
                     print(f"Erreur: {result['error']}")
+                    # Afficher explicitement la valeur attempts_left pour déboguer
+                    print(f"DEBUG - attempts_left: {result.get('attempts_left', 'non défini')}")
                     continue
                     
-                if result['is_correct']:
-                    print(f"✓ Correct! {result['move_quality']}")
+                if result.get('is_correct', False):
+                    print(f"✓ Correct! {result.get('move_quality', '')}")
                     if 'opponent_move' in result and result['opponent_move']:
                         print(f"Réponse de l'adversaire: {result['opponent_move']}")
                     break
-                elif 'attempts_left' in result and result['attempts_left'] > 0:
+                elif result.get('attempts_left', 0) > 0:
                     # Il reste des essais
-                    print(f"✗ Incorrect. Votre coup: {result['submitted_move']}")
-                    print(f"Il vous reste {result['attempts_left']} essai(s).")
+                    print(f"✗ Incorrect. Votre coup: {result.get('submitted_move', '')}")
+                    print(f"Il vous reste {result.get('attempts_left', 0)} essai(s).")
                     attempt += 1
                 else:
                     # Plus d'essais, afficher le coup correct
+                    print(f"✗ Incorrect après {chess_game.attempts_per_move} essais.")
                     if 'correct_move' in result:
-                        print(f"✗ Incorrect après {chess_game.attempts_per_move} essais.")
                         print(f"Le coup correct était: {result['correct_move']}")
                         if 'opponent_move' in result and result['opponent_move']:
                             print(f"Réponse de l'adversaire: {result['opponent_move']}")
