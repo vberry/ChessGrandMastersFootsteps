@@ -56,7 +56,7 @@ class ChessGameNormal:
             'total_moves': self.total_moves,
             'is_player_turn': True,
             'last_opponent_move': self.last_opponent_move,
-            'attempts_left': self.attempts_per_move
+            'attempts_left': self.attempts_per_move  # Toujours afficher le nombre total d'essais disponibles
         }
 
     def get_comment_for_current_move(self):
@@ -218,10 +218,9 @@ class ChessGameNormal:
         # Stocker les meilleurs coups avant que le joueur ne joue
         current_position_best_moves = self.best_moves.copy()
 
-       
         is_valid, validated_move, error_message = self.validate_input(
             convertir_notation_francais_en_anglais(move.strip()).lower()
-    )
+        )
         if not is_valid:
             return {
                 'error': error_message,
@@ -231,9 +230,10 @@ class ChessGameNormal:
                 'game_over': False,
                 'is_player_turn': True,
                 'last_opponent_move': self.last_opponent_move,
-                'attempts_left': self.attempts_per_move - current_attempt + 1,  # Assurez-vous que cette ligne est présente
-                'attempts_used': current_attempt  # Ajoutez cette ligne
+                'attempts_left': self.attempts_per_move - current_attempt + 1,
+                'attempts_used': current_attempt
             }
+        
         correct_move = self.moves[self.current_move_index]
         correct_move_san = self.board.san(correct_move)
         current_comment = self.get_comment_for_current_move()
@@ -248,10 +248,11 @@ class ChessGameNormal:
         # Pour l'affichage
         submitted_move_san = self.board.san(submitted_chess_move)
         
+        # Si le coup est correct OU si c'est le dernier essai
         if is_correct or current_attempt >= self.attempts_per_move:
-            # Si coup correct ou dernier essai, calculer les points et passer au coup suivant
+            # Calculer les points et passer au coup suivant
             points, move_quality_message, checkmate_bonus = self.calculate_points(
-                submitted_move, correct_move, current_attempt
+                submitted_move if is_correct else submitted_move, correct_move, current_attempt
             )
             self.score = round(self.score + points)
             
@@ -315,10 +316,13 @@ class ChessGameNormal:
                 'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
                 'previous_position_best_moves': current_position_best_moves,  # Coups alternatifs pour la position précédente
                 'attempts_used': current_attempt,
-                'attempts_left': 0  # Plus d'essais car on a avancé
+                'attempts_left': self.attempts_per_move  # Réinitialiser à 3 pour le prochain coup
             }
         else:
             # Coup incorrect mais il reste des essais
+            remaining_attempts = self.attempts_per_move - current_attempt
+            #
+            print(current_attempt)
             return {
                 'is_correct': False,
                 'is_valid_format': True,
@@ -329,11 +333,10 @@ class ChessGameNormal:
                 'submitted_move': submitted_move_san,
                 'correct_move': None,  # Ne pas révéler le coup correct tant qu'il reste des essais
                 'attempts_used': current_attempt,
-                'attempts_left': self.attempts_per_move - current_attempt,
+                'attempts_left': remaining_attempts,
                 'best_moves': self.best_moves,
                 'previous_position_best_moves': current_position_best_moves
             }
-
 
     def validate_input(self, move):
         """Valide le format UCI des coups."""
@@ -358,63 +361,56 @@ class ChessGameNormal:
         while True:
             state = chess_game.get_game_state()
             
-            if state['game_over'] if 'game_over' in state else chess_game.current_move_index >= chess_game.total_moves:
+            if state.get('game_over', False) or chess_game.current_move_index >= chess_game.total_moves:
                 print("\nPartie terminée!")
                 print(f"Score final: {chess_game.score} points")
                 break
             
-            # Afficher l'état actuel de l'échiquier
+            # Affichage de l'état du jeu
             print("\nPosition actuelle:")
             print(chess_game.board)
             
-            # Afficher le dernier coup de l'adversaire s'il existe
             if chess_game.last_opponent_move:
                 print(f"\nDernier coup de l'adversaire: {chess_game.last_opponent_move}")
                 
-            # Afficher les meilleurs coups proposés par Stockfish
             print("\n🔍 Meilleurs coups proposés par Stockfish pour cette position:")
-            for i, move in enumerate(chess_game.best_moves[:3], 1):  # Afficher les 3 meilleurs coups
+            for i, move in enumerate(chess_game.best_moves[:3], 1):
                 print(f"➡ {i}. {move['san']} : {move['display_score']}")
+            
+            # Utiliser explicitement current_attempt comme dans submit_move
+            current_attempt = 1
+            correct_move_found = False
+            
+        while current_attempt <= 3 and not correct_move_found:  # 3 essais maximum
+            print(f"\nEssai {current_attempt}/3")
+            user_input = input("Votre coup (notation UCI, ex: e2e4) : ")
+            if user_input.lower() in ["quit", "exit", "q"]:
+                print("Partie abandonnée.")
+                return
                 
-            # Gérer les essais
-            attempt = 1
-            while attempt <= chess_game.attempts_per_move:
-                print(f"\nEssai {attempt}/{chess_game.attempts_per_move}")
-                user_input = input("Votre coup (notation UCI, ex: e2e4) : ")
+            result = chess_game.submit_move(user_input, current_attempt)
+            if 'error' in result:
+                print(f"Erreur: {result['error']}")
+                current_attempt += 1  # Incrémenter même en cas d'erreur
+                print(f"Il vous reste {3 - current_attempt + 1} essai(s).")
+                continue
                 
-                if user_input.lower() in ["quit", "exit", "q"]:
-                    print("Partie abandonnée.")
-                    return
-                    
-                result = chess_game.submit_move(user_input, attempt)
-                print(f"DEBUG - Résultat complet: {result}")  # Ajout pour déboguer
-                
-                if 'error' in result:
-                    print(f"Erreur: {result['error']}")
-                    # Afficher explicitement la valeur attempts_left pour déboguer
-                    print(f"DEBUG - attempts_left: {result.get('attempts_left', 'non défini')}")
-                    continue
-                    
-                if result.get('is_correct', False):
-                    print(f"✓ Correct! {result.get('move_quality', '')}")
-                    if 'opponent_move' in result and result['opponent_move']:
-                        print(f"Réponse de l'adversaire: {result['opponent_move']}")
-                    break
-                elif result.get('attempts_left', 0) > 0:
-                    # Il reste des essais
-                    print(f"✗ Incorrect. Votre coup: {result.get('submitted_move', '')}")
-                    print(f"Il vous reste {result.get('attempts_left', 0)} essai(s).")
-                    attempt += 1
-                else:
-                    # Plus d'essais, afficher le coup correct
-                    print(f"✗ Incorrect après {chess_game.attempts_per_move} essais.")
-                    if 'correct_move' in result:
-                        print(f"Le coup correct était: {result['correct_move']}")
-                        if 'opponent_move' in result and result['opponent_move']:
-                            print(f"Réponse de l'adversaire: {result['opponent_move']}")
-                    break
-
-
+            if result.get('is_correct', False):
+                print(f"✓ Correct! {result.get('move_quality', '')}")
+                if 'opponent_move' in result and result['opponent_move']:
+                    print(f"Réponse de l'adversaire: {result['opponent_move']}")
+                correct_move_found = True
+            else:
+                print(f"✗ Incorrect. Votre coup: {result.get('submitted_move', '')}")
+                current_attempt += 1
+                if current_attempt <= 3:  # S'il reste des essais
+                    print(f"Il vous reste {3 - current_attempt + 1} essai(s).")
+                else:  # Si c'était le dernier essai
+                    final_result = chess_game.submit_move(user_input, 3)
+                    print(f"✗ Vous avez utilisé vos 3 essais.")
+                    print(f"Le coup correct était: {final_result.get('correct_move', '')}")
+                    if 'opponent_move' in final_result and final_result['opponent_move']:
+                        print(f"Réponse de l'adversaire: {final_result['opponent_move']}")
 if __name__ == "__main__":
     # Définir le dossier contenant les fichiers PGN
     PGN_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dossierPgn")
@@ -463,3 +459,4 @@ if __name__ == "__main__":
     
     # Rejouer la partie avec 3 essais par coup
     replay_game(game, user_side)
+    #baaaaa
