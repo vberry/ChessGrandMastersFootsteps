@@ -1,18 +1,132 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    max-width: 1000px;
+    margin: 0 auto;
     padding: 20px;
+    gap: 40px;
 }
+
+.chessboard {
+    flex: 1;
+}
+
+.chessboard img {
+    max-width: 100%;
+    border-radius: 4px;
+    margin-top: 125px; /* Ajuste cette valeur pour descendre l'image */
+}
+
+.form-container {
+    flex: 1;
+    padding: 20px 0;
+}
+
+.form-container h1 {
+    color: #e0e0e0;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 2.5rem;
+    line-height: 1.2;
+}
+
 .form-group {
-    margin: 20px;
+    margin-bottom: 20px;
+    background: #333;
+    padding: 15px;
+    border-radius: 6px;
 }
-.btn {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #a0a0a0;
+    font-size: 1rem;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #555;
+    background-color: #222;
+    color: #f0f0f0;
+    font-size: 1rem;
+    appearance: none; /* Supprime l'apparence par défaut */
     cursor: pointer;
 }
+
+.btn {
+    display: flex;
+    flex-direction: column;  /* Met les éléments en colonne */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    padding: 15px;
+    border-radius: 6px;
+    background-color: #333;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn .btn-main {
+    font-size: 1.2rem; /* Agrandir légèrement */
+    font-weight: bold;
+}
+
+.btn .btn-motivation {
+    font-size: 0.9rem;
+    color: #d0d0d0;
+    font-style: italic;
+    margin-top: 4px; /* Ajouter un petit espace entre les deux */
+}
+
 .btn:hover {
-    background-color: #45a049;
+    background-color: #3d3d3d;
+}
+
+/* Reste du CSS précédent inchangé */
+
+.video-section {
+    background-color: #1a1a1a;
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.video-section h2 {
+    color: #e0e0e0;
+    margin-bottom: 25px;
+    font-size: 2rem;
+}
+
+.video-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.video-container iframe:hover {
+    transform: scale(1.03);
 }

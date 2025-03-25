@@ -3,42 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Choisir une Partie</title>
+    <title>NextMove</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/menuCss.css') }}">
 </head>
 <body>
-    <h1>Choisir une Partie d'Échecs</h1>
-
-    <form id="gameConfigForm" action="{{ url_for('game.start_game') }}" method="post">
-        <div class="form-group">
-            <label>Choisissez une partie :</label>
-            <select name="game_file" required>
-                {% for game in pgn_games %}
-                <option value="{{ game.file }}">
-                    {{ game.event }} - {{ game.white }} vs {{ game.black }} ({{ game.result }})
-                </option>
-                {% endfor %}
-            </select>
+    <!-- Section Échiquier + Formulaire -->
+    <div class="container">
+        <!-- Échiquier à gauche -->
+        <div class="chessboard">
+            <img src="https://www.apprendre-les-echecs.com/wp-content/uploads/2017/03/Initiation_a_la_tactique_exemple1a.png" alt="Échiquier">
         </div>
-
-        <div class="form-group">
-            <label>Choisissez votre couleur :</label>
-            <select name="user_side" required>
-                <option value="white">Blanc</option>
-                <option value="black">Noir</option>
-            </select>
+        <!-- Formulaire à droite -->
+        <div class="form-container">
+            <h1>Choisissez Votre Partie d'Échecs</h1>
+            <form id="gameConfigForm" action="{{ url_for('game.start_game') }}" method="post">
+                <div class="form-group">
+                    <label>Choisissez une partie :</label>
+                    <select name="game_file" required>
+                        {% for game in pgn_games %}
+                        <option value="{{ game.file }}">
+                            {{ game.event }} - {{ game.white }} vs {{ game.black }} ({{ game.result }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Choisissez votre couleur :</label>
+                    <select name="user_side" required>
+                        <option value="white">Blanc</option>
+                        <option value="black">Noir</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Choisissez la difficulté :</label>
+                    <select name="difficulty" required>
+                        <option value="hard">Difficile (1 chance)</option>
+                        <option value="normal">Moyen (3 chances)</option>
+                        <option value="easy">Facile (5 chances)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">
+                    <span class="btn-main">Commencer</span>
+                    <span class="btn-motivation"> Trouvez le meilleur coup !</span>
+                </button>
+            </form>
         </div>
+    </div>
 
-        <div class="form-group">
-            <label>Choisissez la difficulté :</label>
-            <select name="difficulty" required>
-                <option value="hard">Difficile (1 chance)</option>
-                <option value="normal">Moyen (3 chances)</option>
-                <option value="easy">Facile (5 chances)</option>
-            </select>
+    <!-- Section des vidéos (reste inchangée) -->
+    <div class="video-section">
+        <h2>Cours d'Échecs</h2>
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/ivkv-LNCcGI" 
+                title="Vidéo d'échecs 1" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+            <iframe 
+                src="https://www.youtube.com/embed/BDcppKDH62c" 
+                title="Vidéo d'échecs 2" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+            <iframe 
+                src="https://www.youtube.com/embed/sxJmefXA46M" 
+                title="Vidéo d'échecs 3" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+            <iframe 
+                src="https://www.youtube.com/embed/IC62ia_bZeY?si=V5Kv0O9oyQyDSwJU" 
+                title="Vidéo d'échecs 4" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
         </div>
-
-        <button type="submit" class="btn">Commencer</button>
-    </form>
+    </div>
 </body>
 </html>
