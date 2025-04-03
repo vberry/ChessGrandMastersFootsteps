@@ -55,7 +55,7 @@ class ChessGame:
 
     def submit_move(self, move):
         """
-        This method needs to be properly indented to be part of the ChessGame class.
+        Handles a move submitted by the player and updates the game state accordingly.
         """
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
@@ -97,28 +97,35 @@ class ChessGame:
         submitted_move_san = self.board.san(submitted_chess_move)
 
         self.score = round(self.score + points)
+        
+        # Jouer le coup correct (historique) sur l'échiquier
         self.board.push(correct_move)
         
         opponent_move = None
         opponent_move_san = None
         opponent_comment = None
         
-        if self.user_side == 'white' and self.current_move_index < len(self.black_moves):
-            opponent_move = self.black_moves[self.current_move_index]
-            opponent_move_san = self.board.san(opponent_move)
-            opponent_comment = self.get_comment_for_opponent_move()
-            self.board.push(opponent_move)
-            save_board_fen(self.board)
-            self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
-            self.last_opponent_move = opponent_move_san
-        elif self.user_side == 'black' and (self.current_move_index + 1) < len(self.white_moves):
-            opponent_move = self.white_moves[self.current_move_index + 1]
-            opponent_move_san = self.board.san(opponent_move)
-            opponent_comment = self.get_comment_for_opponent_move()
-            self.board.push(opponent_move)
-            save_board_fen(self.board)
-            self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
-            self.last_opponent_move = opponent_move_san
+        # Correction ici pour gérer correctement l'indexation des coups adverses
+        if self.user_side == 'white':
+            # Joueur est blanc, on doit jouer le coup noir correspondant
+            if self.current_move_index < len(self.black_moves):
+                opponent_move = self.black_moves[self.current_move_index]
+                opponent_move_san = self.board.san(opponent_move)
+                opponent_comment = self.get_comment_for_opponent_move()
+                self.board.push(opponent_move)
+                save_board_fen(self.board)
+                self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
+                self.last_opponent_move = opponent_move_san
+        else:  # user_side == 'black'
+            # Joueur est noir, on doit jouer le coup blanc suivant
+            if (self.current_move_index + 1) < len(self.white_moves):
+                opponent_move = self.white_moves[self.current_move_index + 1]
+                opponent_move_san = self.board.san(opponent_move)
+                opponent_comment = self.get_comment_for_opponent_move()
+                self.board.push(opponent_move)
+                save_board_fen(self.board)
+                self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
+                self.last_opponent_move = opponent_move_san
 
         self.current_move_index += 1
 
@@ -150,12 +157,12 @@ class ChessGame:
             'checkmate_bonus': checkmate_bonus,
             'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
             'previous_position_best_moves': current_position_best_moves  # Coups alternatifs pour la position précédente
-        }
+    }
 
     def calculate_points(self, submitted_move, correct_move):
         """
         Calcule les points selon la qualité du coup soumis par rapport au coup correct
-        en utilisant Stockfish pour l'évaluation directe.
+        en utilisant Stockfish pour l'évaluation directe, en tenant compte de la couleur du joueur.
         """
         # Évaluer le coup correct
         correct_eval = evaluate_move_strength(self.board, correct_move)
@@ -163,6 +170,15 @@ class ChessGame:
         # Évaluer le coup soumis
         submitted_chess_move = self.board.parse_uci(submitted_move)
         submitted_eval = evaluate_move_strength(self.board, submitted_chess_move)
+        
+        # Inversion des évaluations pour les noirs car Stockfish donne toujours 
+        # l'évaluation du point de vue des blancs
+        if self.user_side == 'black':
+            # Pour les évaluations en centipawns, on inverse le signe
+            if correct_eval["type"] == "cp":
+                correct_eval["value"] = -correct_eval["value"]
+            if submitted_eval["type"] == "cp":
+                submitted_eval["value"] = -submitted_eval["value"]
         
         # Coup exact du maître
         is_correct = submitted_chess_move == correct_move
@@ -232,7 +248,7 @@ class ChessGame:
             points += checkmate_bonus
             move_quality_message += f" ÉCHEC ET MAT ! (Bonus +{checkmate_bonus} points)"
 
-        return points, move_quality_message, checkmate_bonus  # This was incorrectly indented
+        return points, move_quality_message, checkmate_bonus
     
     def get_game_state(self):
         return {
