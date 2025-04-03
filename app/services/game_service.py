@@ -1,5 +1,6 @@
 import os
-from app.models.game_model import ChessGame, ChessGameEasy, ChessGameNormal
+from app.models.game_model import ChessGame, ChessGameEasy
+from app.models.game_modelNormal import ChessGameNormal
 
 # Dossier contenant les fichiers PGN
 PGN_FOLDER = os.path.join(os.path.dirname(__file__), "../../dossierPgn")

@@ -3,8 +3,8 @@ from flask import Blueprint, render_template, request, jsonify
 from app.controllers.game_controller import GameController
 from app.utils.pgn_utils import get_pgn_games, load_pgn_file
 from app.models.game_model import ChessGame
-from app.models.game_model import ChessGameNormal, ChessGameEasy
-
+from app.models.game_modelNormal import ChessGameNormal
+#from app.models.game_modelEasy import ChessGameEasy
 game_bp = Blueprint("game", __name__)
 
 # Stockage des parties en cours
@@ -65,4 +65,3 @@ def submit_move():
         del result['attempts_left']
     
     return jsonify(result)
-
