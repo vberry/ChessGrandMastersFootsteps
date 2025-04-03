@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu d'Échecs - Mode Normal</title>
+    <meta name="theme-color" content="#8a2be2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/deviner_prochain_coupCss.css') }}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+</head>
+<body>
+
+    <div class="game-layout">
+        <div class="left-column">
+            <div id="board" style="width: 500px;"></div>
+        </div>
+
+        <div class="right-column">
+            <div class="game-info">
+                <h2>Score: <span id="score">{{ game_state['score'] }}</span></h2>
+                {% if game_state['last_opponent_move'] %}
+                <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
+                {% endif %}
+                <p id="status"></p>
+                <p>Essais restants: <span id="attempts-left">5</span></p>
+                <div id="move-history"></div>
+                <div id="move-evaluation"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="message" style="display: none;"></div>
+</body>
+<script>
+    var gameId = "{{ game_id }}";
+    var boardFen = "{{ game_state['board_fen'] }}";
+    var userSide = "{{ game_state['user_side'] }}";
+    var game = new Chess(boardFen);
+</script>
+
+<script>
+    $(document).ready(function() {
+        var board = Chessboard('board', {
+            draggable: true,
+            position: boardFen,
+            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
+            orientation: userSide,
+            onDrop: handleMove
+        });
+
+        function handleMove(source, target) {
+            var move = game.move({ from: source, to: target, promotion: 'q' });
+            if (move === null) return 'snapback';
+            submitMove(move.san);
+        }
+
+        function submitMove(move) {
+            $.ajax({
+                url: '/submit-move',
+                method: 'POST',
+                data: {
+                    game_id: gameId,
+                    move: move
+                },
+                success: function(response) {
+                    if (response.error) {
+                        showMessage(response.error, 'error');
+                        return;
+                    }
+                    
+                    if ('remaining_attempts' in response) {
+                        $('#attempts-left').text(response.remaining_attempts);
+                    }
+                    
+                    game.load(response.board_fen);
+                    board.position(response.board_fen);
+                    $('#score').text(response.score);
+                    updateMoveHistory(response.history);
+                    updateMoveEvaluation(response.evaluation);
+                    
+                    if (response.game_over) {
+                        $('#status').text("Partie terminée! Score final: " + response.score);
+                    }
+                },
+                error: function() {
+                    showMessage('Une erreur est survenue lors de la soumission de votre coup.', 'error');
+                }
+            });
+        }
+
+        function updateMoveHistory(history) {
+            var historyHtml = '<h3>Coups joués :</h3><ul>';
+            history.forEach(move => {
+                historyHtml += '<li>' + move + '</li>';
+            });
+            historyHtml += '</ul>';
+            $('#move-history').html(historyHtml);
+        }
+
+        function updateMoveEvaluation(evaluation) {
+            $('#move-evaluation').html('<h3>Évaluation :</h3><p>' + evaluation + '</p>');
+        }
+
+        function showMessage(message, type) {
+            var messageElement = $('#message');
+            messageElement.text(message);
+            messageElement.removeClass('success error warning').addClass(type);
+            messageElement.fadeIn().delay(5000).fadeOut();
+        }
+    });
+</script>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu d'Échecs - Mode Normal</title>
+    <meta name="theme-color" content="#8a2be2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/deviner_prochain_coupCss.css') }}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+</head>
+<body>
+
+    <div class="game-layout">
+        <!-- Colonne gauche : Échiquier -->
+        <div class="left-column">
+            <div id="board"></div>
+        </div>
+
+        <!-- Colonne droite : Score + Alternatives + Historique -->
+        <div class="right-column">
+            <div class="game-info">
+                <h2>Score: <span id="score">{{ game_state['score'] }}</span></h2>
+                {% if game_state['last_opponent_move'] %}
+                <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
+                {% endif %}
+                <p id="status"></p>
+                <p>Essais restants: <span id="attempts-left">3</span></p>
+            </div>
+            <div class="move-input-section">
+                <form id="move-form">
+                    <input type="text" id="move" name="move" placeholder="Entrez votre coup (ex: e4, Nf3)" required>
+                    <button type="submit">Soumettre</button>
+                </form>
+            </div>
+            <div class="alternative-moves-section">
+                <h3>Coups Alternatifs</h3>
+                <ul class="alternative-moves-list">
+                    <!-- Liste des coups alternatifs -->
+                </ul>
+            </div>
+            <div id="move-history">
+                <div class="history-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Blanc</th>
+                                <th>Noir</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Les coups seront ajoutés ici -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div id="message" class="message" style="display: none;"></div>
+
+</body>
+<script>
+    var gameId = "{{ game_id }}";
+    var boardFen = "{{ game_state['board_fen'] }}"; 
+    var userSide = "{{ game_state['user_side'] }}"; 
+</script>
+
+<script src="{{ url_for('static', filename='js/board.js') }}"></script>
+<script src="{{ url_for('static', filename='js/moves.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+<script src="{{ url_for('static', filename='js/alternatives.js') }}"></script>
+
+<!-- Add script specifically for normal mode with attempts -->
+<script>
+    $(document).ready(function() {
+        $('#move-form').on('submit', function(e) {
+            e.preventDefault();
+            submitMove();
+        });
+
+        function submitMove() {
+            var move = $('#move').val();
+            
+            $.ajax({
+                url: '/submit-move',
+                method: 'POST',
+                data: {
+                    game_id: gameId,
+                    move: move
+                },
+                success: function(response) {
+                    if (response.error) {
+                        showMessage(response.error, 'error');
+                        return;
+                    }
+                    
+                    // Update attempts counter
+                    if ('remaining_attempts' in response) {
+                        $('#attempts-left').text(response.remaining_attempts);
+                    }
+                    
+                    // If correct move or out of attempts
+                    if (response.is_correct || response.attempt >= 3) {
+                        processGameState(response);
+                    } else {
+                        // Wrong move but attempts remaining
+                        showMessage(response.move_quality, 'warning');
+                        $('#move').val('').focus();
+                    }
+                },
+                error: function() {
+                    showMessage('Une erreur est survenue lors de la soumission de votre coup.', 'error');
+                }
+            });
+        }
+
+        function processGameState(response) {
+            // Update the board
+            board.position(response.board_fen);
+            
+            // Update score
+            $('#score').text(response.score);
+            
+            // Display appropriate message
+            let messageType = response.is_correct ? 'success' : 'error';
+            let message = response.move_quality;
+            
+            if (!response.is_correct) {
+                message += " Le coup correct était: " + response.correct_move;
+            }
+            
+            showMessage(message, messageType);
+            
+            // Update move history
+            if (response.submitted_move) {
+                updateMoveHistory(response.submitted_move, response.opponent_move);
+            }
+            
+            // Show alternative moves if available
+            if (response.previous_position_best_moves) {
+                showAlternativeMoves(response.previous_position_best_moves);
+            }
+            
+            // Reset input field
+            $('#move').val('');
+            
+            // Reset attempts counter for next move
+            $('#attempts-left').text(3);
+            
+            // Check if game is over
+            if (response.game_over) {
+                $('#status').text("Partie terminée! Score final: " + response.score);
+                $('#move-form').hide();
+            }
+        }
+
+        function showMessage(message, type) {
+            var messageElement = $('#message');
+            messageElement.text(message);
+            messageElement.removeClass('success error warning').addClass(type);
+            messageElement.fadeIn().delay(5000).fadeOut();
+        }
+    });
+</script>
+
+</html>
