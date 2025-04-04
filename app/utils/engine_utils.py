@@ -2,7 +2,7 @@ import chess.engine
 from stockfish import Stockfish
 
 STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
-STOCKFISH_PATH = "/usr/games/stockfish"
+#STOCKFISH_PATH = "/usr/games/stockfish"
 
 def evaluate_move_strength(board, move):
     """
