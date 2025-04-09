@@ -53,9 +53,29 @@ class ChessGame:
             'last_opponent_move': self.last_opponent_move
         }
 
-    def submit_move(self, move):
+    def calculate_time_bonus(self, time_taken):
+        """
+        Calcule un bonus de points basé sur le temps pris pour jouer.
+        - Réponse rapide (< 15s): +5 points
+        - Réponse normale (15-30s): +3 points
+        - Réponse lente (30-45s): +1 point
+        - Réponse très lente (45-60s): 0 point
+        - Temps écoulé (>60s): -5 points (géré dans le frontend)
+        """
+        if time_taken < 15:
+            return 5
+        elif time_taken < 30:
+            return 3
+        elif time_taken < 45:
+            return 1
+        else:
+            return 0
+
+
+    def submit_move(self, move, time_taken=60):
         """
         Handles a move submitted by the player and updates the game state accordingly.
+        Includes time taken parameter to adjust scoring.
         """
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
@@ -87,6 +107,10 @@ class ChessGame:
 
         # Utiliser la nouvelle méthode de calcul des points
         points, move_quality_message, checkmate_bonus = self.calculate_points(submitted_move, correct_move)
+        
+        # Calculer le bonus/malus de temps
+        time_bonus = self.calculate_time_bonus(time_taken)
+        points += time_bonus
         is_checkmate = checkmate_bonus > 0
 
         # Vérifier si le coup soumis est le même que le coup historique
@@ -101,6 +125,7 @@ class ChessGame:
         # Jouer le coup correct (historique) sur l'échiquier
         self.board.push(correct_move)
         
+        # Le reste de la méthode reste inchangé...
         opponent_move = None
         opponent_move_san = None
         opponent_comment = None
@@ -155,9 +180,11 @@ class ChessGame:
             'points_earned': points,
             'is_checkmate': is_checkmate,
             'checkmate_bonus': checkmate_bonus,
+            'time_bonus': time_bonus,
+            'time_taken': time_taken,
             'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
             'previous_position_best_moves': current_position_best_moves  # Coups alternatifs pour la position précédente
-    }
+        }
 
     def calculate_points(self, submitted_move, correct_move):
         """
@@ -352,3 +379,5 @@ class ChessGameEasy(ChessGame):
             move_quality_message += f" (Bonus mode facile: +{bonus})"
         
         return points, move_quality_message, checkmate_bonus
+    
+    

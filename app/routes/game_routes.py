@@ -66,3 +66,40 @@ def submit_move():
         del result['attempts_left']
     
     return jsonify(result)
+
+# Route pour gérer un timeout
+@game_bp.route("/timeout-move", methods=["POST"])
+def timeout_move():
+    game_id = request.form.get('game_id')
+    time_taken = int(request.form.get('time_taken', 60))
+    
+    # Récupérer le jeu depuis la session
+    game = games.get(game_id)
+    if not game:
+        return jsonify({'error': 'Jeu non trouvé'})
+    
+    # Créer une copie temporaire de l'état du jeu
+    current_score = game.score
+    
+    # Appliquer une pénalité pour le timeout
+    game.score -= 5
+    
+    # Obtenir le coup correct qui aurait dû être joué
+    if game.current_move_index < len(game.moves):
+        correct_move = game.moves[game.current_move_index]
+        correct_move_san = game.board.san(correct_move)
+        
+        # Avancer le jeu comme si un coup avait été soumis
+        result = game.submit_move("e2e4", time_taken)  # On soumet un coup fictif
+        
+        # Ajouter les informations spécifiques au timeout
+        result['timeout'] = True
+        result['timeout_penalty'] = -5
+        result['message'] = f"Temps écoulé! Le coup correct était: {correct_move_san}"
+        
+        return jsonify(result)
+    else:
+        return jsonify({
+            'error': 'La partie est terminée',
+            'game_over': True
+        })
