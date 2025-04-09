@@ -16,9 +16,13 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
     // Cellule pour le coup des Blancs
     const whiteMoveCell = document.createElement('td');
     whiteMoveCell.textContent = playerMove;
-    if (playerMove !== correctMove) {
+    if (correctMove === undefined) {
+        whiteMoveCell.innerHTML += `<br><small>(incorrect)</small>`;
+    } else if (playerMove !== correctMove) {
         whiteMoveCell.innerHTML += `<br><small>(correct: ${correctMove})</small>`;
-    }
+    } else {
+        whiteMoveCell.innerHTML += `<br><small>(correct)</small>`;
+    }      
     moveRow.appendChild(whiteMoveCell);
     
     // Cellule pour le coup des Noirs

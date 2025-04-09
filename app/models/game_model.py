@@ -60,6 +60,9 @@ class ChessGame:
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
 
+        # Afficher immédiatement le coup soumis (avant validation)
+        print(f"Coup soumis : {move.strip()}", flush=True)
+
         # Stocker les meilleurs coups avant que le joueur ne joue
         current_position_best_moves = self.best_moves.copy()
 
@@ -77,6 +80,10 @@ class ChessGame:
                 'is_player_turn': True,
                 'last_opponent_move': self.last_opponent_move
             }
+
+        # Afficher immédiatement le coup soumis
+        submitted_move_san = self.board.san(self.board.parse_uci(validated_move))
+        print(f"Coup soumis : {submitted_move_san}")
 
         correct_move = self.moves[self.current_move_index]
         correct_move_san = self.board.san(correct_move)
@@ -97,6 +104,10 @@ class ChessGame:
         submitted_move_san = self.board.san(submitted_chess_move)
 
         self.score = round(self.score + points)
+
+        move = chess.Move.from_uci(move_uci)
+
+
         
         # Jouer le coup correct (historique) sur l'échiquier
         self.board.push(correct_move)
@@ -166,10 +177,13 @@ class ChessGame:
         """
         # Évaluer le coup correct
         correct_eval = evaluate_move_strength(self.board, correct_move)
+        print("Évaluation du coup correct:", correct_eval)
+
         
         # Évaluer le coup soumis
         submitted_chess_move = self.board.parse_uci(submitted_move)
         submitted_eval = evaluate_move_strength(self.board, submitted_chess_move)
+        print("Évaluation du coup soumis:", submitted_eval,flush=True)
         
         # Inversion des évaluations pour les noirs car Stockfish donne toujours 
         # l'évaluation du point de vue des blancs
@@ -215,7 +229,7 @@ class ChessGame:
                     move_quality_message = f"Vous avez trouvé un mat, mais plus lent que celui du maître. (+5 points)"
             elif correct_eval["type"] == "mate":
                 # Le maître a trouvé un mat mais pas le joueur
-                points = -5
+                points = -5 
                 move_quality_message = f"Le maître a trouvé un mat que vous n'avez pas vu. (-5 points)"
             else:
                 # Comparer les évaluations en centipawns
