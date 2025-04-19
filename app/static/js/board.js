@@ -4,7 +4,7 @@ function initializeBoard() {
     console.log('Initialisation du plateau...');
     board = Chessboard('board', {
         position: boardFen,
-        pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
+        pieceTheme: 'https://chessboardjs.com/img/chesspieces/alpha/{piece}.png',
         showNotation: true,
         draggable: true,
         orientation: userSide,

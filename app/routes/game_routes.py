@@ -32,6 +32,7 @@ def start_game():
     # Créer la partie avec la couleur choisie
     game_controller = GameController(game, user_side)
     game_controller.start_game()
+    print(user_side)
 
     games[game_id] = ChessGame(game, user_side)
     return render_template("deviner_prochain_coup.html", game_id=game_id, game_state=games[game_id].get_game_state())

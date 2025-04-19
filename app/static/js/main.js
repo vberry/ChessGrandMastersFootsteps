@@ -41,7 +41,7 @@ function submitMove() {
             data.correct_move,
             data.opponent_move,
             data.comment,
-            data.opponent_comment
+            data.opponent_comment,
         );
         
         let message = data.is_correct ? 
@@ -87,4 +87,5 @@ function submitMove() {
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeBoard();
+    initializeHistory();
 });
