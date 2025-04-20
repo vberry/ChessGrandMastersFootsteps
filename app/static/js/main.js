@@ -76,7 +76,7 @@ function submitMove() {
     })
     .catch(error => {
         console.error('Erreur:', error);
-        showMessage("Une erreur est survenue", false);
+        showMessage("Une erreur est survenue main.js", false);
     })
     .finally(() => {
         if (!document.getElementById("status").textContent.includes("terminée")) {
