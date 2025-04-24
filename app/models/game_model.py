@@ -105,7 +105,7 @@ class ChessGame:
 
         self.score = round(self.score + points)
 
-        move = chess.Move.from_uci(move_uci)
+        move = chess.Move.from_uci(validated_move)
 
 
         
