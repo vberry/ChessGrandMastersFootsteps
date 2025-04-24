@@ -1,0 +1,33 @@
+site_name: Documentation du Projet
+
+theme:
+  name: material
+
+
+nav:
+  - Accueil: index.md
+  - App:
+      - Controllers: app/controllers/game_controller.md
+      - Models: app/models/game_model.md
+      - Routes: app/routes/game_routes.md
+      - Services: app/services/game_service.md 
+      - Utils: 
+        - Engine: app/utils/engine_utils.md
+        - FEN: app/utils/fen_utils.md
+        - PGN: app/utils/pgn_utils.md
+        - Utils: app/utils/utils.md
+  - Run: run.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: false
+
+
+watch:
+  - app
+  - run.py
