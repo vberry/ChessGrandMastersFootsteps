@@ -38,7 +38,7 @@ def start_game():
         
         if difficulty == "easy":
             games[game_id] = ChessGameEasy(game, user_side)
-            template = "deviner_prochain_coup_easy.html"
+            template = "deviner_prochain_coup.html"
         elif difficulty == "normal":
             games[game_id] = ChessGameNormal(game, user_side)
             template = "deviner_prochain_coup.html"  # Use the "hard" template for normal difficulty
