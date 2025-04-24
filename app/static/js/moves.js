@@ -1,4 +1,4 @@
-function updateMoveHistory(playerMove, correctMove, opponentMove, comment, opponentComment) {
+function updateMoveHistory(playerMove, correctMove, opponentMove, comment, opponentComment, isCorrect) {
     const moveHistoryBody = document.querySelector('#move-history tbody');
     
     // Créer deux lignes : une pour les coups, une pour les commentaires
@@ -61,6 +61,13 @@ function handleMove(source, target) {
 
     console.log("Coup à soumettre:", moveToSubmit);
 
+    // Stopper le timer pendant le traitement du coup
+    if (typeof window.stopTimer === 'function') {
+        window.stopTimer();
+    } else {
+        console.error("La fonction stopTimer n'est pas disponible");
+    }
+
     var formData = new FormData();
     formData.append("game_id", gameId);
     formData.append("move", moveToSubmit);
@@ -69,8 +76,15 @@ function handleMove(source, target) {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log("Réponse du serveur:", data);
+        
         if (data.error) {
             showMessage(data.error, false);
 
@@ -79,6 +93,11 @@ function handleMove(source, target) {
 
             // 🔥 Ajouter effet de tremblement sur la pièce
             animateShakePiece(source);
+            
+            // Redémarrer le timer puisque le coup est invalide
+            if (typeof window.startTimer === 'function') {
+                window.startTimer();
+            }
             return;
         }
 
@@ -107,16 +126,37 @@ function handleMove(source, target) {
         // ✅ Vérifier si la partie est terminée
         if (data.game_over) {
             document.getElementById("status").textContent = "🎉 Partie terminée !";
+            if (typeof window.stopTimer === 'function') {
+                window.stopTimer(); // Arrêter le timer définitivement
+            }
+        } else {
+            // Réinitialiser le timer avec le nouveau temps de départ
+            if (data.move_start_time && typeof window.resetTimer === 'function') {
+                window.resetTimer(data.move_start_time);
+            }
+            
+            // Émettre un événement personnalisé pour le timer
+            const event = new CustomEvent('moveSubmitted', { 
+                detail: { result: data } 
+            });
+            document.dispatchEvent(event);
         }
     })
     .catch(error => {
-        console.error('Erreur complète:', error);
-        showMessage("Une erreur est survenue", false);
+        console.error('Erreur:', error);
+        showMessage("Une erreur est survenue: " + error.message, false);
 
         // 🔴 Annuler immédiatement le coup illégal
         setTimeout(() => board.position(previousPosition), 100);
 
-        animateShakePiece(source);
+        if (typeof animateShakePiece === 'function') {
+            animateShakePiece(source);
+        }
+        
+        // Redémarrer le timer en cas d'erreur
+        if (typeof window.startTimer === 'function') {
+            window.startTimer();
+        }
     });
 
     return false;

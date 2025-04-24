@@ -1,6 +1,7 @@
 import chess
 import chess.pgn
 import os
+import time
 from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen
 from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
@@ -31,6 +32,10 @@ class ChessGame:
         self.score = 0
         self.total_moves = len(self.moves)
         
+        # Ajouter le timing pour le mode difficile
+        self.time_limit = 30  # Limite de temps en secondes
+        self.move_start_time = time.time()
+        
         if user_side == 'black' and len(self.white_moves) > 0:
             first_move = self.white_moves[0]
             self.last_opponent_move = self.board.san(first_move)
@@ -50,7 +55,9 @@ class ChessGame:
             'score': self.score,
             'total_moves': self.total_moves,
             'is_player_turn': True,
-            'last_opponent_move': self.last_opponent_move
+            'last_opponent_move': self.last_opponent_move,
+            'time_limit': self.time_limit,
+            'move_start_time': self.move_start_time
         }
 
     def submit_move(self, move):
@@ -59,6 +66,16 @@ class ChessGame:
         """
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
+
+        # Calculer le temps écoulé depuis le début du coup
+        elapsed_time = time.time() - self.move_start_time
+        time_penalty = 0
+        time_message = ""
+
+        # Vérifier si le temps est dépassé
+        if elapsed_time > self.time_limit:
+            time_penalty = -5  # Pénalité de 5 points pour dépassement de temps
+            time_message = " Temps dépassé! (-5 points)"
 
         # Afficher immédiatement le coup soumis (avant validation)
         print(f"Coup soumis : {move.strip()}", flush=True)
@@ -78,7 +95,8 @@ class ChessGame:
                 'score': self.score,
                 'game_over': False,
                 'is_player_turn': True,
-                'last_opponent_move': self.last_opponent_move
+                'last_opponent_move': self.last_opponent_move,
+                'time_left': max(0, self.time_limit - elapsed_time)
             }
 
         # Afficher immédiatement le coup soumis
@@ -103,11 +121,12 @@ class ChessGame:
         # Pour l'affichage
         submitted_move_san = self.board.san(submitted_chess_move)
 
+        # Appliquer la pénalité de temps si nécessaire
+        if time_penalty:
+            points += time_penalty
+            move_quality_message += time_message
+
         self.score = round(self.score + points)
-
-        move = chess.Move.from_uci(validated_move)
-
-
         
         # Jouer le coup correct (historique) sur l'échiquier
         self.board.push(correct_move)
@@ -139,6 +158,9 @@ class ChessGame:
                 self.last_opponent_move = opponent_move_san
 
         self.current_move_index += 1
+        
+        # Réinitialiser le minuteur pour le prochain coup
+        self.move_start_time = time.time()
 
         hint_message = ""
         if not is_correct:
@@ -167,8 +189,10 @@ class ChessGame:
             'is_checkmate': is_checkmate,
             'checkmate_bonus': checkmate_bonus,
             'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
-            'previous_position_best_moves': current_position_best_moves  # Coups alternatifs pour la position précédente
-    }
+            'previous_position_best_moves': current_position_best_moves,  # Coups alternatifs pour la position précédente
+            'time_limit': self.time_limit,
+            'move_start_time': self.move_start_time
+        }
 
     def calculate_points(self, submitted_move, correct_move):
         """
@@ -264,17 +288,6 @@ class ChessGame:
 
         return points, move_quality_message, checkmate_bonus
     
-    def get_game_state(self):
-        return {
-            'board_fen': self.board.fen(),
-            'user_side': self.user_side,
-            'current_move_index': self.current_move_index,
-            'score': self.score,
-            'total_moves': self.total_moves,
-            'is_player_turn': True,
-            'last_opponent_move': self.last_opponent_move
-        }
-
     def get_comment_for_current_move(self):
         """Récupère le commentaire pour le coup actuel."""
         move_number = self.current_move_index * 2 if self.user_side == 'white' else self.current_move_index * 2 + 1
@@ -308,61 +321,3 @@ class ChessGame:
                 return False, None, "Coup illégal sur l'échiquier"
         except ValueError:
             return False, None, "Format UCI invalide"
-
-
-        
-class ChessGameEasy(ChessGame):
-    """Version facile du jeu d'échecs avec des indices et des pénalités réduites."""
-    
-    def __init__(self, game, user_side):
-        super().__init__(game, user_side)
-        self.hints_used = 0
-    
-    def get_hint(self):
-        """Fournit un indice pour le coup actuel."""
-        if self.current_move_index >= len(self.moves):
-            return {'error': 'La partie est terminée'}
-        
-        correct_move = self.moves[self.current_move_index]
-        correct_move_san = self.board.san(correct_move)
-        
-        # Générer un indice en fonction du type de pièce
-        if self.is_pawn_move(correct_move_san):
-            hint = f"Le prochain coup est un coup de pion vers {correct_move_san[-2:]}"
-        elif 'x' in correct_move_san:
-            hint = "Le prochain coup est une prise"
-        elif 'O-O' in correct_move_san:
-            hint = "Pensez au roque"
-        else:
-            piece = correct_move_san[0]
-            piece_names = {'K': 'Roi', 'Q': 'Dame', 'R': 'Tour', 'B': 'Fou', 'N': 'Cavalier'}
-            piece_name = piece_names.get(piece, "pièce")
-            hint = f"Le prochain coup implique un {piece_name}"
-        
-        self.hints_used += 1
-        # Chaque indice coûte 2 points
-        self.score -= 2
-        
-        return {
-            'hint': hint,
-            'points_deducted': 2,
-            'current_score': self.score
-        }
-    
-    def calculate_points(self, submitted_move, correct_move):
-        """Version modifiée avec des pénalités réduites pour le mode facile."""
-        # Appeler la méthode de base
-        points, move_quality_message, checkmate_bonus = super().calculate_points(submitted_move, correct_move)
-        
-        # Réduire les pénalités de moitié
-        if points < 0:
-            points = points // 2
-            move_quality_message += " (Pénalité réduite car mode facile)"
-        
-        # Bonus supplémentaire pour les bons coups
-        if points > 0:
-            bonus = 2
-            points += bonus
-            move_quality_message += f" (Bonus mode facile: +{bonus})"
-        
-        return points, move_quality_message, checkmate_bonus
