@@ -6,8 +6,8 @@ from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_f
 from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
 
-class ChessGame:
-    def __init__(self, game, user_side, use_timer=False):
+class ChessGame3Min:
+    def __init__(self, game, user_side):
         self.board = game.board()
         self.game = game  # Garder une référence au jeu PGN complet
         self.all_moves = list(game.mainline_moves())
@@ -32,9 +32,8 @@ class ChessGame:
         self.score = 0
         self.total_moves = len(self.moves)
         
-        # Paramètre pour le mode timer
-        self.use_timer = use_timer
-        self.time_limit = 30  # Limite de temps en secondes
+        # Modifier le temps limite à 3 minutes (180 secondes)
+        self.time_limit = 180  # Limite de temps en secondes
         self.move_start_time = time.time()
         
         if user_side == 'black' and len(self.white_moves) > 0:
@@ -45,7 +44,7 @@ class ChessGame:
             self.last_opponent_move = None
         
         save_board_fen(self.board)
-        # ✅ Obtenir les meilleurs coups dès le début
+        # Obtenir les meilleurs coups dès le début
         self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
 
     def get_game_state(self):
@@ -73,8 +72,8 @@ class ChessGame:
         time_penalty = 0
         time_message = ""
 
-        # Vérifier si le temps est dépassé, seulement si le mode timer est activé
-        if self.use_timer and elapsed_time > self.time_limit:
+        # Vérifier si le temps est dépassé
+        if elapsed_time > self.time_limit:
             time_penalty = -5  # Pénalité de 5 points pour dépassement de temps
             time_message = " Temps dépassé! (-5 points)"
 

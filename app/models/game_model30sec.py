@@ -6,8 +6,8 @@ from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_f
 from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
 
-class ChessGame:
-    def __init__(self, game, user_side, use_timer=False):
+class ChessGame30sec:
+    def __init__(self, game, user_side):
         self.board = game.board()
         self.game = game  # Garder une référence au jeu PGN complet
         self.all_moves = list(game.mainline_moves())
@@ -32,8 +32,7 @@ class ChessGame:
         self.score = 0
         self.total_moves = len(self.moves)
         
-        # Paramètre pour le mode timer
-        self.use_timer = use_timer
+        # Ajouter le timing pour le mode difficile
         self.time_limit = 30  # Limite de temps en secondes
         self.move_start_time = time.time()
         
@@ -73,8 +72,8 @@ class ChessGame:
         time_penalty = 0
         time_message = ""
 
-        # Vérifier si le temps est dépassé, seulement si le mode timer est activé
-        if self.use_timer and elapsed_time > self.time_limit:
+        # Vérifier si le temps est dépassé
+        if elapsed_time > self.time_limit:
             time_penalty = -5  # Pénalité de 5 points pour dépassement de temps
             time_message = " Temps dépassé! (-5 points)"
 

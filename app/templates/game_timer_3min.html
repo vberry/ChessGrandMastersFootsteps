@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu d'Échecs</title>
+    <title>Mode 3 Minutes - Jeu d'Échecs</title>
     <meta name="theme-color" content="#8a2be2">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
@@ -19,7 +19,7 @@
          data-game-id="{{ game_id }}"
          data-board-fen="{{ game_state['board_fen'] }}"
          data-user-side="{{ game_state['user_side'] }}"
-         data-time-limit="{{ game_state.get('time_limit', 30) }}"
+         data-time-limit="{{ game_state.get('time_limit', 180) }}"
          data-move-start-time="{{ game_state.get('move_start_time', 0) }}">
     </div>
 
@@ -30,14 +30,15 @@
             <!-- Minuteur sous l'échiquier -->
             <div id="timer-container">
                 <h3>Temps restant</h3>
-                <div id="timer">00:30</div>
+                <div id="timer">03:00</div>
             </div>
         </div>
 
         <!-- Colonne droite : Score + Alternatives + Historique -->
         <div class="right-column">
             <div class="game-info">
-                <h2>Score: <span id="score">{{ game_state['score'] }}</span></h2>
+                <h2>Mode 3 Minutes</h2>
+                <h3>Score: <span id="score">{{ game_state['score'] }}</span></h3>
                 {% if game_state['last_opponent_move'] %}
                 <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
                 {% endif %}

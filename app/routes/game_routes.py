@@ -5,7 +5,10 @@ from app.utils.pgn_utils import get_pgn_games, load_pgn_file
 from app.models.game_model import ChessGame
 from app.models.game_modelNormal import ChessGameNormal
 from app.models.game_modelEasy import ChessGameEasy
-#from app.models.game_modelEasy import ChessGameEasy
+from app.models.game_model1min import ChessGame1Min
+from app.models.game_model3min import ChessGame3Min  
+from app.models.game_model30sec import ChessGame30sec
+
 game_bp = Blueprint("game", __name__)
 
 # Stockage des parties en cours
@@ -50,13 +53,13 @@ def start_game():
         timer_difficulty = request.form.get("timer_difficulty", "normal")  # Difficulté pour le mode timer
         
         if timer_difficulty == "easy":
-            games[game_id] = ChessGame(game, user_side)  # Classe de jeu avec timer de 3 minutes
-            template = "game_timer.html"
+            games[game_id] = ChessGame3Min(game, user_side)  # Nouveau mode 3 minutes
+            template = "game_timer_3min.html"
         elif timer_difficulty == "normal":
-            games[game_id] = ChessGame(game, user_side)  # Classe de jeu avec timer de 1 minute
-            template = "game_timer.html"
+            games[game_id] = ChessGame1Min(game, user_side)  # Classe de jeu avec timer de 1 minute
+            template = "game_timer_1min.html"
         else:  # "hard" par défaut (30 secondes)
-            games[game_id] = ChessGame(game, user_side)  # Classe de jeu avec timer de 30 secondes
+            games[game_id] = ChessGame30sec(game, user_side)  # Classe de jeu avec timer de 30 secondes
             template = "game_timer_hard.html"
     
     # Si le mode n'est pas reconnu, utilisez le mode vies par défaut
@@ -73,7 +76,7 @@ def submit_move():
     move = request.form.get('move')
     
     # Récupérer le jeu depuis la session
-    game = games.get(game_id)  # Changed from active_games to games
+    game = games.get(game_id)
     if not game:
         return jsonify({'error': 'Jeu non trouvé'})
     
