@@ -39,7 +39,7 @@ function initializeHistory() {
     }
 }
 
-function updateMoveHistory(playerMove, correctMove, opponentMove, comment, opponentComment) {
+function updateMoveHistory(playerMove, correctMove, opponentMove, comment, opponentComment, moveEval = null) {
     const moveHistoryBody = document.querySelector('#move-history tbody');
     
     // CAS SPÉCIAL: Premier coup du bot quand le joueur est noir
@@ -109,6 +109,11 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
                     }
                 }
                 
+                // Ajouter l'évaluation du coup du joueur noir, si c'est un mauvais coup
+                if (moveEval && moveEval.display && playerMove !== correctMove) {
+                    lastMoveRow.cells[2].innerHTML += `<br><small>(${moveEval.display})</small>`;
+                }
+                
                 // Scroller automatiquement vers le bas
                 const moveHistory = document.querySelector('#move-history .history-content');
                 moveHistory.scrollTop = moveHistory.scrollHeight;
@@ -137,6 +142,11 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
         whiteMoveCell.textContent = playerMove;
         if (playerMove !== correctMove && correctMove) {
             whiteMoveCell.innerHTML += `<br><small>(correct: ${correctMove})</small>`;
+            
+            // Ajouter l'évaluation du coup si c'est un mauvais coup
+            if (moveEval && moveEval.display && playerMove !== correctMove) {
+                whiteMoveCell.innerHTML += `<br><small>(${moveEval.display})</small>`;
+            }
         }
     } else if (!isPlayerWhite && opponentMove) {
         // Bot blanc
@@ -153,6 +163,11 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
         blackMoveCell.textContent = playerMove;
         if (playerMove !== correctMove && correctMove) {
             blackMoveCell.innerHTML += `<br><small>(correct: ${correctMove})</small>`;
+
+            // Ajouter l'évaluation du coup si c'est un mauvais coup
+            if (moveEval && moveEval.display && playerMove !== correctMove) {
+                blackMoveCell.innerHTML += `<br><small>(${moveEval.display})</small>`;
+            }
         }
     } else if (isPlayerWhite && opponentMove) {
         // Bot noir
@@ -185,11 +200,19 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
     moveHistory.scrollTop = moveHistory.scrollHeight;
 }
 
+
 function handleMove(source, target) {
     let moveToSubmit = source + target;  // Envoie simplement le coup en UCI
     const previousPosition = board.fen(); // Sauvegarde la position avant le coup
 
     console.log("Coup à soumettre:", moveToSubmit);
+
+    // Stopper le timer pendant le traitement du coup
+    if (typeof window.stopTimer === 'function') {
+        window.stopTimer();
+    } else {
+        console.error("La fonction stopTimer n'est pas disponible");
+    }
 
     var formData = new FormData();
     formData.append("game_id", gameId);
@@ -199,8 +222,15 @@ function handleMove(source, target) {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log("Réponse du serveur:", data);
+        
         if (data.error) {
             showMessage(data.error, false);
 
@@ -209,6 +239,11 @@ function handleMove(source, target) {
 
             // Ajouter effet de tremblement sur la pièce
             animateShakePiece(source);
+            
+            // Redémarrer le timer puisque le coup est invalide
+            if (typeof window.startTimer === 'function') {
+                window.startTimer();
+            }
             return;
         }
 
@@ -233,7 +268,8 @@ function handleMove(source, target) {
                 data.correct_move,
                 null,
                 data.comment,
-                null
+                null,
+                data.move_evaluation
             );
         } else {
             // Si le joueur est blanc, mettre à jour avec le coup du joueur et la réponse du bot
@@ -242,7 +278,8 @@ function handleMove(source, target) {
                 data.correct_move,
                 data.opponent_move,
                 data.comment,
-                data.opponent_comment
+                data.opponent_comment,
+                data.move_evaluation
             );
         }
 
@@ -263,16 +300,37 @@ function handleMove(source, target) {
         // Vérifier si la partie est terminée
         if (data.game_over) {
             document.getElementById("status").textContent = "🎉 Partie terminée !";
+            if (typeof window.stopTimer === 'function') {
+                window.stopTimer(); // Arrêter le timer définitivement
+            }
+        } else {
+            // Réinitialiser le timer avec le nouveau temps de départ
+            if (data.move_start_time && typeof window.resetTimer === 'function') {
+                window.resetTimer(data.move_start_time);
+            }
+            
+            // Émettre un événement personnalisé pour le timer
+            const event = new CustomEvent('moveSubmitted', { 
+                detail: { result: data } 
+            });
+            document.dispatchEvent(event);
         }
     })
     .catch(error => {
-        console.error('Erreur complète:', error);
-        showMessage("Une erreur est survenue", false);
+        console.error('Erreur:', error);
+        showMessage("Une erreur est survenue move.js: " + error.message, false);
 
         // Annuler immédiatement le coup illégal
         setTimeout(() => board.position(previousPosition), 100);
 
-        animateShakePiece(source);
+        if (typeof animateShakePiece === 'function') {
+            animateShakePiece(source);
+        }
+        
+        // Redémarrer le timer en cas d'erreur
+        if (typeof window.startTimer === 'function') {
+            window.startTimer();
+        }
     });
 
     return false;

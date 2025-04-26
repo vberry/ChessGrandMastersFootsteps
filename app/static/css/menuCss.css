@@ -4,54 +4,59 @@ body {
     color: #f0f0f0;
     margin: 0;
     padding: 0;
-}
-
-.container {
+  }
+  
+  /* Style pour le contenu principal ajusté pour la barre latérale */
+  .main-content {
+    margin-left: 200px; /* Correspond à la largeur de la sidebar */
+  }
+  
+  .container {
     display: flex;
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
     gap: 40px;
-}
-
-.chessboard {
+  }
+  
+  .chessboard {
     flex: 1;
-}
-
-.chessboard img {
+  }
+  
+  .chessboard img {
     max-width: 100%;
     border-radius: 4px;
     margin-top: 125px; /* Ajuste cette valeur pour descendre l'image */
-}
-
-.form-container {
+  }
+  
+  .form-container {
     flex: 1;
     padding: 20px 0;
-}
-
-.form-container h1 {
+  }
+  
+  .form-container h1 {
     color: #e0e0e0;
     margin-bottom: 30px;
     text-align: center;
     font-size: 2.5rem;
     line-height: 1.2;
-}
-
-.form-group {
+  }
+  
+  .form-group {
     margin-bottom: 20px;
     background: #333;
     padding: 15px;
     border-radius: 6px;
-}
-
-.form-group label {
+  }
+  
+  .form-group label {
     display: block;
     margin-bottom: 8px;
     color: #a0a0a0;
     font-size: 1rem;
-}
-
-.form-group select {
+  }
+  
+  .form-group select {
     width: 100%;
     padding: 12px;
     border-radius: 6px;
@@ -61,11 +66,47 @@ body {
     font-size: 1rem;
     appearance: none; /* Supprime l'apparence par défaut */
     cursor: pointer;
-}
-
-.btn {
+  }
+  
+  /* Style pour la barre latérale */
+  .sidebar {
+    width: 200px;
+    background-color: #222;
+    padding: 20px 0;
+    position: fixed;
+    height: 100%;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .sidebar-title {
+    color: #e0e0e0;
+    text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #444;
+    margin-bottom: 20px;
+  }
+  
+  .mode-option {
+    padding: 15px;
+    text-align: center;
+    color: #a0a0a0;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    margin: 5px 10px;
+    border-radius: 4px;
+  }
+  
+  .mode-option:hover, .mode-option.active {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .btn {
     display: flex;
-    flex-direction: column;  /* Met les éléments en colonne */
+    flex-direction: column; /* Met les éléments en colonne */
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -79,54 +120,54 @@ body {
     cursor: pointer;
     border: none;
     transition: background-color 0.3s ease;
-}
-
-.btn .btn-main {
+  }
+  
+  .btn .btn-main {
     font-size: 1.2rem; /* Agrandir légèrement */
     font-weight: bold;
-}
-
-.btn .btn-motivation {
+  }
+  
+  .btn .btn-motivation {
     font-size: 0.9rem;
     color: #d0d0d0;
     font-style: italic;
     margin-top: 4px; /* Ajouter un petit espace entre les deux */
-}
-
-.btn:hover {
+  }
+  
+  .btn:hover {
     background-color: #3d3d3d;
-}
-
-/* Reste du CSS précédent inchangé */
-
-.video-section {
+  }
+  
+  /* Section vidéo */
+  .video-section {
     background-color: #1a1a1a;
     padding: 30px 20px;
     text-align: center;
-}
-
-.video-section h2 {
+  }
+  
+  .video-section h2 {
     color: #e0e0e0;
     margin-bottom: 25px;
     font-size: 2rem;
-}
-
-.video-container {
+  }
+  
+  .video-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     max-width: 1000px;
     margin: 0 auto;
-}
-
-.video-container iframe {
+  }
+  
+  .video-container iframe {
     width: 100%;
     aspect-ratio: 16 / 9;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease;
-}
-
-.video-container iframe:hover {
+  }
+  
+  .video-container iframe:hover {
     transform: scale(1.03);
-}
+  }
+  

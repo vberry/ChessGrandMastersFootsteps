@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/deviner_prochain_coupCss.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/timer.css') }}">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
@@ -18,7 +19,7 @@
          data-game-id="{{ game_id }}"
          data-board-fen="{{ game_state['board_fen'] }}"
          data-user-side="{{ game_state['user_side'] }}"
-         data-time-limit="{{ game_state.get('time_limit', 60) }}"
+         data-time-limit="{{ game_state.get('time_limit', 30) }}"
          data-move-start-time="{{ game_state.get('move_start_time', 0) }}">
     </div>
 
@@ -26,6 +27,11 @@
         <!-- Colonne gauche : Échiquier -->
         <div class="left-column">
             <div id="board"></div>
+            <!-- Minuteur sous l'échiquier -->
+            <div id="timer-container">
+                <h3>Temps restant</h3>
+                <div id="timer">00:30</div>
+            </div>
         </div>
 
         <!-- Colonne droite : Score + Alternatives + Historique -->
@@ -70,12 +76,15 @@ const gameDataElement = document.getElementById('game-data');
 var gameId = gameDataElement.getAttribute('data-game-id');
 var boardFen = gameDataElement.getAttribute('data-board-fen');
 var userSide = gameDataElement.getAttribute('data-user-side');
+var timeLimit = parseInt(gameDataElement.getAttribute('data-time-limit'), 10);
+var moveStartTime = parseInt(gameDataElement.getAttribute('data-move-start-time'), 10);
 </script>
 
 <script src="{{ url_for('static', filename='js/board.js') }}"></script>
 <script src="{{ url_for('static', filename='js/moves.js') }}"></script>
 <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
 <script src="{{ url_for('static', filename='js/alternatives.js') }}"></script>
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 </body>

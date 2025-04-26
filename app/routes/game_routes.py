@@ -3,6 +3,11 @@ from flask import Blueprint, render_template, request, jsonify
 from app.controllers.game_controller import GameController
 from app.utils.pgn_utils import get_pgn_games, load_pgn_file
 from app.models.game_model import ChessGame
+from app.models.game_modelNormal import ChessGameNormal
+from app.models.game_modelEasy import ChessGameEasy
+from app.models.game_model1min import ChessGame1Min
+from app.models.game_model3min import ChessGame3Min  
+from app.models.game_model30sec import ChessGame30sec
 
 game_bp = Blueprint("game", __name__)
 
@@ -90,19 +95,45 @@ def start_game():
     """
     game_file = request.form.get("game_file")
     user_side = request.form.get("user_side")
-
+    game_mode = request.form.get("game_mode", "lives")  # Mode par défaut: vies
     # Création d'un identifiant unique pour la partie
     game_id = str(len(games) + 1)
-
     game = load_pgn_file(os.path.join(pgn_dir, game_file))
-
-    # Créer la partie avec la couleur choisie
+    
+    # Initialiser le contrôleur de jeu
     game_controller = GameController(game, user_side)
     game_controller.start_game()
     print(user_side)
-
-    games[game_id] = ChessGame(game, user_side)
-    return render_template("deviner_prochain_coup.html", game_id=game_id, game_state=games[game_id].get_game_state())
+    
+    # Sélectionner la classe de jeu et le template en fonction du mode et de la difficulté
+    if game_mode == "lives":
+        difficulty = request.form.get("difficulty", "normal")  # Difficulté pour le mode vies
+        if difficulty == "easy":
+            games[game_id] = ChessGameEasy(game, user_side)
+            template = "deviner_prochain_coup_easy.html"
+        elif difficulty == "normal":
+            games[game_id] = ChessGameNormal(game, user_side)
+            template = "deviner_prochain_coup.html"  # Use the "hard" template for normal difficulty
+        else:  # "hard" by default
+            games[game_id] = ChessGame(game, user_side)
+            template = "deviner_prochain_coup.html"
+    elif game_mode == "timer":
+        timer_difficulty = request.form.get("timer_difficulty", "normal")  # Difficulté pour le mode timer
+        if timer_difficulty == "easy":
+            games[game_id] = ChessGame3Min(game, user_side)  # Nouveau mode 3 minutes
+            template = "game_timer_3min.html"
+        elif timer_difficulty == "normal":
+            games[game_id] = ChessGame1Min(game, user_side)  # Classe de jeu avec timer de 1 minute
+            template = "game_timer_1min.html"
+        else:  # "hard" par défaut (30 secondes)
+            games[game_id] = ChessGame30sec(game, user_side)  # Classe de jeu avec timer de 30 secondes
+            template = "game_timer_hard.html"
+    # Si le mode n'est pas reconnu, utilisez le mode vies par défaut
+    else:
+        games[game_id] = ChessGameNormal(game, user_side)
+        template = "game_lives.html"
+    
+    return render_template(template, game_id=game_id, game_state=games[game_id].get_game_state())
 
 
 @game_bp.route("/submit-move", methods=["POST"])
@@ -153,7 +184,7 @@ def submit_move():
     move = request.form.get('move')
     
     # Récupérer le jeu depuis la session
-    game = games.get(game_id)  # Changed from active_games to games
+    game = games.get(game_id)
     if not game:
         return jsonify({'error': 'Jeu non trouvé'})
     

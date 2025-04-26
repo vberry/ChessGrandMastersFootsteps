@@ -1,38 +1,15 @@
 import chess
 import chess.pgn
 import os
+import time
 from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen
+from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen, evaluate_played_move
 from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
 
 class ChessGame:
-    def __init__(self, game, user_side):
-        """
-            Initialise l'état du jeu d'échecs en fonction du jeu PGN et de la couleur choisie par l'utilisateur.
-
-            ###Arguments:
-
-            - game : Un objet représentant le jeu d'échecs en format PGN (Portable Game Notation).
-            - user_side : Une chaîne de caractères indiquant la couleur que l'utilisateur joue ('white' ou 'black').
-
-            ###Attributs de la classe :
-
-            - self.board : L'objet représentant le plateau de jeu d'échecs.
-            - self.game : Référence au jeu PGN complet.
-            - self.all_moves : Liste de tous les mouvements du jeu sous forme de chaîne PGN.
-            - self.user_side : La couleur choisie par l'utilisateur.
-            - self.comments : Liste des commentaires associés à chaque mouvement du jeu.
-            - self.white_moves, self.black_moves : Mouvements des blancs et des noirs séparés.
-            - self.moves : Mouvements de l'utilisateur (en fonction de la couleur choisie).
-            - self.opponent_moves : Mouvements de l'adversaire.
-            - self.current_move_index : Index du mouvement actuel dans la liste des mouvements.
-            - self.score : Score actuel du jeu (initialisé à 0).
-            - self.total_moves : Nombre total de mouvements restant à jouer.
-            - self.last_opponent_move : Le dernier mouvement de l'adversaire (si applicable).
-            - self.best_moves : Liste des meilleurs coups calculés à partir du fichier FEN.
-        """
-        # Initialisation du plateau et des objets associés au jeu
-        self.board = game.board() # Récupère l'état initial du plateau à partir du jeu PGN
+    def __init__(self, game, user_side, use_timer=False):
+        self.board = game.board()
         self.game = game  # Garder une référence au jeu PGN complet
         self.all_moves = list(game.mainline_moves()) # Liste tous les mouvements du jeu
         self.user_side = user_side # Définit la couleur de l'utilisateur ('white' ou 'black')
@@ -59,7 +36,11 @@ class ChessGame:
         self.score = 0 # Initialisation du score à 0
         self.total_moves = len(self.moves) # Nombre total de mouvements à jouer par l'utilisateur
         
-        # Si l'utilisateur joue avec les pièces noires, on applique le premier coup des blancs
+        # Paramètre pour le mode timer
+        self.use_timer = use_timer
+        self.time_limit = 30  # Limite de temps en secondes
+        self.move_start_time = time.time()
+
         if user_side == 'black' and len(self.white_moves) > 0:
             first_move = self.white_moves[0] # Récupère le premier mouvement des blancs
             self.last_opponent_move = self.board.san(first_move) # Sauvegarde le dernier mouvement de l'adversaire
@@ -72,7 +53,6 @@ class ChessGame:
         
         # Calcul des meilleurs coups possibles en utilisant un fichier FEN mis à jour
         self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
-
 
     def submit_move(self, move):
         """
@@ -150,8 +130,24 @@ class ChessGame:
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
 
+        # Calculer le temps écoulé depuis le début du coup
+        elapsed_time = time.time() - self.move_start_time
+        time_penalty = 0
+        time_message = ""
+
+        # Vérifier si le temps est dépassé, seulement si le mode timer est activé
+        if self.use_timer and elapsed_time > self.time_limit:
+            time_penalty = -5  # Pénalité de 5 points pour dépassement de temps
+            time_message = " Temps dépassé! (-5 points)"
+
+        # Afficher immédiatement le coup soumis (avant validation)
+        print(f"Coup soumis : {move.strip()}", flush=True)
+
         # Stocker les meilleurs coups avant que le joueur ne joue
         current_position_best_moves = self.best_moves.copy()
+
+        # Stocker la position FEN actuelle avant de jouer le coup
+        position_fen_before_move = self.board.fen()
 
         is_valid, validated_move, error_message = self.validate_input(
             convertir_notation_francais_en_anglais(move.strip()).lower()
@@ -165,8 +161,13 @@ class ChessGame:
                 'score': self.score,
                 'game_over': False,
                 'is_player_turn': True,
-                'last_opponent_move': self.last_opponent_move
+                'last_opponent_move': self.last_opponent_move,
+                'time_left': max(0, self.time_limit - elapsed_time)
             }
+
+        # Afficher immédiatement le coup soumis
+        submitted_move_san = self.board.san(self.board.parse_uci(validated_move))
+        print(f"Coup soumis : {submitted_move_san}")
 
         correct_move = self.moves[self.current_move_index]
         correct_move_san = self.board.san(correct_move)
@@ -186,6 +187,14 @@ class ChessGame:
         # Pour l'affichage
         submitted_move_san = self.board.san(submitted_chess_move)
 
+        # Appliquer la pénalité de temps si nécessaire
+        if time_penalty:
+            points += time_penalty
+            move_quality_message += time_message
+
+        # Évaluer le coup joué par le joueur avec Stockfish
+        move_evaluation = evaluate_played_move(position_fen_before_move, submitted_move)
+        
         self.score = round(self.score + points)
         
         # Jouer le coup correct (historique) sur l'échiquier
@@ -218,6 +227,9 @@ class ChessGame:
                 self.last_opponent_move = opponent_move_san
 
         self.current_move_index += 1
+        
+        # Réinitialiser le minuteur pour le prochain coup
+        self.move_start_time = time.time()
 
         hint_message = ""
         if not is_correct:
@@ -245,9 +257,12 @@ class ChessGame:
             'points_earned': points,
             'is_checkmate': is_checkmate,
             'checkmate_bonus': checkmate_bonus,
+            'move_evaluation': move_evaluation,  # Nouvelle clé avec l'évaluation du coup
             'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
-            'previous_position_best_moves': current_position_best_moves  # Coups alternatifs pour la position précédente
-    }
+            'previous_position_best_moves': current_position_best_moves,  # Coups alternatifs pour la position précédente
+            'time_limit': self.time_limit,
+            'move_start_time': self.move_start_time
+        }
 
     def calculate_points(self, submitted_move, correct_move):
         """
@@ -282,10 +297,13 @@ class ChessGame:
         """
         # Évaluer le coup correct
         correct_eval = evaluate_move_strength(self.board, correct_move)
+        print("Évaluation du coup correct:", correct_eval)
+
         
         # Évaluer le coup soumis
         submitted_chess_move = self.board.parse_uci(submitted_move)
         submitted_eval = evaluate_move_strength(self.board, submitted_chess_move)
+        print("Évaluation du coup soumis:", submitted_eval,flush=True)
         
         # Inversion des évaluations pour les noirs car Stockfish donne toujours 
         # l'évaluation du point de vue des blancs
@@ -331,7 +349,7 @@ class ChessGame:
                     move_quality_message = f"Vous avez trouvé un mat, mais plus lent que celui du maître. (+5 points)"
             elif correct_eval["type"] == "mate":
                 # Le maître a trouvé un mat mais pas le joueur
-                points = -5
+                points = -5 
                 move_quality_message = f"Le maître a trouvé un mat que vous n'avez pas vu. (-5 points)"
             else:
                 # Comparer les évaluations en centipawns
@@ -365,8 +383,7 @@ class ChessGame:
             move_quality_message += f" ÉCHEC ET MAT ! (Bonus +{checkmate_bonus} points)"
 
         return points, move_quality_message, checkmate_bonus
-    
-    
+       
     def get_game_state(self):
         """
             Retourne l'état actuel du jeu sous forme de dictionnaire.

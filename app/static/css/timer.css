@@ -1,0 +1,66 @@
+/* Timer styles */
+#timer-container {
+    margin: 15px auto;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 200px;
+}
+
+#timer-container h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
+#timer {
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: #222;
+    transition: all 0.3s ease;
+    display: inline-block;
+    min-width: 80px;
+}
+
+#timer.warning {
+    background-color: #ffcc00;
+    color: #333;
+}
+
+#timer.danger {
+    background-color: #ff3333;
+    color: white;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.time-expired {
+    color: #ff3333;
+    font-weight: bold;
+    animation: fadeInOut 1.5s;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Pour que le message de statut soit toujours visible */
+#status {
+    min-height: 24px;
+    margin: 10px 0;
+}
