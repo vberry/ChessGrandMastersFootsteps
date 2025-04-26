@@ -24,21 +24,23 @@ def home():
     return render_template("menu.html", pgn_games=pgn_games)
 
 
-# ✅ Route pour démarrer une partie
 @game_bp.route("/start-game", methods=["POST"])
 def start_game():
     game_file = request.form.get("game_file")
     user_side = request.form.get("user_side")
     game_mode = request.form.get("game_mode", "lives")  # Mode par défaut: vies
-    
     # Création d'un identifiant unique pour la partie
     game_id = str(len(games) + 1)
     game = load_pgn_file(os.path.join(pgn_dir, game_file))
     
+    # Initialiser le contrôleur de jeu
+    game_controller = GameController(game, user_side)
+    game_controller.start_game()
+    print(user_side)
+    
     # Sélectionner la classe de jeu et le template en fonction du mode et de la difficulté
     if game_mode == "lives":
         difficulty = request.form.get("difficulty", "normal")  # Difficulté pour le mode vies
-        
         if difficulty == "easy":
             games[game_id] = ChessGameEasy(game, user_side)
             template = "deviner_prochain_coup_easy.html"
@@ -48,10 +50,8 @@ def start_game():
         else:  # "hard" by default
             games[game_id] = ChessGame(game, user_side)
             template = "deviner_prochain_coup.html"
-            
     elif game_mode == "timer":
         timer_difficulty = request.form.get("timer_difficulty", "normal")  # Difficulté pour le mode timer
-        
         if timer_difficulty == "easy":
             games[game_id] = ChessGame3Min(game, user_side)  # Nouveau mode 3 minutes
             template = "game_timer_3min.html"
@@ -61,7 +61,6 @@ def start_game():
         else:  # "hard" par défaut (30 secondes)
             games[game_id] = ChessGame30sec(game, user_side)  # Classe de jeu avec timer de 30 secondes
             template = "game_timer_hard.html"
-    
     # Si le mode n'est pas reconnu, utilisez le mode vies par défaut
     else:
         games[game_id] = ChessGameNormal(game, user_side)

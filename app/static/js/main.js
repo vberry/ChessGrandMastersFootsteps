@@ -41,7 +41,7 @@ function submitMove() {
             data.correct_move,
             data.opponent_move,
             data.comment,
-            data.opponent_comment
+            data.opponent_comment,
         );
         
         let message = data.is_correct ? 
@@ -76,7 +76,7 @@ function submitMove() {
     })
     .catch(error => {
         console.error('Erreur:', error);
-        showMessage("Une erreur est survenue", false);
+        showMessage("Une erreur est survenue main.js", false);
     })
     .finally(() => {
         if (!document.getElementById("status").textContent.includes("terminée")) {
@@ -87,4 +87,5 @@ function submitMove() {
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeBoard();
+    initializeHistory();
 });

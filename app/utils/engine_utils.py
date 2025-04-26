@@ -99,3 +99,59 @@ def get_best_moves_from_fen(fen_file_path, num_top_moves=3, num_total_moves=3):
     except Exception as e:
         print(f"Erreur lors de l'analyse Stockfish : {e}")
         return []
+    
+
+def evaluate_played_move(fen_before, move_uci):
+    """
+    Évalue simplement la force d'un coup joué par le joueur.
+    
+    Paramètres:
+    - fen_before: Position FEN avant que le coup soit joué
+    - move_uci: Le coup joué au format UCI (ex: "e2e4")
+    
+    Affiche uniquement l'évaluation du coup en centipawns ou en mat.
+    """
+    try:
+        # Créer un objet Board à partir de la position FEN
+        board = chess.Board(fen_before)
+        
+        # Vérifier si le coup est légal
+        move = chess.Move.from_uci(move_uci)
+        if move not in board.legal_moves:
+            print(f"⚠️ Le coup {move_uci} n'est pas légal dans cette position")
+            return
+        
+        # Convertir en SAN avant de jouer le coup
+        move_san = board.san(move)
+        
+        # Jouer le coup
+        board.push(move)
+        
+        # Évaluer la nouvelle position
+        stockfish = Stockfish(STOCKFISH_PATH)
+        stockfish.set_fen_position(board.fen())
+        stockfish.set_depth(15)
+        evaluation = stockfish.get_evaluation()
+        
+         # Créer la structure de réponse
+        eval_result = {
+            "type": evaluation["type"],
+            "value": evaluation["value"]
+        }
+        
+        # Créer le message d'affichage
+        if evaluation["type"] == "mate":
+            eval_result["display"] = f"Mat en {abs(evaluation['value'])} coups"
+        else:
+            eval_result["display"] = f"{evaluation['value']/100} pions"
+        
+        # Afficher dans le terminal
+        print("\n📊 Évaluation du coup joué:")
+        print(f"▶ Coup: {move_uci} ({move_san})")
+        print(f"▶ Évaluation: {eval_result['display']}")
+            
+        return eval_result
+            
+    except Exception as e:
+        print(f"Erreur lors de l'évaluation du coup: {e}")
+        return None
