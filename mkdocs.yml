@@ -16,7 +16,6 @@ nav:
         - FEN: app/utils/fen_utils.md
         - PGN: app/utils/pgn_utils.md
         - Utils: app/utils/utils.md
-  - Run: run.md
 
 plugins:
   - search
@@ -30,4 +29,3 @@ plugins:
 
 watch:
   - app
-  - run.py
