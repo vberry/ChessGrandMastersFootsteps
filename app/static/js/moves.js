@@ -1,44 +1,4 @@
-// Fonction pour initialiser le jeu
-function initializeHistory() {
-    // Si le joueur est noir, faire une requête pour obtenir le premier coup du bot
-    if (userSide === 'black') {
-        // Créer un FormData pour la requête
-        var formData = new FormData();
-        formData.append("game_id", gameId);
-        
-        // Demander au serveur le premier coup du bot
-        fetch('/get-first-move', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.error) {
-                // Mettre à jour le plateau avec le premier coup du bot
-                board.position(data.board_fen);
-                
-                // Mettre à jour l'historique avec le premier coup du bot
-                updateMoveHistory(
-                    null,           // Pas de coup soumis par le joueur
-                    null,           // Pas de coup correct
-                    data.opponent_move, // Le coup du bot
-                    null,           // Pas de commentaire joueur
-                    data.opponent_comment // Commentaire du bot s'il y en a un
-                );
-                
-                // Mettre à jour l'affichage du dernier coup joué
-                const lastMoveElement = document.getElementById("last-move");
-                if (lastMoveElement) {
-                    lastMoveElement.textContent = "Dernier coup joué : " + data.opponent_move;
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Erreur lors de la récupération du premier coup:', error);
-        });
-    }
-}
-
+// Fonction pour mettre à jour l'historique des coups
 function updateMoveHistory(playerMove, correctMove, opponentMove, comment, opponentComment, moveEval = null) {
     const moveHistoryBody = document.querySelector('#move-history tbody');
     
@@ -200,7 +160,6 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
     moveHistory.scrollTop = moveHistory.scrollHeight;
 }
 
-
 function handleMove(source, target) {
     let moveToSubmit = source + target;  // Envoie simplement le coup en UCI
     const previousPosition = board.fen(); // Sauvegarde la position avant le coup
@@ -257,63 +216,148 @@ function handleMove(source, target) {
             document.getElementById("score").textContent = data.score;
         }
 
-        // Mise à jour du plateau avec le coup joué
-        board.position(data.board_fen);
-
-        // Mettre à jour l'historique des coups
-        if (userSide === 'black') {
-            // Si le joueur est noir, mettre à jour avec le coup du joueur seulement
-            updateMoveHistory(
-                data.submitted_move,
-                data.correct_move,
-                null,
-                data.comment,
-                null,
-                data.move_evaluation
-            );
-        } else {
-            // Si le joueur est blanc, mettre à jour avec le coup du joueur et la réponse du bot
-            updateMoveHistory(
-                data.submitted_move,
-                data.correct_move,
-                data.opponent_move,
-                data.comment,
-                data.opponent_comment,
-                data.move_evaluation
-            );
-        }
-
-        // Si le joueur est noir et que le bot (blanc) a joué un coup
-        if (userSide === 'black' && data.opponent_move) {
-            // Ajouter une nouvelle entrée pour le coup du bot blanc
+        // Vérifier si le coup soumis est différent du coup correct
+        if (data.submitted_move !== data.correct_move && data.correct_move) {
+            // 1. D'abord, annuler le coup incorrect et revenir à la position précédente
             setTimeout(() => {
-                updateMoveHistory(
-                    null,
-                    null,
-                    data.opponent_move,
-                    null,
-                    data.opponent_comment
-                );
-            }, 500); // Petit délai pour que l'UI se mette à jour correctement
-        }
-
-        // Vérifier si la partie est terminée
-        if (data.game_over) {
-            document.getElementById("status").textContent = "🎉 Partie terminée !";
-            if (typeof window.stopTimer === 'function') {
-                window.stopTimer(); // Arrêter le timer définitivement
-            }
+                board.position(previousPosition);
+                showMessage("Coup incorrect. Le coup correct est: " + data.correct_move, false);
+                
+                // Effet de tremblement sur la pièce
+                if (typeof animateShakePiece === 'function') {
+                    animateShakePiece(source);
+                }
+                
+                // 2. Après 1 seconde, jouer le coup correct (sans la réponse de l'adversaire)
+                setTimeout(() => {
+                    // On a besoin d'une position intermédiaire avec uniquement le coup correct
+                    // Si le serveur la fournit, utiliser cette position, sinon utiliser board_fen
+                    const correctMoveFen = data.correct_move_fen || data.board_fen;
+                    board.position(correctMoveFen);
+                    showMessage("Voici le coup correct: " + data.correct_move, true);
+                    
+                    // 3. Après 1 seconde supplémentaire, jouer la réponse de l'adversaire
+                    setTimeout(() => {
+                        // Position finale avec la réponse de l'adversaire
+                        board.position(data.board_fen);
+                        
+                        if (data.opponent_move) {
+                            showMessage("L'adversaire a joué: " + data.opponent_move, true);
+                        }
+                        
+                        // Mettre à jour l'historique des coups
+                        if (userSide === 'black') {
+                            // Si le joueur est noir, mettre à jour avec le coup du joueur seulement
+                            updateMoveHistory(
+                                data.submitted_move,
+                                data.correct_move,
+                                null,
+                                data.comment,
+                                null,
+                                data.move_evaluation
+                            );
+                            
+                            // Si le bot (blanc) a joué un coup
+                            if (data.opponent_move) {
+                                updateMoveHistory(
+                                    null,
+                                    null,
+                                    data.opponent_move,
+                                    null,
+                                    data.opponent_comment
+                                );
+                            }
+                        } else {
+                            // Si le joueur est blanc, mettre à jour avec le coup du joueur et la réponse du bot
+                            updateMoveHistory(
+                                data.submitted_move,
+                                data.correct_move,
+                                data.opponent_move,
+                                data.comment,
+                                data.opponent_comment,
+                                data.move_evaluation
+                            );
+                        }
+                        
+                        // Vérifier si la partie est terminée
+                        if (data.game_over) {
+                            document.getElementById("status").textContent = "🎉 Partie terminée !";
+                            if (typeof window.stopTimer === 'function') {
+                                window.stopTimer(); // Arrêter le timer définitivement
+                            }
+                        } else {
+                            // Réinitialiser le timer avec le nouveau temps de départ
+                            if (data.move_start_time && typeof window.resetTimer === 'function') {
+                                window.resetTimer(data.move_start_time);
+                            }
+                            
+                            // Émettre un événement personnalisé pour le timer
+                            const event = new CustomEvent('moveSubmitted', { 
+                                detail: { result: data } 
+                            });
+                            document.dispatchEvent(event);
+                        }
+                    }, 1000); // 1 seconde de délai avant de montrer la réponse de l'adversaire
+                }, 1000); // 1 seconde de délai avant de jouer le coup correct
+            }, 100); // Un court délai initial
         } else {
-            // Réinitialiser le timer avec le nouveau temps de départ
-            if (data.move_start_time && typeof window.resetTimer === 'function') {
-                window.resetTimer(data.move_start_time);
+            // Si le coup est correct, simplement mettre à jour le plateau
+            board.position(data.board_fen);
+            
+            // Mettre à jour l'historique des coups
+            if (userSide === 'black') {
+                // Si le joueur est noir, mettre à jour avec le coup du joueur seulement
+                updateMoveHistory(
+                    data.submitted_move,
+                    data.correct_move,
+                    null,
+                    data.comment,
+                    null,
+                    data.move_evaluation
+                );
+                
+                // Si le bot (blanc) a joué un coup
+                if (data.opponent_move) {
+                    setTimeout(() => {
+                        updateMoveHistory(
+                            null,
+                            null,
+                            data.opponent_move,
+                            null,
+                            data.opponent_comment
+                        );
+                    }, 500); // Petit délai pour que l'UI se mette à jour correctement
+                }
+            } else {
+                // Si le joueur est blanc, mettre à jour avec le coup du joueur et la réponse du bot
+                updateMoveHistory(
+                    data.submitted_move,
+                    data.correct_move,
+                    data.opponent_move,
+                    data.comment,
+                    data.opponent_comment,
+                    data.move_evaluation
+                );
             }
             
-            // Émettre un événement personnalisé pour le timer
-            const event = new CustomEvent('moveSubmitted', { 
-                detail: { result: data } 
-            });
-            document.dispatchEvent(event);
+            // Vérifier si la partie est terminée
+            if (data.game_over) {
+                document.getElementById("status").textContent = "🎉 Partie terminée !";
+                if (typeof window.stopTimer === 'function') {
+                    window.stopTimer(); // Arrêter le timer définitivement
+                }
+            } else {
+                // Réinitialiser le timer avec le nouveau temps de départ
+                if (data.move_start_time && typeof window.resetTimer === 'function') {
+                    window.resetTimer(data.move_start_time);
+                }
+                
+                // Émettre un événement personnalisé pour le timer
+                const event = new CustomEvent('moveSubmitted', { 
+                    detail: { result: data } 
+                });
+                document.dispatchEvent(event);
+            }
         }
     })
     .catch(error => {
