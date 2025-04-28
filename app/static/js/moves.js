@@ -44,25 +44,20 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
     
     // CAS SPÉCIAL: Premier coup du bot quand le joueur est noir
     if (userSide === 'black' && !playerMove && opponentMove && moveHistoryBody.children.length === 0) {
-        // Créer les lignes pour le premier coup
         const moveRow = document.createElement('tr');
         const commentRow = document.createElement('tr');
         
-        // Numéro de l'échange
         const exchangeCell = document.createElement('td');
         exchangeCell.textContent = "1";
         moveRow.appendChild(exchangeCell);
         
-        // Coup des blancs (bot)
         const whiteMoveCell = document.createElement('td');
         whiteMoveCell.textContent = opponentMove;
         moveRow.appendChild(whiteMoveCell);
         
-        // Case vide pour les noirs (pas encore joué)
         const blackMoveCell = document.createElement('td');
         moveRow.appendChild(blackMoveCell);
         
-        // Ligne de commentaire
         const commentCell = document.createElement('td');
         commentCell.setAttribute('colspan', '3');
         commentCell.classList.add('move-comment');
@@ -70,36 +65,31 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
         commentRow.appendChild(commentCell);
         commentRow.style.display = opponentComment ? 'table-row' : 'none';
         
-        // Ajouter les lignes au tableau
         moveHistoryBody.appendChild(moveRow);
         moveHistoryBody.appendChild(commentRow);
         return;
     }
     
-    // Pour tous les autres cas
     const isPlayerWhite = userSide === 'white';
-    
-    // Déterminer le numéro de l'échange
     let exchangeNumber;
     
     if (isPlayerWhite) {
-        // Si joueur blanc: nouveau numéro d'échange à chaque coup du joueur
         exchangeNumber = Math.ceil((moveHistoryBody.children.length + 1) / 2);
     } else {
-        // Si joueur noir: vérifier si on complète une ligne existante ou on en crée une nouvelle
         if (playerMove && !opponentMove) {
-            // Le joueur noir joue, on complète la dernière ligne
-            const lastMoveRow = moveHistoryBody.lastElementChild && 
-                                moveHistoryBody.lastElementChild.previousElementSibling;
+            const lastMoveRow = moveHistoryBody.lastElementChild && moveHistoryBody.lastElementChild.previousElementSibling;
             
             if (lastMoveRow && lastMoveRow.cells[2].textContent === '') {
-                // Il y a une ligne existante avec une case noire vide, compléter cette ligne
                 lastMoveRow.cells[2].textContent = playerMove;
-                if (playerMove !== correctMove && correctMove) {
+
+                if (playerMove !== correctMove && correctMove && moveEval?.isLastChance) {
                     lastMoveRow.cells[2].innerHTML += `<br><small>(correct: ${correctMove})</small>`;
                 }
                 
-                // Ajouter le commentaire du joueur noir
+                if (moveEval && moveEval.display && playerMove !== correctMove) {
+                    lastMoveRow.cells[2].innerHTML += `<br><small>(${moveEval.display})</small>`;
+                }
+                
                 const commentRow = lastMoveRow.nextElementSibling;
                 if (commentRow) {
                     const commentCell = commentRow.cells[0];
@@ -109,80 +99,64 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
                     }
                 }
                 
-                // Ajouter l'évaluation du coup du joueur noir, si c'est un mauvais coup
-                if (moveEval && moveEval.display && playerMove !== correctMove) {
-                    lastMoveRow.cells[2].innerHTML += `<br><small>(${moveEval.display})</small>`;
-                }
-                
-                // Scroller automatiquement vers le bas
                 const moveHistory = document.querySelector('#move-history .history-content');
                 moveHistory.scrollTop = moveHistory.scrollHeight;
                 
-                return; // Sortir de la fonction car la mise à jour est terminée
+                return;
             }
         }
-        
-        // Sinon, nouvelle ligne (soit premier coup du joueur, soit coup du bot)
         exchangeNumber = Math.ceil((moveHistoryBody.children.length + 1) / 2);
     }
     
-    // Créer une nouvelle ligne pour les coups
     const moveRow = document.createElement('tr');
     const commentRow = document.createElement('tr');
     
-    // Cellule pour le numéro de l'échange
     const exchangeCell = document.createElement('td');
     exchangeCell.textContent = exchangeNumber;
     moveRow.appendChild(exchangeCell);
     
-    // Cellule pour le coup des Blancs
     const whiteMoveCell = document.createElement('td');
     if (isPlayerWhite && playerMove) {
-        // Joueur blanc
         whiteMoveCell.textContent = playerMove;
-        if (playerMove !== correctMove && correctMove) {
+
+        if (playerMove !== correctMove && correctMove && moveEval?.isLastChance) {
             whiteMoveCell.innerHTML += `<br><small>(correct: ${correctMove})</small>`;
-            
-            // Ajouter l'évaluation du coup si c'est un mauvais coup
-            if (moveEval && moveEval.display && playerMove !== correctMove) {
-                whiteMoveCell.innerHTML += `<br><small>(${moveEval.display})</small>`;
-            }
         }
+        
+        if (moveEval && moveEval.display && playerMove !== correctMove) {
+            whiteMoveCell.innerHTML += `<br><small>(${moveEval.display})</small>`;
+        }
+
     } else if (!isPlayerWhite && opponentMove) {
-        // Bot blanc
         whiteMoveCell.textContent = opponentMove;
     } else {
         whiteMoveCell.textContent = '';
     }
     moveRow.appendChild(whiteMoveCell);
     
-    // Cellule pour le coup des Noirs
     const blackMoveCell = document.createElement('td');
     if (!isPlayerWhite && playerMove) {
-        // Joueur noir
         blackMoveCell.textContent = playerMove;
-        if (playerMove !== correctMove && correctMove) {
-            blackMoveCell.innerHTML += `<br><small>(correct: ${correctMove})</small>`;
 
-            // Ajouter l'évaluation du coup si c'est un mauvais coup
-            if (moveEval && moveEval.display && playerMove !== correctMove) {
-                blackMoveCell.innerHTML += `<br><small>(${moveEval.display})</small>`;
-            }
+        if (playerMove !== correctMove && correctMove && moveEval?.isLastChance) {
+            blackMoveCell.innerHTML += `<br><small>(correct: ${correctMove})</small>`;
         }
+        
+        if (moveEval && moveEval.display && playerMove !== correctMove) {
+            blackMoveCell.innerHTML += `<br><small>(${moveEval.display})</small>`;
+        }
+
     } else if (isPlayerWhite && opponentMove) {
-        // Bot noir
         blackMoveCell.textContent = opponentMove;
     } else {
         blackMoveCell.textContent = '';
     }
     moveRow.appendChild(blackMoveCell);
     
-    // Ligne de commentaire
     const commentCell = document.createElement('td');
     commentCell.setAttribute('colspan', '3');
     commentCell.classList.add('move-comment');
     
-    // Ajouter les commentaires s'ils existent
     const commentTexts = [];
     if (comment) commentTexts.push(comment);
     if (opponentComment) commentTexts.push(opponentComment);
@@ -191,14 +165,13 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
     commentRow.appendChild(commentCell);
     commentRow.style.display = commentTexts.length ? 'table-row' : 'none';
     
-    // Ajouter les lignes au tableau
     moveHistoryBody.appendChild(moveRow);
     moveHistoryBody.appendChild(commentRow);
     
-    // Scroller automatiquement vers le bas
     const moveHistory = document.querySelector('#move-history .history-content');
     moveHistory.scrollTop = moveHistory.scrollHeight;
 }
+
 
 
 function handleMove(source, target) {
@@ -224,7 +197,7 @@ function handleMove(source, target) {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error(`Erreur HTTP ${response.status}`);
+            throw new Error(`Erreur HTTP ${response.status}`); 
         }
         return response.json();
     })

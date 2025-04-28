@@ -1,8 +1,8 @@
 import chess.engine
 from stockfish import Stockfish
 
-STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
-#STOCKFISH_PATH = "/usr/games/stockfish"
+#STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
+STOCKFISH_PATH = "/usr/games/stockfish"
 
 def evaluate_move_strength(board, move):
     """
@@ -98,7 +98,7 @@ def get_best_moves_from_fen(fen_file_path, num_top_moves=3, num_total_moves=3):
 
     except Exception as e:
         print(f"Erreur lors de l'analyse Stockfish : {e}")
-        return []
+        return [] 
     
 
 def evaluate_played_move(fen_before, move_uci):

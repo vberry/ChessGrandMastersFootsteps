@@ -22,7 +22,7 @@ class ChessGameEasy(ChessGame):
         Retourne le résultat après 5 essais ou si le coup correct est trouvé.
         """
         if self.current_move_index >= len(self.moves):
-            return {'error': 'La partie est terminée'}
+            return {'error': 'La partie est terminée'} 
 
         # Stocker les meilleurs coups avant que le joueur ne joue
         current_position_best_moves = self.best_moves.copy()
