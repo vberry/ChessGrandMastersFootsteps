@@ -1,3 +1,35 @@
+// Ajout du style CSS pour le surlignage rouge directement dans le script
+(function() {
+    // Créer un élément style
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Style pour surligner une case en rouge */
+        .highlight-red {
+            background-color: rgba(255, 0, 0, 0.6) !important;
+            box-shadow: inset 0 0 0 3px rgba(255, 0, 0, 0.8);
+            transition: background-color 0.3s ease;
+        }
+    `;
+    // Ajouter le style au head du document
+    document.head.appendChild(style);
+})();
+
+// Fonction pour surligner une case en rouge brièvement
+function highlightSquareRed(square) {
+    // Trouver l'élément de la case
+    const squareElement = document.querySelector(`.square-${square}`);
+    
+    if (squareElement) {
+        // Ajouter une classe pour le surlignage rouge
+        squareElement.classList.add('highlight-red');
+        
+        // Retirer la classe après un court délai
+        setTimeout(() => {
+            squareElement.classList.remove('highlight-red');
+        }, 500); // 500ms de surlignage
+    }
+}
+
 // Fonction pour mettre à jour l'historique des coups
 function updateMoveHistory(playerMove, correctMove, opponentMove, comment, opponentComment, moveEval = null) {
     const moveHistoryBody = document.querySelector('#move-history tbody');
@@ -191,10 +223,12 @@ function handleMove(source, target) {
         console.log("Réponse du serveur:", data);
         
         if (data.error) {
-            showMessage(data.error, false);
 
             // Annuler immédiatement le coup illégal
             setTimeout(() => board.position(previousPosition), 100);
+
+            // Surligner la case de destination en rouge
+            highlightSquareRed(target);
 
             // Ajouter effet de tremblement sur la pièce
             animateShakePiece(source);
@@ -218,10 +252,13 @@ function handleMove(source, target) {
 
         // Vérifier si le coup soumis est différent du coup correct
         if (data.submitted_move !== data.correct_move && data.correct_move) {
+            // Surligner la case de destination en rouge
+            highlightSquareRed(target);
+            
             // 1. D'abord, annuler le coup incorrect et revenir à la position précédente
             setTimeout(() => {
                 board.position(previousPosition);
-                showMessage("Coup incorrect. Le coup correct est: " + data.correct_move, false);
+                //showMessage("Coup incorrect. Le coup correct est: " + data.correct_move, false);
                 
                 // Effet de tremblement sur la pièce
                 if (typeof animateShakePiece === 'function') {
@@ -234,17 +271,13 @@ function handleMove(source, target) {
                     // Si le serveur la fournit, utiliser cette position, sinon utiliser board_fen
                     const correctMoveFen = data.correct_move_fen || data.board_fen;
                     board.position(correctMoveFen);
-                    showMessage("Voici le coup correct: " + data.correct_move, true);
                     
-                    // 3. Après 1 seconde supplémentaire, jouer la réponse de l'adversaire
+                    // 3. Après 3 secondes supplémentaires, jouer la réponse de l'adversaire
                     setTimeout(() => {
                         // Position finale avec la réponse de l'adversaire
                         board.position(data.board_fen);
                         
-                        if (data.opponent_move) {
-                            showMessage("L'adversaire a joué: " + data.opponent_move, true);
-                        }
-                        
+                    
                         // Mettre à jour l'historique des coups
                         if (userSide === 'black') {
                             // Si le joueur est noir, mettre à jour avec le coup du joueur seulement
@@ -297,7 +330,7 @@ function handleMove(source, target) {
                             });
                             document.dispatchEvent(event);
                         }
-                    }, 1000); // 1 seconde de délai avant de montrer la réponse de l'adversaire
+                    }, 3000); // 3 secondes de délai avant de montrer la réponse de l'adversaire
                 }, 1000); // 1 seconde de délai avant de jouer le coup correct
             }, 100); // Un court délai initial
         } else {
@@ -366,6 +399,9 @@ function handleMove(source, target) {
 
         // Annuler immédiatement le coup illégal
         setTimeout(() => board.position(previousPosition), 100);
+
+        // Surligner la case de destination en rouge
+        highlightSquareRed(target);
 
         if (typeof animateShakePiece === 'function') {
             animateShakePiece(source);
