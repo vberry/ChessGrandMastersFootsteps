@@ -1,7 +1,0 @@
-pour lancer:
-    cd chess
-    une deuxieme fois cd chess
-    taper uv venv dans le terminal (si uv est installé)
-    activer l'environnement virtuel avec la commande qui est affichée dans le terminal
-    python3 server.py
-    eventuellement il faudra installer flask ou python-chess (uv add flask) (uv add python-chess)
