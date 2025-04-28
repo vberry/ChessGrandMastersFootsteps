@@ -221,7 +221,7 @@ class ChessGame:
             'move_evaluation': move_evaluation,  # Nouvelle clé avec l'évaluation du coup
             'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
             'previous_position_best_moves': current_position_best_moves,  # Coups alternatifs pour la position précédente
-            'move_start_time': self.move_start_time
+            'is_last_chance':True
         }
 
     def calculate_points(self, submitted_move, correct_move):

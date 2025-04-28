@@ -2,7 +2,7 @@ import chess
 import chess.pgn
 import os
 import time
-from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen
+from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen, evaluate_played_move
 from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
 
@@ -120,6 +120,10 @@ class ChessGame30sec:
         is_pawn = self.is_pawn_move(correct_move_san)
         submitted_move = validated_move
 
+        # Évaluer le coup joué par le joueur avec Stockfish
+        move_evaluation = evaluate_played_move(position_fen_before_move, validated_move)
+        
+
         # Utiliser la nouvelle méthode de calcul des points
         points, move_quality_message, checkmate_bonus = self.calculate_points(submitted_move, correct_move)
         is_checkmate = checkmate_bonus > 0
@@ -130,11 +134,6 @@ class ChessGame30sec:
         
         # Pour l'affichage
         submitted_move_san = self.board.san(submitted_chess_move)
-
-        # Évaluer le coup joué par le joueur avec Stockfish
-        from app.utils.engine_utils import evaluate_played_move
-        move_evaluation = evaluate_played_move(position_fen_before_move, submitted_move)
-
         # Appliquer la pénalité de temps si nécessaire
         if time_penalty:
             points += time_penalty
@@ -208,10 +207,12 @@ class ChessGame30sec:
             'is_checkmate': is_checkmate,
             'checkmate_bonus': checkmate_bonus,
             'move_evaluation': move_evaluation,  # Nouvelle clé avec l'évaluation du coup
+            'move_evaluation': move_evaluation,
             'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
             'previous_position_best_moves': current_position_best_moves,  # Coups alternatifs pour la position précédente
             'time_limit': self.time_limit,
-            'move_start_time': self.move_start_time
+            'move_start_time': self.move_start_time,
+            'is_last_chance': True
         }
 
     def calculate_points(self, submitted_move, correct_move):

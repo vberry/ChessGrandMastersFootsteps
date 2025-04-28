@@ -1,7 +1,7 @@
 import chess
 import chess.pgn
 import os
-from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen
+from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen, evaluate_played_move
 from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
 from app.models.game_model import ChessGame
@@ -26,7 +26,10 @@ class ChessGameEasy(ChessGame):
         # Stocker l’état des meilleurs coups avant la soumission
         current_position_best_moves = self.best_moves.copy()
 
-        # Valider le format (FR → EN, minuscule)
+        # Stocker la position FEN actuelle avant de jouer le coup
+        position_fen_before_move = self.board.fen()
+
+        # Valider le format du coup
         is_valid, validated_move, error_message = self.validate_input(
             convertir_notation_francais_en_anglais(move.strip()).lower()
         )
@@ -52,11 +55,15 @@ class ChessGameEasy(ChessGame):
         is_correct = (submitted_move_obj == correct_move)
         is_pawn = self.is_pawn_move(correct_move_san)
 
-        # Incrémenter les essais
+       # Évaluer le coup joué par le joueur avec Stockfish
+        move_evaluation = evaluate_played_move(position_fen_before_move, validated_move)
+        
+        
+        # Incrémenter le compteur d'essais
         self.attempts += 1
         self.last_submitted_move = validated_move
+        print(self.attempts)
 
-        # Branche "coup trouvé" ou "dernier essai"
         if is_correct or self.attempts >= self.max_attempts:
             # Choix du coup à évaluer
             move_to_eval = validated_move if is_correct else self.last_submitted_move
@@ -102,13 +109,6 @@ class ChessGameEasy(ChessGame):
             )
             self.last_opponent_move = opponent_move_san
 
-            # Indice selon pièce vs pion
-            hint_msg = ""
-            if not is_correct:
-                hint_msg = ("Pour les pions, entrez simplement la case d'arrivée (ex: e4)"
-                            if is_pawn
-                            else "Pour les pièces, entrez la pièce et la case d'arrivée (ex: Nf3)")
-
             # Passer au coup suivant
             self.current_move_index += 1
             self.attempts = 0
@@ -135,12 +135,13 @@ class ChessGameEasy(ChessGame):
                 'game_over': self.current_move_index >= len(self.moves),
                 'is_player_turn': True,
                 'last_opponent_move': self.last_opponent_move,
-                'hint': hint_msg,
                 'is_pawn_move': is_pawn,
                 'best_moves': self.best_moves,
                 'previous_position_best_moves': current_position_best_moves,
                 'attempts_used': self.attempts,
-                'attempts_left': 0
+                'attempts_left': 0,
+                'move_evaluation': move_evaluation,
+                'is_last_chance': self.attempts == 0
             }
 
         # Branche "mauvais coup + essais restants" : on n'envoie PAS score_percentage
@@ -160,5 +161,7 @@ class ChessGameEasy(ChessGame):
                 'is_valid_format': True,
                 'game_over': False,
                 'is_player_turn': True,
-                'last_opponent_move': self.last_opponent_move
+                'last_opponent_move': self.last_opponent_move,
+                'move_evaluation': move_evaluation,
+                'is_last_chance': self.attempts == 0
             }
