@@ -2,7 +2,6 @@ import chess
 import chess.pgn
 import os
 import time
-from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen
 from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen, evaluate_played_move
 from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
@@ -35,11 +34,10 @@ class ChessGame:
         self.current_move_index = 0 # Le jeu commence au premier mouvement
         self.score = 0 # Initialisation du score à 0
         self.total_moves = len(self.moves) # Nombre total de mouvements à jouer par l'utilisateur
+        # Base: 10 points par coup estimés pour un jeu parfait
+        self.max_score = self.total_moves * 15  # Score de base + estimation des bonus
         
-        # Paramètre pour le mode timer
-        self.use_timer = use_timer
-        self.time_limit = 30  # Limite de temps en secondes
-        self.move_start_time = time.time()
+       
 
         if user_side == 'black' and len(self.white_moves) > 0:
             first_move = self.white_moves[0] # Récupère le premier mouvement des blancs
@@ -96,49 +94,13 @@ class ChessGame:
                 - **'checkmate_bonus'** : Le bonus de points attribué si le coup mène à un échec et mat.
                 - **'best_moves'** : Liste des meilleurs coups pour la position actuelle après le coup joué.
                 - **'previous_position_best_moves'** : Liste des meilleurs coups pour la position précédente.
-
-            ### Utilité de la fonction :
-            Cette fonction est essentielle pour la gestion de l'état du jeu en temps réel. Elle permet à l'utilisateur de soumettre un coup, qui est ensuite validé et joué. Elle assure également que le jeu reste cohérent en vérifiant si la partie est terminée, si les coups sont valides, et en attribuant un score en fonction de la qualité du coup joué. Elle gère aussi l'aspect stratégique du jeu en fournissant des suggestions pour les coups à venir et en tenant compte de l'adversaire.
-
-            ### Exemple de retour :
-            Si l'utilisateur soumet un coup valide, la fonction retourne un dictionnaire similaire à ceci :
-            ```python
-            {
-                'is_correct': True,
-                'correct_move': 'e2e4',
-                'opponent_move': 'e7e5',
-                'board_fen': 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-                'score': 10,
-                'game_over': False,
-                'is_player_turn': True,
-                'last_opponent_move': 'e7e5',
-                'hint': "",
-                'is_pawn_move': False,
-                'is_valid_format': True,
-                'comment': "Excellente ouverture.",
-                'opponent_comment': "Réponse standard.",
-                'submitted_move': 'e2e4',
-                'move_quality': "Très bon coup",
-                'points_earned': 10,
-                'is_checkmate': False,
-                'checkmate_bonus': 0,
-                'best_moves': ['e2e4', 'd2d4'],
-                'previous_position_best_moves': ['e2e4', 'd2d4']
-            }
-            ```
         """
         if self.current_move_index >= len(self.moves):
             return {'error': 'La partie est terminée'}
 
-        # Calculer le temps écoulé depuis le début du coup
-        elapsed_time = time.time() - self.move_start_time
-        time_penalty = 0
-        time_message = ""
+       
 
-        # Vérifier si le temps est dépassé, seulement si le mode timer est activé
-        if self.use_timer and elapsed_time > self.time_limit:
-            time_penalty = -5  # Pénalité de 5 points pour dépassement de temps
-            time_message = " Temps dépassé! (-5 points)"
+    
 
         # Afficher immédiatement le coup soumis (avant validation)
         print(f"Coup soumis : {move.strip()}", flush=True)
@@ -162,7 +124,6 @@ class ChessGame:
                 'game_over': False,
                 'is_player_turn': True,
                 'last_opponent_move': self.last_opponent_move,
-                'time_left': max(0, self.time_limit - elapsed_time)
             }
 
         # Afficher immédiatement le coup soumis
@@ -186,11 +147,6 @@ class ChessGame:
         
         # Pour l'affichage
         submitted_move_san = self.board.san(submitted_chess_move)
-
-        # Appliquer la pénalité de temps si nécessaire
-        if time_penalty:
-            points += time_penalty
-            move_quality_message += time_message
 
         # Évaluer le coup joué par le joueur avec Stockfish
         move_evaluation = evaluate_played_move(position_fen_before_move, submitted_move)
@@ -237,6 +193,9 @@ class ChessGame:
                 hint_message = "Pour les pions, entrez simplement la case d'arrivée (ex: e4)"
             else:
                 hint_message = "Pour les pièces, entrez la pièce et la case d'arrivée (ex: Nf3)"
+                
+        # Calcul du pourcentage de score avec limitation à 100%
+        score_percentage = min(100, round((self.score / self.max_score) * 100, 1)) if self.max_score > 0 else 0
 
         return {
             'is_correct': is_correct,
@@ -244,6 +203,8 @@ class ChessGame:
             'opponent_move': opponent_move_san,
             'board_fen': self.board.fen(),
             'score': self.score,
+            'score_percentage': score_percentage,  # Pourcentage limité à 100%
+            'max_score': self.max_score,  # Ajout du score maximal
             'game_over': self.current_move_index >= len(self.moves),
             'is_player_turn': True,
             'last_opponent_move': self.last_opponent_move,
@@ -260,7 +221,6 @@ class ChessGame:
             'move_evaluation': move_evaluation,  # Nouvelle clé avec l'évaluation du coup
             'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
             'previous_position_best_moves': current_position_best_moves,  # Coups alternatifs pour la position précédente
-            'time_limit': self.time_limit,
             'move_start_time': self.move_start_time
         }
 
@@ -271,14 +231,13 @@ class ChessGame:
             Stockfish et attribue des points en fonction de la précision du coup.
 
             La fonction prend en compte les facteurs suivants :
-            - Si le coup soumis est exactement le même que celui du maître.
+            - La qualité des deux coups (soumis et historique) selon l'évaluation de Stockfish.
             - Si le joueur a trouvé un mat que le maître n'a pas vu.
-            - La qualité du coup par rapport à l'évaluation de Stockfish.
             - Un bonus pour les mats.
             - Une évaluation de la position à l'aide de l'algorithme Stockfish.
 
             Les points sont attribués comme suit :
-            - Si le joueur soumet le coup exact du maître, il obtient des points.
+            - Le coup est évalué selon sa qualité objective, même s'il s'agit du coup exact du maître.
             - Des bonus supplémentaires sont attribués pour les coups de haute qualité (mat, avantage significatif).
             - Des pénalités peuvent être appliquées si le joueur fait un mauvais coup.
 
@@ -321,25 +280,11 @@ class ChessGame:
         move_quality_message = ""
         checkmate_bonus = 0
         
-        if is_correct:
-            # C'est exactement le même coup que le maître
-            points = 10
-            move_quality_message = f"C'est le coup historique ! (+10 points)"
-            
-            # Bonus si c'est un coup de très haute qualité selon Stockfish
+        # Au lieu d'attribuer automatiquement 10 points au coup du maître,
+        # évaluons objectivement les deux coups (maître et joueur) selon leur qualité
+        if submitted_eval["type"] == "mate":
+            # Le joueur a trouvé un mat
             if correct_eval["type"] == "mate":
-                points += 10
-                move_quality_message += f" Et c'est un mat en {abs(correct_eval['value'])} ! (+10 points bonus)"
-            elif correct_eval["type"] == "cp" and correct_eval["value"] >= 200:  # Avantage significatif
-                points += 5
-                move_quality_message += f" Et c'est un excellent coup selon Stockfish ! (+5 points bonus)"
-        else:
-            # Le coup n'est pas celui du maître, on compare les évaluations Stockfish
-            if submitted_eval["type"] == "mate" and correct_eval["type"] != "mate":
-                # Le joueur a trouvé un mat que le maître n'a pas vu
-                points = 20
-                move_quality_message = f"Vous avez trouvé un mat en {abs(submitted_eval['value'])} que le maître n'a pas vu ! (+20 points)"
-            elif submitted_eval["type"] == "mate" and correct_eval["type"] == "mate":
                 # Les deux sont des mats, comparer la rapidité
                 if abs(submitted_eval["value"]) <= abs(correct_eval["value"]):
                     points = 15
@@ -347,32 +292,40 @@ class ChessGame:
                 else:
                     points = 5
                     move_quality_message = f"Vous avez trouvé un mat, mais plus lent que celui du maître. (+5 points)"
-            elif correct_eval["type"] == "mate":
-                # Le maître a trouvé un mat mais pas le joueur
-                points = -5 
-                move_quality_message = f"Le maître a trouvé un mat que vous n'avez pas vu. (-5 points)"
             else:
-                # Comparer les évaluations en centipawns
-                diff = submitted_eval["value"] - correct_eval["value"]
+                # Le joueur a trouvé un mat que le maître n'a pas vu
+                points = 20
+                move_quality_message = f"Vous avez trouvé un mat que le maître n'a pas vu ! (+20 points)"
+        elif correct_eval["type"] == "mate" and submitted_eval["type"] != "mate":
+            # Le maître a trouvé un mat mais pas le joueur
+            points = -5 
+            move_quality_message = f"Le maître a trouvé un mat que vous n'avez pas vu. (-5 points)"
+        else:
+            # Comparer les évaluations en centipawns
+            diff = submitted_eval["value"] - correct_eval["value"]
+            
+            if diff >= 10:  # Le coup du joueur est meilleur
+                points = 20
+                move_quality_message = f"Votre coup est meilleur que celui du maître selon Stockfish ! (+20 points)"
+            elif diff >= -10:  # Différence négligeable (0.1 pawn)
+                points = 15
+                move_quality_message = f"Votre coup est pratiquement aussi bon que celui du maître ! (+15 points)"
+            elif diff >= -50:  # Bonne alternative (0.5 pawn)
+                points = 10
+                move_quality_message = f"Votre coup est une bonne alternative ! (+10 points)"
+            elif diff >= -100:  # Alternative acceptable (1 pawn)
+                points = 5
+                move_quality_message = f"Votre coup est une alternative acceptable. (+5 points)"
+            elif diff >= -200:  # Alternative inférieure (2 pawns)
+                points = 0
+                move_quality_message = f"Votre coup est inférieur à celui du maître. (+0 points)"
+            else:  # Erreur significative
+                points = -10
+                move_quality_message = f"Votre coup est significativement plus faible que celui du maître. (-10 points)"
                 
-                if diff >= 10:  # Le coup du joueur est meilleur
-                    points = 20
-                    move_quality_message = f"Votre coup est meilleur que celui du maître selon Stockfish ! (+20 points)"
-                elif diff >= -10:  # Différence négligeable (0.1 pawn)
-                    points = 15
-                    move_quality_message = f"Votre coup est pratiquement aussi bon que celui du maître ! (+15 points)"
-                elif diff >= -50:  # Bonne alternative (0.5 pawn)
-                    points = 10
-                    move_quality_message = f"Votre coup est une bonne alternative ! (+10 points)"
-                elif diff >= -100:  # Alternative acceptable (1 pawn)
-                    points = 5
-                    move_quality_message = f"Votre coup est une alternative acceptable. (+5 points)"
-                elif diff >= -200:  # Alternative inférieure (2 pawns)
-                    points = 0
-                    move_quality_message = f"Votre coup est inférieur à celui du maître. (+0 points)"
-                else:  # Erreur significative
-                    points = -10
-                    move_quality_message = f"Votre coup est significativement plus faible que celui du maître. (-10 points)"
+        # Ajouter une indication si c'est le coup historique exact
+        if is_correct:
+            move_quality_message += f" (C'est le coup historique !)"
         
         # Vérifier si le coup est un échec et mat immédiat
         temp_board = chess.Board(self.board.fen())
@@ -403,11 +356,16 @@ class ChessGame:
                     - 'is_player_turn' : Booléen indiquant si c'est le tour de l'utilisateur.
                     - 'last_opponent_move' : Le dernier mouvement effectué par l'adversaire (s'il y en a un).
         """
+        # Calcul du pourcentage de score avec limitation à 100%
+        score_percentage = min(100, round((self.score / self.max_score) * 100, 1)) if self.max_score > 0 else 0
+
         return {
             'board_fen': self.board.fen(),  # Obtient l'état actuel du plateau au format FEN (Forsyth-Edwards Notation)
             'user_side': self.user_side,  # Retourne la couleur de l'utilisateur ('white' ou 'black')            
             'current_move_index': self.current_move_index,  # L'indice du mouvement actuel dans la séquence des mouvements           
-            'score': self.score,  # Le score actuel du jeu (initialisé à 0 au départ)            
+            'score': self.score,  # Le score actuel du jeu (initialisé à 0 au départ)  
+            'score_percentage': score_percentage, 
+            'max_score': self.max_score,      
             'total_moves': self.total_moves,  # Nombre total de mouvements restants que l'utilisateur doit jouer            
             'is_player_turn': True,  # Indique si c'est actuellement le tour de l'utilisateur (ici fixé à True, peut être ajusté selon l'état du jeu)           
             'last_opponent_move': self.last_opponent_move  # Le dernier mouvement effectué par l'adversaire (si applicable)

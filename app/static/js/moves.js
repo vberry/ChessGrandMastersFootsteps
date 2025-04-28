@@ -253,8 +253,14 @@ function handleMove(source, target) {
         }
 
         // Mise à jour du score
+        // Mise à jour du score
         if (data.score !== undefined) {
             document.getElementById("score").textContent = data.score;
+            // Vérifier si score_percentage est défini avant de l'afficher
+            if (data.score_percentage !== undefined) {
+                document.getElementById("score-percentage").textContent = data.score_percentage + "%";
+            }
+            // Ne pas mettre à jour score_percentage s'il n'est pas défini
         }
 
         // Mise à jour du plateau avec le coup joué

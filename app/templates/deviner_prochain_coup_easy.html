@@ -23,13 +23,14 @@
         <!-- Colonne droite : Score + Alternatives + Historique -->
         <div class="right-column">
             <div class="game-info">
-                <h2>Score: <span id="score">{{ game_state['score'] }}</span></h2>
+                <h2>Score: <span id="score">{{ game_state['score'] }}</span> (<span id="score-percentage">{{ game_state['score_percentage'] }}%</span>)</h2>
                 {% if game_state['last_opponent_move'] %}
-                <p>Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
+                <p id="last-move">Dernier coup joué : {{ game_state['last_opponent_move'] }}</p>
+                {% else %}
+                <p id="last-move"></p>
                 {% endif %}
                 <p id="status"></p>
                 <p>Essais restants: <span id="attempts-left">5</span></p>
-                <div class="difficulty-indicator">Mode: <span class="easy-mode">Facile</span></div>
             </div>
             
             <div class="alternative-moves-section">
@@ -72,9 +73,19 @@
 <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
 <script src="{{ url_for('static', filename='js/alternatives.js') }}"></script>
 
-<!-- Script spécifique pour le mode facile avec 5 essais -->
+<!-- Script for normal mode with attempts -->
 <script>
     $(document).ready(function() {
+        // Initialiser la board si ce n'est pas déjà fait
+        if (typeof board === 'undefined' && typeof initializeBoard === 'function') {
+            initializeBoard();
+        }
+        
+        // Initialiser l'historique si ce n'est pas déjà fait
+        if (typeof initializeHistory === 'function') {
+            initializeHistory();
+        }
+        
         $('#move-form').on('submit', function(e) {
             e.preventDefault();
             submitMove();
@@ -82,6 +93,13 @@
 
         function submitMove() {
             var move = $('#move').val();
+            if (!move.trim()) {
+                showMessage("Veuillez entrer un coup", 'error');
+                return;
+            }
+            
+            // Désactiver le bouton pendant la soumission
+            $('button[type="submit"]').prop('disabled', true);
             
             $.ajax({
                 url: '/submit-move',
@@ -96,71 +114,102 @@
                         return;
                     }
                     
-                    // Update attempts counter
-                    if ('remaining_attempts' in response) {
-                        $('#attempts-left').text(response.remaining_attempts);
+                    // Mettre à jour le score
+                    if ('score' in response) {
+                        $('#score').text(response.score);
                     }
                     
-                    // If correct move or out of attempts
-                    if (response.is_correct || response.attempt >= 5) {
-                        processGameState(response);
+                    // Mettre à jour le pourcentage seulement s'il est fourni
+                    if (response.score_percentage !== undefined) {
+                        $('#score-percentage').text(response.score_percentage + '%');
+                    }
+                    // Ne rien faire si score_percentage n'est pas défini (garder l'affichage actuel)
+                    
+                    // Mettre à jour le compteur d'essais
+                    if (response.attempts_left !== undefined) {
+                        $('#attempts-left').text(response.attempts_left);
+                    }
+                    
+                    // Mettre à jour le plateau
+                    if (response.board_fen) {
+                        board.position(response.board_fen);
+                    }
+                    
+                    // Afficher les coups alternatifs si disponibles
+                    if (Array.isArray(response.previous_position_best_moves) 
+                        && response.previous_position_best_moves.length 
+                        && typeof displayAlternativeMoves === 'function') {
+                        displayAlternativeMoves(response.previous_position_best_moves, move);
+                    }
+                    
+                    // Mettre à jour l'historique des coups si approprié
+                    if ((response.is_correct || (response.attempts_left === 0 && response.correct_move)) 
+                        && typeof updateMoveHistory === 'function') {
+                        updateMoveHistory(
+                            response.submitted_move,
+                            response.correct_move,
+                            response.opponent_move,
+                            response.comment,
+                            response.opponent_comment
+                        );
+                    }
+                    
+                    // Afficher le dernier coup adverse
+                    if (response.last_opponent_move) {
+                        setTimeout(() => {
+                            $('#last-move').text("Dernier coup joué : " + response.last_opponent_move);
+                        }, 500);
+                    }
+                    
+                    // Afficher un message approprié
+                    if (response.is_correct) {
+                        showMessage("✅ Bravo ! Coup correct.\n" + (response.move_quality || ""), 'success');
+                    } else if (response.attempts_left === 0 || response.correct_move) {
+                        // Plus d'essais ou réponse finale
+                        let msg = `❌ Incorrect. Le bon coup était : ${response.correct_move}`;
+                        if (response.hint) {
+                            msg += `\n💡 ${response.hint}`;
+                        }
+                        showMessage(msg, 'error');
                     } else {
-                        // Wrong move but attempts remaining
-                        showMessage(response.move_quality, 'warning');
-                        $('#move').val('').focus();
+                        // Toujours des essais restants
+                        showMessage(response.move_quality || "Coup incorrect. Essayez encore.", 'warning');
+                    }
+                    
+                    // Réinitialiser le champ de saisie
+                    $('#move').val('').focus();
+                    
+                    // Vérifier si le jeu est terminé
+                    if (response.game_over) {
+                        $('#status').text("🎉 Partie terminée !");
+                        $('button[type="submit"]').prop('disabled', true);
+                        $('#move').prop('disabled', true);
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('Erreur Ajax :', error);
                     showMessage('Une erreur est survenue lors de la soumission de votre coup.', 'error');
+                },
+                complete: function() {
+                    // Réactiver le bouton si le jeu n'est pas terminé
+                    if (!$('#status').text().includes("terminée")) {
+                        $('button[type="submit"]').prop('disabled', false);
+                    }
                 }
             });
         }
 
-        function processGameState(response) {
-            // Update the board
-            board.position(response.board_fen);
-            
-            // Update score
-            $('#score').text(response.score);
-            
-            // Display appropriate message
-            let messageType = response.is_correct ? 'success' : 'error';
-            let message = response.move_quality;
-            
-            if (!response.is_correct) {
-                message += " Le coup correct était: " + response.correct_move;
-            }
-            
-            showMessage(message, messageType);
-            
-            // Update move history
-            if (response.submitted_move) {
-                updateMoveHistory(response.submitted_move, response.opponent_move);
-            }
-            
-            // Show alternative moves if available
-            if (response.previous_position_best_moves) {
-                showAlternativeMoves(response.previous_position_best_moves);
-            }
-            
-            // Reset input field
-            $('#move').val('');
-            
-            // Reset attempts counter for next move
-            $('#attempts-left').text(5);
-            
-            // Check if game is over
-            if (response.game_over) {
-                $('#status').text("Partie terminée! Score final: " + response.score);
-                $('#move-form').hide();
-            }
-        }
-
         function showMessage(message, type) {
             var messageElement = $('#message');
-            messageElement.text(message);
+            messageElement.html(message.replace(/\n/g, '<br>'));
             messageElement.removeClass('success error warning').addClass(type);
-            messageElement.fadeIn().delay(5000).fadeOut();
+            messageElement.fadeIn();
+            
+            // Effacer le message après un délai
+            clearTimeout(window.messageTimeout);
+            window.messageTimeout = setTimeout(function() {
+                messageElement.fadeOut();
+            }, 5000);
         }
     });
 </script>
