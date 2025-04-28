@@ -9,6 +9,12 @@
     --board-dark: #555;
 }
 
+.container {
+    max-width: 1400px;
+    margin: 0 auto;  /* Centre le contenu horizontalement */
+    padding: 0 60px; /* Ajoute des marges à gauche et à droite */
+}
+
 /* Global Styles */
 body {
     font-family: 'Inter', sans-serif;
@@ -39,8 +45,8 @@ body {
 }
 
 #board {
-    width: 55vw; /* 55% de la largeur de l'écran */
-    height: 55vw; /* Carré parfait */
+    width: 48vw; /* 55% de la largeur de l'écran */
+    height: 48vw; /* Carré parfait */
     max-width: 800px; /* Évite qu'il devienne trop grand sur grands écrans */
     max-height: 800px;
     min-width: 300px; /* Pour éviter qu'il soit trop petit sur petits écrans */
