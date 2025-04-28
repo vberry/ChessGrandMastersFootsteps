@@ -1,7 +1,7 @@
 import chess
 import chess.pgn
 import os
-from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen
+from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen, evaluate_played_move
 from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
 from app.models.game_model import ChessGame
@@ -10,11 +10,11 @@ class ChessGameNormal(ChessGame):
     
     def __init__(self, game, user_side):
         super().__init__(game, user_side)
-        self.attempts = 0
-        self.max_attempts = 3
-        self.last_submitted_move = None
-        
-    def submit_move(self, move):
+        self.attempts = 0  # Compteur d'essais pour le coup actuel
+        self.max_attempts = 3  # Nombre maximum d'essais autorisés
+        self.last_submitted_move = None  # Dernier coup soumis
+
+    def submit_move(self, move): 
         """
         Gère la soumission d'un coup avec plusieurs tentatives.
         On calcule et renvoie score_percentage seulement si le coup est correct
@@ -26,7 +26,10 @@ class ChessGameNormal(ChessGame):
         # Stocker l’état des meilleurs coups avant la soumission
         current_position_best_moves = self.best_moves.copy()
 
-        # Valider le format (FR → EN, minuscule)
+        # Stocker la position FEN actuelle avant de jouer le coup
+        position_fen_before_move = self.board.fen()
+
+        # Valider le format du coup
         is_valid, validated_move, error_message = self.validate_input(
             convertir_notation_francais_en_anglais(move.strip()).lower()
         )
@@ -52,7 +55,10 @@ class ChessGameNormal(ChessGame):
         is_correct = (submitted_move_obj == correct_move)
         is_pawn = self.is_pawn_move(correct_move_san)
 
-        # Incrémenter les essais
+        # Évaluer le coup joué par le joueur avec Stockfish
+        move_evaluation = evaluate_played_move(position_fen_before_move, validated_move)
+           
+        # Incrémenter le compteur d'essais
         self.attempts += 1
         self.last_submitted_move = validated_move
 
@@ -140,7 +146,9 @@ class ChessGameNormal(ChessGame):
                 'best_moves': self.best_moves,
                 'previous_position_best_moves': current_position_best_moves,
                 'attempts_used': self.attempts,
-                'attempts_left': 0
+                'move_evaluation': move_evaluation,  # Ajout de l'évaluation du coup
+                'attempts_left': 0,  # Réinitialisation pour le prochain coup
+                'is_last_chance': self.attempts == (self.max_attempts - 1)
             }
 
         # Branche "mauvais coup + essais restants" : on n'envoie PAS score_percentage
@@ -153,6 +161,7 @@ class ChessGameNormal(ChessGame):
                     f"Vous avez encore {self.max_attempts - self.attempts} essai"
                     f"{'s' if self.max_attempts - self.attempts > 1 else ''}."
                 ),
+                'correct_move': correct_move_san,  # Ajout du coup correct pour l'affichage
                 'board_fen': self.board.fen(),
                 'score': self.score,
                 'attempts_used': self.attempts,
@@ -160,5 +169,9 @@ class ChessGameNormal(ChessGame):
                 'is_valid_format': True,
                 'game_over': False,
                 'is_player_turn': True,
-                'last_opponent_move': self.last_opponent_move
+                'last_opponent_move': self.last_opponent_move,
+                'move_evaluation': move_evaluation,  # Ajout de l'évaluation du coup
+                'move_quality': f"Ce n'est pas le coup correct. Vous avez encore {self.max_attempts - self.attempts} essai{'s' if self.max_attempts - self.attempts > 1 else ''}.",
+                'is_last_chance': self.attempts == (self.max_attempts - 1),
             }
+

@@ -21,7 +21,7 @@ class ChessGameEasy(ChessGame):
         ou si c'est le dernier essai.
         """
         if self.current_move_index >= len(self.moves):
-            return {'error': 'La partie est terminée'}
+            return {'error': 'La partie est terminée'} 
 
         # Stocker l’état des meilleurs coups avant la soumission
         current_position_best_moves = self.best_moves.copy()
