@@ -2,7 +2,6 @@ import chess
 import chess.pgn
 import os
 import time
-from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen
 from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen, evaluate_played_move
 from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
@@ -261,7 +260,8 @@ class ChessGame:
             'best_moves': self.best_moves,  # Coups pour la position actuelle (après le coup)
             'previous_position_best_moves': current_position_best_moves,  # Coups alternatifs pour la position précédente
             'time_limit': self.time_limit,
-            'move_start_time': self.move_start_time
+            'move_start_time': self.move_start_time,
+            'is_last_chance':True
         }
 
     def calculate_points(self, submitted_move, correct_move):

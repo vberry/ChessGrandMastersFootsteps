@@ -67,6 +67,7 @@ class ChessGameNormal(ChessGame):
         # Incrémenter le compteur d'essais
         self.attempts += 1
         self.last_submitted_move = validated_move
+        print(self.attempts)
         
         # Si c'est le coup correct ou le dernier essai, procéder à l'évaluation
         if is_correct or self.attempts >= self.max_attempts:
@@ -152,7 +153,7 @@ class ChessGameNormal(ChessGame):
                 'previous_position_best_moves': current_position_best_moves,
                 'attempts_used': self.attempts,
                 'attempts_left': 0,  # Réinitialisation pour le prochain coup
-                'is_last_chance': self.attempts == (self.max_attempts - 1)
+                'is_last_chance': self.attempts == 0
             }
         else:
             # Ce n'est pas le coup correct et il reste des essais
@@ -171,6 +172,6 @@ class ChessGameNormal(ChessGame):
                 'last_opponent_move': self.last_opponent_move,
                 'move_evaluation': move_evaluation,  # Ajout de l'évaluation du coup
                 'move_quality': f"Ce n'est pas le coup correct. Vous avez encore {self.max_attempts - self.attempts} essai{'s' if self.max_attempts - self.attempts > 1 else ''}.",
-                'is_last_chance': self.attempts == (self.max_attempts - 1),
+                'is_last_chance': self.attempts == 0,
 
             }

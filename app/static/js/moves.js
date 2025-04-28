@@ -82,7 +82,7 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
             if (lastMoveRow && lastMoveRow.cells[2].textContent === '') {
                 lastMoveRow.cells[2].textContent = playerMove;
 
-                if (playerMove !== correctMove && correctMove && moveEval?.isLastChance) {
+                if (playerMove !== correctMove && correctMove && moveEval?.isLastChance ) {
                     lastMoveRow.cells[2].innerHTML += `<br><small>(correct: ${correctMove})</small>`;
                 }
                 
@@ -119,8 +119,9 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
     if (isPlayerWhite && playerMove) {
         whiteMoveCell.textContent = playerMove;
 
-        if (playerMove !== correctMove && correctMove && moveEval?.isLastChance) {
+        if (playerMove !== correctMove && correctMove && (moveEval?.isLastChance )) {
             whiteMoveCell.innerHTML += `<br><small>(correct: ${correctMove})</small>`;
+            console.log(moveEval?.isLastChance)
         }
         
         if (moveEval && moveEval.display && playerMove !== correctMove) {
@@ -138,7 +139,7 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
     if (!isPlayerWhite && playerMove) {
         blackMoveCell.textContent = playerMove;
 
-        if (playerMove !== correctMove && correctMove && moveEval?.isLastChance) {
+        if (playerMove !== correctMove && correctMove && (moveEval?.isLastChance )) {
             blackMoveCell.innerHTML += `<br><small>(correct: ${correctMove})</small>`;
         }
         
@@ -228,6 +229,11 @@ function handleMove(source, target) {
         // Mise à jour du score
         if (data.score !== undefined) {
             document.getElementById("score").textContent = data.score;
+        }
+
+        if (data.move_evaluation) {
+        data.move_evaluation.attemptsUsed = data.attempts_used || 0;
+        data.move_evaluation.isLastChance = data.is_last_chance || false;
         }
 
         // Mise à jour du plateau avec le coup joué
