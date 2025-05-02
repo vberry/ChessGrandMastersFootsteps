@@ -1,8 +1,39 @@
+import os
+import platform
 import chess.engine
 from stockfish import Stockfish
 
-STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
-#STOCKFISH_PATH = "/usr/games/stockfish"
+def get_stockfish_path():
+    """Détecte automatiquement le chemin de Stockfish selon l'environnement"""
+    # Si une variable d'environnement est définie (fonctionnera dans Codespaces grâce au devcontainer)
+    env_path = os.environ.get("STOCKFISH_PATH")
+    if env_path and os.path.exists(env_path):
+        return env_path
+        
+    # Chemins par défaut selon l'OS
+    if platform.system() == "Darwin":  # macOS
+        path = "/opt/homebrew/bin/stockfish"
+        if os.path.exists(path):
+            return path
+    elif platform.system() == "Linux":
+        for path in ["/usr/games/stockfish", "/usr/bin/stockfish"]:
+            if os.path.exists(path):
+                return path
+    elif platform.system() == "Windows":
+        path = "C:/Program Files/Stockfish/stockfish.exe"
+        if os.path.exists(path):
+            return path
+    
+    # Tenter de trouver stockfish dans le PATH
+    import shutil
+    stockfish_in_path = shutil.which("stockfish")
+    if stockfish_in_path:
+        return stockfish_in_path
+    
+    raise FileNotFoundError("Stockfish non trouvé. Veuillez l'installer ou définir STOCKFISH_PATH.")
+
+# Utiliser cette fonction pour obtenir le chemin
+STOCKFISH_PATH = get_stockfish_path()
 
 def evaluate_move_strength(board, move):
     """
