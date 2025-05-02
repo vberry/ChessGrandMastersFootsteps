@@ -1,0 +1,14 @@
+{
+  "name": "Python Chess Project",
+  "image": "mcr.microsoft.com/devcontainers/python:3",
+  "features": {},
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y stockfish && echo 'export STOCKFISH_PATH=/usr/games/stockfish' >> ~/.bashrc",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ]
+    }
+  }
+}
