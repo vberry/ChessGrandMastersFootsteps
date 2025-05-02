@@ -113,10 +113,10 @@ def start_game():
     if game_mode == "lives":
         difficulty = request.form.get("difficulty", "normal")  # Difficulté pour le mode vies
         if difficulty == "easy":
-            games[game_id] = ChessGameEasy(game, user_side)
+            games[game_id] = ChessGameEasy(game, user_side, game_id=game_id)
             template = "deviner_prochain_coup_easy.html"
         elif difficulty == "normal":
-            games[game_id] = ChessGameNormal(game, user_side)
+            games[game_id] = ChessGameNormal(game, user_side, game_id=game_id)
             template = "deviner_prochain_coup.html"  # Use the "hard" template for normal difficulty
         else:  # "hard" by default
             games[game_id] = ChessGame(game, user_side, game_id=game_id)
@@ -124,17 +124,17 @@ def start_game():
     elif game_mode == "timer":
         timer_difficulty = request.form.get("timer_difficulty", "normal")  # Difficulté pour le mode timer
         if timer_difficulty == "easy":
-            games[game_id] = ChessGame3Min(game, user_side)  # Nouveau mode 3 minutes
+            games[game_id] = ChessGame3Min(game, user_side, game_id=game_id)  # Nouveau mode 3 minutes
             template = "game_timer_3min.html"
         elif timer_difficulty == "normal":
-            games[game_id] = ChessGame1Min(game, user_side)  # Classe de jeu avec timer de 1 minute
+            games[game_id] = ChessGame1Min(game, user_side, game_id=game_id)  # Classe de jeu avec timer de 1 minute
             template = "game_timer_1min.html"
         else:  # "hard" par défaut (30 secondes)
-            games[game_id] = ChessGame30sec(game, user_side)  # Classe de jeu avec timer de 30 secondes
+            games[game_id] = ChessGame30sec(game, user_side, game_id=game_id)  # Classe de jeu avec timer de 30 secondes
             template = "game_timer_hard.html"
     # Si le mode n'est pas reconnu, utilisez le mode vies par défaut
     else:
-        games[game_id] = ChessGameNormal(game, user_side)
+        games[game_id] = ChessGameNormal(game, user_side, game_id=game_id)
         template = "game_lives.html"
     
     # À la fin, utilisez cette approche simplifiée
