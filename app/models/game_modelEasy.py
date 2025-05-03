@@ -8,8 +8,8 @@ from app.models.game_model import ChessGame
 class ChessGameEasy(ChessGame):
     """Version à difficulté moyenne : le joueur a 5 essais pour deviner le coup correct."""
     
-    def __init__(self, game, user_side):
-        super().__init__(game, user_side)
+    def __init__(self, game, user_side, game_id=None, use_timer=False):
+        super().__init__(game, user_side, game_id=game_id, use_timer=use_timer)
         self.attempts = 0
         self.max_attempts = 5
         self.last_submitted_move = None
@@ -102,11 +102,13 @@ class ChessGameEasy(ChessGame):
                     opponent_comment = self.get_comment_for_opponent_move()
                     self.board.push(op)
 
-            # Sauvegarde FEN et recalcul des "best moves"
-            save_board_fen(self.board)
-            self.best_moves = get_best_moves_from_fen(
-                os.path.join(os.getcwd(), "fichierFenAjour.fen")
-            )
+            # Sauvegarde l'état du plateau dans un fichier FEN propre à cette partie
+            fen_filename = f"{self.game_id}.fen" if self.game_id else "fichierFenAjour.fen"
+            save_board_fen(self.board, filename=fen_filename)
+
+            
+            fen_path = os.path.join(os.getcwd(), "fen_saves", f"{self.game_id}.fen")
+            self.best_moves = get_best_moves_from_fen(fen_path)
             self.last_opponent_move = opponent_move_san
 
             # Passer au coup suivant

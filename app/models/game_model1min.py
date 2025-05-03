@@ -7,11 +7,12 @@ from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
 
 class ChessGame1Min:
-    def __init__(self, game, user_side):
+    def __init__(self, game, user_side, game_id=None, use_timer=False):
         self.board = game.board()
         self.game = game  # Garder une référence au jeu PGN complet
         self.all_moves = list(game.mainline_moves())
         self.user_side = user_side
+        self.game_id = game_id
         
         # Récupérer les commentaires du PGN
         self.comments = []
@@ -45,9 +46,13 @@ class ChessGame1Min:
         else:
             self.last_opponent_move = None
         
-        save_board_fen(self.board)
-        # Obtenir les meilleurs coups dès le début
-        self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
+        # Sauvegarde l'état du plateau dans un fichier FEN propre à cette partie
+        fen_filename = f"{game_id}.fen" if game_id else "fichierFenAjour.fen"
+        save_board_fen(self.board, filename=fen_filename)
+
+        
+        fen_path = os.path.join(os.getcwd(), "fen_saves", f"{self.game_id}.fen")
+        self.best_moves = get_best_moves_from_fen(fen_path)
 
     def get_game_state(self):
         # Calcul du pourcentage de score avec limitation à 100%
@@ -158,8 +163,10 @@ class ChessGame1Min:
                 opponent_move_san = self.board.san(opponent_move)
                 opponent_comment = self.get_comment_for_opponent_move()
                 self.board.push(opponent_move)
-                save_board_fen(self.board)
-                self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
+                fen_filename = f"{self.game_id}.fen"
+                save_board_fen(self.board, filename=fen_filename)
+                fen_path = os.path.join(os.getcwd(), "fen_saves", fen_filename)
+                self.best_moves = get_best_moves_from_fen(fen_path)
                 self.last_opponent_move = opponent_move_san
         else:  # user_side == 'black'
             # Joueur est noir, on doit jouer le coup blanc suivant
@@ -168,8 +175,10 @@ class ChessGame1Min:
                 opponent_move_san = self.board.san(opponent_move)
                 opponent_comment = self.get_comment_for_opponent_move()
                 self.board.push(opponent_move)
-                save_board_fen(self.board)
-                self.best_moves = get_best_moves_from_fen(os.path.join(os.getcwd(), "fichierFenAjour.fen"))
+                fen_filename = f"{self.game_id}.fen"
+                save_board_fen(self.board, filename=fen_filename)
+                fen_path = os.path.join(os.getcwd(), "fen_saves", fen_filename)
+                self.best_moves = get_best_moves_from_fen(fen_path)
                 self.last_opponent_move = opponent_move_san
 
         self.current_move_index += 1

@@ -1,4 +1,5 @@
 import os
+import platform
 import chess.engine
 import platform
 from stockfish import Stockfish
