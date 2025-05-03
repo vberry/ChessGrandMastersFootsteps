@@ -26,7 +26,7 @@ function highlightSquareRed(square) {
         // Retirer la classe après un court délai
         setTimeout(() => {
             squareElement.classList.remove('highlight-red');
-        }, 500); // 500ms de surlignage
+        }, 200); // 500ms de surlignage
     }
 }
 
@@ -330,8 +330,8 @@ function handleMove(source, target) {
                             });
                             document.dispatchEvent(event);
                         }
-                    }, 3000); // 3 secondes de délai avant de montrer la réponse de l'adversaire
-                }, 1000); // 1 seconde de délai avant de jouer le coup correct
+                    }, 1000); // 3 secondes de délai avant de montrer la réponse de l'adversaire
+                }, 500); // 1 seconde de délai avant de jouer le coup correct
             }, 100); // Un court délai initial
         } else {
             // Si le coup est correct, simplement mettre à jour le plateau
