@@ -10,8 +10,9 @@
 <!-- Barre latérale -->
 <div class="sidebar">
   <h3 class="sidebar-title">Modes de jeu</h3>
-  <div class="mode-option active" id="lives-mode">Mode Vies</div>
-  <div class="mode-option" id="timer-mode">Mode Timer</div>
+  <a href="?mode=lives" class="mode-option" id="lives-mode">Mode Vies</a>
+  <a href="?mode=timer" class="mode-option" id="timer-mode">Mode Timer</a>
+  <a href="{{ url_for('game.rules') }}" class="mode-option">Règles</a>
 </div>
 
 <!-- Contenu principal -->

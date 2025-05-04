@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextMove - Règles et Informations</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/menuCss.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/rulesCss.css') }}">
+</head>
+<body>
+<!-- Barre latérale -->
+<div class="sidebar">
+  <h3 class="sidebar-title">Modes de jeu</h3>
+  <a href="{{ url_for('game.home', mode='lives') }}" class="mode-option" id="lives-mode">Mode Vies</a>
+  <a href="{{ url_for('game.home', mode='timer') }}" class="mode-option" id="timer-mode">Mode Timer</a>
+  <div class="mode-option active">Règles</div>
+</div>
+
+<!-- Contenu principal -->
+<div class="main-content">
+  <div class="rules-container">
+    <h1>Règles et Informations de NextMove</h1> <!-- pitié qu'on trouve un autre nom pour l'appli s'il vous plaît -->
+    
+    <div class="rules-section">
+      <h2>Qu'est-ce que NextMove ?</h2>
+      <p>NextMove est un jeu éducatif d'échecs conçu pour améliorer vos compétences tactiques. En utilisant des parties célèbres comme base d'apprentissage, vous serez mis au défi de trouver le meilleur coup dans des positions critiques.</p>
+      <p>Que vous soyez débutant ou joueur expérimenté, NextMove vous aide à développer votre intuition et votre vision tactique aux échecs.</p>
+    </div>
+    
+    <div class="rules-section">
+      <h2>Modes de jeu</h2>
+      <p>NextMove propose deux modes de jeu distincts adaptés à différents styles d'apprentissage :</p>
+      
+      <div class="mode-details">
+        <h3>Mode Vies</h3>
+        <p>Dans ce mode, vous disposez d'un nombre limité de vies :</p>
+        <ul>
+          <li><strong>Facile :</strong> 5 vies</li>
+          <li><strong>Normal :</strong> 3 vies</li>
+          <li><strong>Difficile :</strong> 1 vie</li>
+        </ul>
+        <p>Chaque erreur vous fait perdre une vie. Votre objectif est de trouver le plus de coups corrects avant d'épuiser toutes vos vies.</p>
+        <p>Ce mode est idéal pour un apprentissage approfondi, car il vous permet de prendre votre temps pour analyser chaque position.</p>
+      </div>
+      
+      <div class="mode-details">
+        <h3>Mode Timer</h3>
+        <p>Dans ce mode, vous devez trouver le coup correct dans un temps limité :</p>
+        <ul>
+          <li><strong>Facile :</strong> 3 minutes par coup</li>
+          <li><strong>Normal :</strong> 1 minute par coup</li>
+          <li><strong>Difficile :</strong> 30 secondes par coup</li>
+        </ul>
+        <p>Ce mode simule la pression du temps d'une partie réelle et développe votre capacité à prendre des décisions rapides mais précises.</p>
+        <p><strong>Note :</strong> Si le temps est écoulé, vous pouvez toujours jouer un coup, mais vous recevrez une pénalité de <strong>-5 points</strong>.</p>
+      </div>
+    </div>
+    
+    <div class="rules-section">
+      <h2>Comment jouer</h2>
+      <ol>
+        <li>Choisissez votre mode de jeu (Vies ou Timer) et le niveau de difficulté</li>
+        <li>Choisissez une partie historique parmi la sélection disponible</li>
+        <li>Sélectionnez la couleur que vous souhaitez jouer (Blanc ou Noir)</li>
+        <li>À chaque position, analysez l'échiquier et tentez de trouver le coup qui a été joué dans la partie originale</li>
+        <li>Vous recevrez un feedback immédiat sur votre réponse</li>
+        <li>Continuez jusqu'à ce que vous ayez terminé la partie ou épuisé vos vies/temps</li>
+      </ol>
+    </div>
+    
+    <div class="rules-section">
+      <h2>Système de notation</h2>
+      <p>Le score ne dépend pas de votre capacité à copier le coup du grand maître, mais de la qualité de votre coup selon le moteur d'échecs Stockfish. Voici comment ça fonctionne :</p>
+      <ul>
+        <li>Si vous trouvez un <strong>mat</strong> que le maître a manqué : <strong>+20 points</strong></li>
+        <li>Si vous trouvez un matau même temps que le maître (éventuellement un mat différent) : <strong>+15 points</strong></li>
+        <li>Si vous trouvez un mat plus lent : <strong>+5 points</strong></li>
+        <li>Si le maître a vu un mat et vous non : <strong>-5 points</strong></li>
+      </ul>
+      <p>Pour les coups "normaux", le système compare votre coup à celui du maître :</p>
+      <ul>
+        <li>Votre coup est objectivement <strong>meilleur</strong> (selon Stockfish) : <strong>+20 points</strong></li>
+        <li>Votre coup est presque aussi bon : <strong>+15 points</strong></li>
+        <li>Bonne alternative : <strong>+10 points</strong></li>
+        <li>Acceptable mais moins bonne : <strong>+5 points</strong></li>
+        <li>Inférieure : <strong>0 point</strong></li>
+        <li>Erreur importante : <strong>-10 points</strong></li>
+      </ul>
+      <p>Un bonus spécial de <strong>+20 points</strong> est attribué si vous jouez un coup qui donne immédiatement échec et mat.</p>
+      <p>En résumé : même si vous ne trouvez pas le "bon" coup historique, l’important est de jouer un coup solide et logique. Le moteur reconnaît les bonnes idées !</p>
+    </div>
+    
+    <div class="rules-section">
+      <h2>Conseils pour progresser</h2>
+      <div class="tips">
+        <ul>
+          <li>Analysez toujours la position complète avant de jouer un coup</li>
+          <li>Vérifiez les menaces directes et les opportunités tactiques</li>
+          <li>Considérez les motifs tactiques communs (fourchettes, clouages, etc.)</li>
+          <li>Après chaque erreur, prenez le temps de comprendre pourquoi le coup joué dans la partie originale était meilleur</li>
+          <li>Regardez les vidéos pédagogiques disponibles sur la page d'accueil pour améliorer vos compétences</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div style="text-align: center;">
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+</body>
+</html>

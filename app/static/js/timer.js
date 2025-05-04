@@ -87,6 +87,15 @@ function showTimerExpiredMessage() {
     }
 }
 
+// Effacer le message d'expiration du timer
+function clearTimerExpiredMessage() {
+    const statusElement = document.getElementById('status');
+    if (statusElement && statusElement.classList.contains('time-expired')) {
+        statusElement.textContent = "";
+        statusElement.className = '';
+    }
+}
+
 // Arrêter le timer
 function stopTimer() {
     console.log("Arrêt du timer");
@@ -101,6 +110,9 @@ function stopTimer() {
 function resetTimer(newStartTime) {
     console.log("Réinitialisation du timer avec:", newStartTime);
     stopTimer();
+    
+    // Effacer le message d'expiration lors de la réinitialisation du timer
+    clearTimerExpiredMessage();
     
     // Récupérer le timeLimit à nouveau
     const gameDataElement = document.getElementById('game-data');
@@ -135,3 +147,4 @@ window.initTimer = initTimer;
 window.startTimer = startTimer;
 window.stopTimer = stopTimer;
 window.resetTimer = resetTimer;
+window.clearTimerExpiredMessage = clearTimerExpiredMessage;

@@ -25,9 +25,9 @@ def home():
     Route principale de l'application — Affiche la page d'accueil.
 
     Cette fonction est liée à la route « `/` » de l'application Flask, et elle est appelée
-    lorsqu'un utilisateur accède à la page d’accueil.
+    lorsqu'un utilisateur accède à la page d'accueil.
 
-    Elle sert à récupérer et afficher la liste des parties d’échecs disponibles (au format PGN)
+    Elle sert à récupérer et afficher la liste des parties d'échecs disponibles (au format PGN)
     en les passant à un template HTML.
 
     ###Étapes effectuées par la fonction :
@@ -46,12 +46,27 @@ def home():
 
     ###Utilité :
 
-        - Sert de point d’entrée principal à l'application.
+        - Sert de point d'entrée principal à l'application.
         - Permet à l'utilisateur de choisir une partie PGN à analyser ou à jouer.
-        - Interface intuitive pour démarrer une session de jeu ou d’apprentissage.
+        - Interface intuitive pour démarrer une session de jeu ou d'apprentissage.
     """
     pgn_games = get_pgn_games() 
     return render_template("menu.html", pgn_games=pgn_games)
+
+
+# ✅ Route pour la page des règles
+@game_bp.route("/rules", methods=["GET"])
+def rules():
+    """
+    Affiche la page des règles et informations du jeu.
+    
+    Cette route permet aux utilisateurs d'accéder à une page explicative
+    qui détaille les règles du jeu, les différents modes et la façon de jouer.
+    
+    ###Retourne :
+        flask.Response : Le rendu HTML de la page `rules.html`.
+    """
+    return render_template("rules.html")
 
 
 @game_bp.route("/start-game", methods=["POST"])
@@ -60,10 +75,10 @@ def start_game():
     Démarre une nouvelle partie d'échecs à partir d'un fichier PGN et des préférences de l'utilisateur.
 
     Cette route est appelée lorsqu'un utilisateur soumet le formulaire de sélection de partie et de couleur
-    via la méthode POST (depuis la page d’accueil, par exemple).
+    via la méthode POST (depuis la page d'accueil, par exemple).
 
     Elle permet d'initialiser une nouvelle instance de partie, de configurer le contrôleur de jeu, et
-    de charger l'état initial sur l’interface `deviner_prochain_coup.html`.
+    de charger l'état initial sur l'interface `deviner_prochain_coup.html`.
 
     ###Étapes effectuées par la fonction :
 
@@ -76,13 +91,13 @@ def start_game():
     4. **Initialisation du contrôleur de jeu** : Une instance `GameController` est créée pour gérer la logique.
     5. **Démarrage de la partie** : La méthode `start_game()` du contrôleur est appelée.
     6. **Stockage de l'instance du jeu** : Une instance de `ChessGame` est enregistrée dans le dictionnaire global `games`.
-    7. **Rendu HTML** : La vue `deviner_prochain_coup.html` est rendue avec l’état initial du jeu.
+    7. **Rendu HTML** : La vue `deviner_prochain_coup.html` est rendue avec l'état initial du jeu.
 
     ###Paramètres :
 
         Aucun en paramètre direct Python, mais récupère deux champs via `request.form` :
         - **game_file** (str) : Nom du fichier PGN sélectionné.
-        - **user_side** (str) : Couleur choisie par l’utilisateur (`white` ou `black`).
+        - **user_side** (str) : Couleur choisie par l'utilisateur (`white` ou `black`).
 
     ###Retourne :
 
@@ -150,10 +165,10 @@ def submit_move():
     """
     Soumet un coup joué par l'utilisateur et retourne le résultat au format JSON.
 
-    Cette route est déclenchée lorsqu’un joueur entre un coup sur l’interface 
+    Cette route est déclenchée lorsqu'un joueur entre un coup sur l'interface 
     (par exemple dans un champ de texte ou en cliquant sur une case).  
     Elle va appeler la logique du jeu pour valider et traiter ce coup, 
-    puis renvoyer les informations actualisées de la partie à afficher dans l’interface.
+    puis renvoyer les informations actualisées de la partie à afficher dans l'interface.
 
     ###Étapes effectuées par la fonction :
     
@@ -163,7 +178,7 @@ def submit_move():
     
     2. **Vérification de l'existence de la partie** :
         - On tente de retrouver l'objet `ChessGame` associé à `game_id` dans le dictionnaire `games`.
-        - Si aucun jeu n’est trouvé, on retourne une erreur JSON.
+        - Si aucun jeu n'est trouvé, on retourne une erreur JSON.
 
     3. **Soumission du coup** :
         - Le coup est passé à la méthode `submit_move()` de la classe `ChessGame`, 
@@ -171,7 +186,7 @@ def submit_move():
 
     4. **Compatibilité frontend** :
         - Si le résultat contient la clé `attempts_left`, elle est renommée en `remaining_attempts` 
-          pour s’adapter au nom utilisé côté JavaScript.
+          pour s'adapter au nom utilisé côté JavaScript.
 
     ###Retourne :
 
@@ -183,9 +198,9 @@ def submit_move():
 
     ###Utilité :
 
-    - Cœur de l’interaction utilisateur → permet d’évaluer et réagir au coup soumis.
+    - Cœur de l'interaction utilisateur → permet d'évaluer et réagir au coup soumis.
     - Gère la logique de feedback pédagogique (qualité du coup, aide, points...).
-    - Gère la continuité de la partie (évolution de l’échiquier et passage au coup suivant).
+    - Gère la continuité de la partie (évolution de l'échiquier et passage au coup suivant).
     """
 
     game_id = request.form.get('game_id')
@@ -205,3 +220,4 @@ def submit_move():
         del result['attempts_left']
     
     return jsonify(result)
+
