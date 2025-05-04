@@ -79,7 +79,7 @@ class ChessGame:
             ### Retourne :
             - `dict` : Un dictionnaire contenant l'état mis à jour du jeu avec les clés suivantes :
                 - **'is_correct'** : Booléen indiquant si le coup soumis est correct.
-                - **'correct_move'** : Le coup historique correct à jouer.
+                - **'correct_move'** : Le coup historique correct joué.
                 - **'opponent_move'** : Le dernier coup joué par l'adversaire (si applicable).
                 - **'board_fen'** : L'état actuel du plateau sous forme de notation FEN (Forsyth-Edwards Notation).
                 - **'score'** : Le score actuel du joueur.

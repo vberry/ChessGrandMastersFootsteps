@@ -21,7 +21,7 @@ Votre objectif est d’identifier le meilleur coup dans des positions critiques,
 - **Normal** : 3 vies  
 - **Difficile** : 1 vie  
 
-> Chaque erreur coûte une vie. Le but est d’aller le plus loin possible.
+> Chaque erreur coûte une vie. Le but est d'avoir le plus de points sachant que moins de vies on utilise, plus on gagne de points
 
 ### Mode Timer
 

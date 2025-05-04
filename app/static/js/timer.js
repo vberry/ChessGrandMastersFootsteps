@@ -82,7 +82,7 @@ function updateTimerDisplay() {
 function showTimerExpiredMessage() {
     const statusElement = document.getElementById('status');
     if (statusElement) {
-        statusElement.textContent = "⏰ Temps écoulé ! (-5 points de pénalité seront appliqués)";
+        statusElement.textContent = "⏰ Temps écoulé ! (-5 points de pénalité seront appliqués sur le coup que vous jouez)";
         statusElement.className = 'time-expired';
     }
 }
