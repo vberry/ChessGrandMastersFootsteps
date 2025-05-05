@@ -30,6 +30,23 @@ function highlightSquareRed(square) {
     }
 }
 
+// Fonction de défilement améliorée pour l'historique des coups
+function scrollMoveHistoryToBottom() {
+    const moveHistory = document.querySelector('#move-history .history-content');
+    if (moveHistory) {
+        // Utiliser requestAnimationFrame pour s'assurer que le défilement 
+        // se fait après que le navigateur a rendu les changements
+        requestAnimationFrame(() => {
+            moveHistory.scrollTop = moveHistory.scrollHeight;
+            
+            // Parfois une seule Frame n'est pas suffisante, on en ajoute une seconde pour être sûr
+            requestAnimationFrame(() => {
+                moveHistory.scrollTop = moveHistory.scrollHeight;
+            });
+        });
+    }
+}
+
 // Fonction pour mettre à jour l'historique des coups
 function updateMoveHistory(playerMove, correctMove, opponentMove, comment, opponentComment, moveEval = null) {
     const moveHistoryBody = document.querySelector('#move-history tbody');
@@ -59,6 +76,9 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
         
         moveHistoryBody.appendChild(moveRow);
         moveHistoryBody.appendChild(commentRow);
+        
+        // Faire défiler après avoir ajouté les lignes
+        scrollMoveHistoryToBottom();
         return;
     }
     
@@ -91,9 +111,8 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
                     }
                 }
                 
-                const moveHistory = document.querySelector('#move-history .history-content');
-                moveHistory.scrollTop = moveHistory.scrollHeight;
-                
+                // Faire défiler après avoir modifié une ligne existante
+                scrollMoveHistoryToBottom();
                 return;
             }
         }
@@ -161,8 +180,8 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
     moveHistoryBody.appendChild(moveRow);
     moveHistoryBody.appendChild(commentRow);
     
-    const moveHistory = document.querySelector('#move-history .history-content');
-    moveHistory.scrollTop = moveHistory.scrollHeight;
+    // Faire défiler vers le bas après ajout de nouvelles lignes
+    scrollMoveHistoryToBottom();
 }
 
 function handleMove(source, target) {
