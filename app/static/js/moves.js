@@ -75,7 +75,7 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
                 lastMoveRow.cells[2].textContent = playerMove;
 
                 if (playerMove !== correctMove && correctMove && moveEval?.isLastChance ) {
-                    lastMoveRow.cells[2].innerHTML += `<br><small>(correct: ${correctMove})</small>`;
+                    lastMoveRow.cells[2].innerHTML += `<br><small>(Coup du maître: ${correctMove})</small>`;
                 }
                 
                 if (moveEval && moveEval.display && playerMove !== correctMove) {
@@ -112,7 +112,7 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
         whiteMoveCell.textContent = playerMove;
 
         if (playerMove !== correctMove && correctMove && (moveEval?.isLastChance )) {
-            whiteMoveCell.innerHTML += `<br><small>(correct: ${correctMove})</small>`;
+            whiteMoveCell.innerHTML += `<br><small>(Coup du maître: ${correctMove})</small>`;
             console.log(moveEval?.isLastChance)
         }
         
@@ -132,7 +132,7 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
         blackMoveCell.textContent = playerMove;
 
         if (playerMove !== correctMove && correctMove && (moveEval?.isLastChance )) {
-            blackMoveCell.innerHTML += `<br><small>(correct: ${correctMove})</small>`;
+            blackMoveCell.innerHTML += `<br><small>(Coup du maître: ${correctMove})</small>`;
         }
         
         if (moveEval && moveEval.display && playerMove !== correctMove) {
