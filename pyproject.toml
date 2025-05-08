@@ -16,3 +16,4 @@ dependencies = [
     "python-chess>=1.999",
     "stockfish>=3.28.0",
 ]
+
