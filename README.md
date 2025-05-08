@@ -1,7 +1,7 @@
 # ChessGrandMastersFootsteps
 
 **ChessGrandMastersFootsteps** est une application éducative qui vous permet de progresser aux échecs en rejouant des parties historiques de grands maîtres.  
-Votre objectif est d’identifier le meilleur coup dans des positions critiques, avec un retour immédiat fourni par le moteur d’échecs **Stockfish**.
+Votre objectif est d'identifier le meilleur coup dans des positions critiques, avec un retour immédiat fourni par le moteur d'échecs **Stockfish**.
 
 ---
 
@@ -37,7 +37,7 @@ Votre objectif est d’identifier le meilleur coup dans des positions critiques,
 
 ### Coups de mat :
 
-- Mat que le maître n’a pas vu : **+20 pts**  
+- Mat que le maître n'a pas vu : **+20 pts**  
 - Même mat que le maître : **+15 pts**  
 - Mat plus lent : **+5 pts**  
 - Le maître a vu un mat, vous non : **-5 pts**  
@@ -53,8 +53,6 @@ Votre objectif est d’identifier le meilleur coup dans des positions critiques,
 - Grosse erreur : **-10 pts**
 
 ---
-
-## 📂 Structure du projet
 
 ## 📂 Structure du projet
 
@@ -74,8 +72,6 @@ Votre objectif est d’identifier le meilleur coup dans des positions critiques,
   - docs/
   - .gitignore
 
-
-
 ---
 
 ## ⚙️ Lancer le projet dans GitHub Codespaces
@@ -83,25 +79,52 @@ Votre objectif est d’identifier le meilleur coup dans des positions critiques,
 1. Installer `uv` :
    ```bash
    pip install uv
+   ```
 2. Créer un environnement virtuel :
-    ```bash
-    uv venv
-3. Activer l’environnement :
-    ```bash
-    source .venv/bin/activate
+   ```bash
+   uv venv
+   ```
+3. Activer l'environnement :
+   ```bash
+   source .venv/bin/activate
+   ```
 4. Réinstaller Flask (si nécessaire) :
-    ```bash
-    uv add flask
+   ```bash
+   uv add flask
+   ```
 5. Lancer le serveur :
-    ```bash
-    python3 run.py
+   ```bash
+   python3 run.py
+   ```
 📌 Toutes les autres dépendances sont déjà prises en charge par uv.
+
+---
+
+## 📚 Lancer la documentation
+
+Pour générer et consulter la documentation du projet, suivez ces étapes :
+
+1. Eventuellement installer les dépendances nécessaires :
+   ```bash
+   uv add mkdocs
+   uv add mkdocs-material
+   uv add mkdocstrings
+   uv add mkdocstrings-python
+   ```
+2. Lancer le serveur de documentation :
+   ```bash
+   mkdocs serve
+   ```
+3. Accéder à la documentation dans votre navigateur à l'adresse :
+   ```
+   http://127.0.0.1:8000
+   ```
 
 ---
 
 ## ➕ Ajouter de nouvelles parties
 
-Pour l’instant, il n’est pas possible d’ajouter une partie PGN depuis l’interface utilisateur.
+Pour l'instant, il n'est pas possible d'ajouter une partie PGN depuis l'interface utilisateur.
 Pour enrichir la base de données, placez simplement vos fichiers .pgn dans le dossier :
 
 - app/
@@ -113,7 +136,6 @@ Pour enrichir la base de données, placez simplement vos fichiers .pgn dans le d
 
 Analysez toujours la position avant de jouer
 Identifiez les motifs tactiques classiques (fourchette, clouage, enfilade, etc.)
-Comparez votre coup avec celui du maître et apprenez de l’analyse de Stockfish
+Comparez votre coup avec celui du maître et apprenez de l'analyse de Stockfish
 Prenez votre temps dans le mode Vies ; entraînez votre rapidité avec le mode Timer
 Bon jeu et bonne progression 🎓♟️
-
