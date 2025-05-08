@@ -113,7 +113,7 @@ Pour générer et consulter la documentation du projet, suivez ces étapes :
    ```
 2. Lancer le serveur de documentation :
    ```bash
-   mkdocs serve
+   mkdocs serve   
    ```
 3. Accéder à la documentation dans votre navigateur à l'adresse :
    ```
@@ -125,10 +125,10 @@ Pour générer et consulter la documentation du projet, suivez ces étapes :
 
 Pour tester les codes avec mypy :
 
+    mypy --disable-error-code import-not-found .
+    (à exécuter dans la racine du projet)
 
-
-
-
+Si on exécute seulement mypy, il y a des problèmes d'import pour tout ce qui concerne chess et flask.
 
 ---
 
