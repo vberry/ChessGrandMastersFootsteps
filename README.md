@@ -119,6 +119,16 @@ Pour générer et consulter la documentation du projet, suivez ces étapes :
    ```
    http://127.0.0.1:8000
    ```
+---
+
+## Lancer mypy
+
+Pour tester les codes avec mypy :
+
+
+
+
+
 
 ---
 
