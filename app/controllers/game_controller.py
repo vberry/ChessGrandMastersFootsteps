@@ -10,16 +10,16 @@ class GameController:
         et de mettre à jour l'affichage.
     """
      
-    def __init__(self, pgn_file, user_side):
+    def __init__(self, pgn_file: str, user_side: str) -> None:
         """
             Initialise un contrôleur de jeu d'échecs.
 
             :param pgn_file: Le fichier PGN contenant les mouvements du jeu.
             :param user_side: Le côté de l'utilisateur ('white' ou 'black').
         """
-        self.chess_game = ChessGame(pgn_file, user_side)
+        self.chess_game: ChessGame = ChessGame(pgn_file, user_side)
 
-    def start_game(self):
+    def start_game(self) -> None:
         """
             Démarre la partie en affichant le plateau de jeu initial.
 
@@ -28,7 +28,7 @@ class GameController:
         """
         display_board(self.chess_game.board.fen())
 
-    def handle_user_move(self, move):
+    def handle_user_move(self, move: str) -> None:
         """
             Gère le mouvement de l'utilisateur et met à jour l'affichage.
 
@@ -38,7 +38,7 @@ class GameController:
             en fonction du résultat. Si le mouvement est valide, elle affiche le nouveau 
             plateau, le score et la qualité du mouvement. Sinon, elle affiche un message d'erreur.
         """
-        result = self.chess_game.submit_move(move)
+        result: dict = self.chess_game.submit_move(move)
         if 'error' in result:
             print(f"Erreur : {result['error']}")
         else:
