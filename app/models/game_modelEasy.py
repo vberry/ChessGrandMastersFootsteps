@@ -1,6 +1,7 @@
 import chess
 import chess.pgn
 import os
+from typing import Dict, List, Tuple, Optional, Any, Union
 from app.utils.engine_utils import evaluate_move_strength, get_best_moves_from_fen, evaluate_played_move
 from app.utils.utils import convertir_notation_francais_en_anglais
 from app.utils.fen_utils import save_board_fen
@@ -8,13 +9,13 @@ from app.models.game_model import ChessGame
 class ChessGameEasy(ChessGame):
     """Version à difficulté moyenne : le joueur a 5 essais pour deviner le coup correct."""
     
-    def __init__(self, game, user_side, game_id=None, use_timer=False):
+    def __init__(self, game: chess.pgn.Game, user_side: str, game_id: Optional[str] = None, use_timer: bool = False) -> None:
         super().__init__(game, user_side, game_id=game_id, use_timer=use_timer)
-        self.attempts = 0
-        self.max_attempts = 5
-        self.last_submitted_move = None
+        self.attempts: int = 0
+        self.max_attempts: int = 5
+        self.last_submitted_move: Optional[str] = None
         
-    def submit_move(self, move):
+    def submit_move(self, move: str) -> Dict[str, Any]:
         """
         Gère la soumission d'un coup avec plusieurs tentatives.
         On calcule et renvoie score_percentage seulement si le coup est correct
@@ -24,12 +25,15 @@ class ChessGameEasy(ChessGame):
             return {'error': 'La partie est terminée'} 
 
         # Stocker l’état des meilleurs coups avant la soumission
-        current_position_best_moves = self.best_moves.copy()
+        current_position_best_moves: List[Dict[str, Any]] = self.best_moves.copy()
 
         # Stocker la position FEN actuelle avant de jouer le coup
-        position_fen_before_move = self.board.fen()
+        position_fen_before_move: str = self.board.fen()
 
         # Valider le format du coup
+        is_valid: bool
+        validated_move: str
+        error_message: str
         is_valid, validated_move, error_message = self.validate_input(
             convertir_notation_francais_en_anglais(move.strip()).lower()
         )
@@ -47,16 +51,16 @@ class ChessGameEasy(ChessGame):
             }
 
         # Préparer la position courante
-        correct_move = self.moves[self.current_move_index]
-        correct_move_san = self.board.san(correct_move)
-        current_comment = self.get_comment_for_current_move()
-        submitted_move_obj = self.board.parse_uci(validated_move)
-        submitted_move_san = self.board.san(submitted_move_obj)
-        is_correct = (submitted_move_obj == correct_move)
-        is_pawn = self.is_pawn_move(correct_move_san)
+        correct_move: chess.Move = self.moves[self.current_move_index]
+        correct_move_san: str = self.board.san(correct_move)
+        current_comment: Optional[str] = self.get_comment_for_current_move()
+        submitted_move_obj: chess.Move = self.board.parse_uci(validated_move)
+        submitted_move_san: str = self.board.san(submitted_move_obj)
+        is_correct: bool = (submitted_move_obj == correct_move)
+        is_pawn: bool = self.is_pawn_move(correct_move_san)
 
        # Évaluer le coup joué par le joueur avec Stockfish
-        move_evaluation = evaluate_played_move(position_fen_before_move, validated_move)
+        move_evaluation: Dict[str, Any] = evaluate_played_move(position_fen_before_move, validated_move)
         
         
         # Incrémenter le compteur d'essais
@@ -66,17 +70,19 @@ class ChessGameEasy(ChessGame):
 
         if is_correct or self.attempts >= self.max_attempts:
             # Choix du coup à évaluer
-            move_to_eval = validated_move if is_correct else self.last_submitted_move
+            move_to_eval: str = validated_move if is_correct else self.last_submitted_move
 
             # Calcul des points et bonus
+            points: int
+            move_quality_msg: str
+            checkmate_bonus: int
             points, move_quality_msg, checkmate_bonus = self.calculate_points(
                 move_to_eval, correct_move
             )
-            is_checkmate = (checkmate_bonus > 0)
-
+            is_checkmate: bool = (checkmate_bonus > 0)
             # Multiplicateur si coup correct en moins d’essais
             if is_correct:
-                mult = (self.max_attempts - self.attempts + 1) / self.max_attempts
+                mult: float = (self.max_attempts - self.attempts + 1) / self.max_attempts
                 points = round(points * mult)
                 move_quality_msg += f" (x{mult:.1f} pour l'avoir trouvé en {self.attempts} essai{'s' if self.attempts>1 else ''})"
 
@@ -103,12 +109,12 @@ class ChessGameEasy(ChessGame):
                     self.board.push(op)
 
             # Sauvegarde l'état du plateau dans un fichier FEN propre à cette partie
-            fen_filename = f"{self.game_id}.fen" if self.game_id else "fichierFenAjour.fen"
-            app_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Chemin du dossier app
-            fen_dir = os.path.join(app_dir, "fen_saves")
+            fen_filename: str = f"{self.game_id}.fen" if self.game_id else "fichierFenAjour.fen"
+            app_dir: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Chemin du dossier app
+            fen_dir: str = os.path.join(app_dir, "fen_saves")
             # S'assurer que le répertoire existe
             os.makedirs(fen_dir, exist_ok=True)
-            fen_path = os.path.join(fen_dir, fen_filename)
+            fen_path: str = os.path.join(fen_dir, fen_filename)
             save_board_fen(self.board, filename=fen_path)
             self.best_moves = get_best_moves_from_fen(fen_path)
             self.last_opponent_move = opponent_move_san
@@ -119,7 +125,7 @@ class ChessGameEasy(ChessGame):
 
             # Calcul du pourcentage de score **uniquement ici**
             self.score_percentage = round((self.score / self.max_score) * 100, 2)
-            score_pct = self.score_percentage
+            score_pct: float = self.score_percentage
 
             return {
                 'is_correct': is_correct,
