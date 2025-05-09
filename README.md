@@ -125,6 +125,12 @@ Pour générer et consulter la documentation du projet, suivez ces étapes :
 
 Pour tester les codes avec mypy :
 
+Eventuellement installer mypy :
+   ```bash
+   uv add mypy
+   ```
+puis:
+
     mypy --disable-error-code import-untyped .
     (à exécuter dans la racine du projet)
 
