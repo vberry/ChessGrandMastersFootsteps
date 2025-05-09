@@ -9,7 +9,11 @@ dependencies = [
     "flask>=3.1.0",
     "jsonfy>=0.4",
     "mkdocs>=1.6.1",
+    "mkdocs-material>=9.6.12",
+    "mkdocstrings>=0.29.1",
+    "mkdocstrings-python>=1.16.10",
     "pip>=25.1",
     "python-chess>=1.999",
     "stockfish>=3.28.0",
 ]
+

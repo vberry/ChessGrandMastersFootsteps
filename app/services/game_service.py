@@ -1,5 +1,6 @@
 import os
-from app.models.game_model import ChessGame, ChessGameEasy
+from app.models.game_model import ChessGame
+from app.models.game_modelEasy import ChessGameEasy
 from app.models.game_modelNormal import ChessGameNormal
 
 # Dossier contenant les fichiers PGN

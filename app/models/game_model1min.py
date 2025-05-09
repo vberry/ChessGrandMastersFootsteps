@@ -48,10 +48,12 @@ class ChessGame1Min:
         
         # Sauvegarde l'état du plateau dans un fichier FEN propre à cette partie
         fen_filename = f"{game_id}.fen" if game_id else "fichierFenAjour.fen"
-        save_board_fen(self.board, filename=fen_filename)
-
-        
-        fen_path = os.path.join(os.getcwd(), "fen_saves", f"{self.game_id}.fen")
+        app_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Chemin du dossier app
+        fen_dir = os.path.join(app_dir, "fen_saves")
+        # S'assurer que le répertoire existe
+        os.makedirs(fen_dir, exist_ok=True)
+        fen_path = os.path.join(fen_dir, fen_filename)
+        save_board_fen(self.board, filename=fen_path)
         self.best_moves = get_best_moves_from_fen(fen_path)
 
     def get_game_state(self):
@@ -164,8 +166,12 @@ class ChessGame1Min:
                 opponent_comment = self.get_comment_for_opponent_move()
                 self.board.push(opponent_move)
                 fen_filename = f"{self.game_id}.fen"
-                save_board_fen(self.board, filename=fen_filename)
-                fen_path = os.path.join(os.getcwd(), "fen_saves", fen_filename)
+                app_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Chemin du dossier app
+                fen_dir = os.path.join(app_dir, "fen_saves")
+                # S'assurer que le répertoire existe
+                os.makedirs(fen_dir, exist_ok=True)
+                fen_path = os.path.join(fen_dir, fen_filename)
+                save_board_fen(self.board, filename=fen_path)
                 self.best_moves = get_best_moves_from_fen(fen_path)
                 self.last_opponent_move = opponent_move_san
         else:  # user_side == 'black'
