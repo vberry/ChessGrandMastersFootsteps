@@ -1,5 +1,5 @@
 # Développement Fullstack d'une Application d'Entraînement à la Stratégie du Jeu d'Échecs
-
+<!--veuillez lire le README.MD à la racine du projet afin de déployer la documentation-->
 ---
 <p align="center">
   <img src="figures/chess_indie.jpg" alt="image de pion" width="500"/>

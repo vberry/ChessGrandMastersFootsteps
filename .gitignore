@@ -23,6 +23,7 @@ logs/
 *.sqlite3
 *.db
 
+
 # Fichiers spécifiques à votre IDE (si vous utilisez PyCharm, VS Code, etc.)
 .idea/
 .vscode/
@@ -44,3 +45,6 @@ site/
 
 # Fichier de position d'échecs
 fichierFenAjour.fen
+
+# fichier fen_saves dans app/
+fen_saves/
