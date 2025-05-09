@@ -9,9 +9,44 @@
 [BlackElo "2635"]
 [ECO "C75"]
 
-1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 d6 5.c3 Bd7 6.d4 Nge7 7.Bb3 h6 8.Nbd2 Ng6
-9.Nc4 Be7 10.Ne3 Bg5 11.Nd5 Bxc1 12.Rxc1 O-O 13.dxe5 Ncxe5 14.Nxe5 dxe5 15.h4 a5
-16.g3 Ra6 17.c4 Ne7 18.c5 a4 19.Bc4 Ra5 20.Nb4 Nc6 21.Nxc6 Bxc6 22.O-O Qe7
-23.Bd5 Bxd5 24.Qxd5 Rb5 25.Rc2 Rd8 26.Qc4 Ra5 27.Qc3 Raa8 28.c6 b6 29.Rd2 Rxd2
-30.Qxd2 Rd8 31.Qc2 Rd4 32.Qe2 Qe6 33.Rc1 Qxa2 34.Qa6 Qe6 35.Qa7 Qe7 36.Qa6 Kh7
-37.Qc8 h5 38.Rc2 g6 39.Re2 Qd8 40.Qa6 Rd1+ 41.Kg2 Qd3  
+1. e4 e5 {La partie commence par une ouverture espagnole, un choix classique pour un jeu tactique et stratégique.}  
+2. Nf3 Nc6 {Le développement normal des Noirs, avec un contrôle solide du centre.}  
+3. Bb5 a6 {Les Noirs préparent la poussée b5 pour expulser le Fou blanc de la case a4.}  
+4. Ba4 d6 {Une approche solide des Noirs, consolidant leur position et préparant la libération du fou.}  
+5. c3 Bd7 {Les Noirs développent leur Fou et préparent la consolidation de la position centrale.}  
+6. d4 Nge7 {Les Noirs cherchent à soutenir leur centre tout en restant flexibles.}  
+7. Bb3 h6 {Les Noirs prennent soin de prévenir l'attaque du Fou blanc.}  
+8. Nbd2 Ng6 {Les Noirs placent leur Cavalier sur une case plus active, avec des menaces potentielles.}  
+9. Nc4 Be7 {Les Noirs continuent leur développement avec un placement sécurisé de leur Fou.}  
+10. Ne3 Bg5 {Les Noirs développent leur Fou pour exercer une pression sur les Blancs.}  
+11. Nd5 Bxc1 {Les Blancs échangent leur Cavalier contre le Fou noir, mais cela donne une forte paire de Fous aux Noirs.}  
+12. Rxc1 O-O {Les Noirs roquent et préparent la phase finale du jeu.}  
+13. dxe5 Ncxe5 {Les Blancs essaient d'ouvrir la position, mais les Noirs reprennent le contrôle avec leur Cavalier.}  
+14. Nxe5 dxe5 {Les Noirs reprennent avec le pion, consolidant leur centre tout en maintenant une meilleure structure.}  
+15. h4 a5 {Les Blancs lancent une attaque à l'aile roi, mais les Noirs contre-attaquent sur l'aile dame.}  
+16. g3 Ra6 {Les Noirs préparent une expansion sur l'aile dame avec des contre-menaces.}  
+17. c4 Ne7 {Les Noirs déplacent leur Cavalier pour soutenir leurs positions et préparer un éventuel contre-jeu.}  
+18. c5 a4 {Les Noirs avancent leur pion pour perturber les Blancs et gagner de l'espace.}  
+19. Bc4 Ra5 {Les Noirs renforcent leur attaque sur l'aile dame tout en exerçant une pression sur le centre.}  
+20. Nb4 Nc6 {Les Noirs réorganisent leurs pièces pour renforcer leur contrôle sur le centre.}  
+21. Nxc6 Bxc6 {Les Noirs récupèrent le Cavalier et augmentent leur influence sur les cases centrales.}  
+22. O-O Qe7 {Les Noirs préparent à soutenir leur Dame et à exercer plus de pression sur le Roi blanc.}  
+23. Bd5 Bxd5 {Les Noirs échangent des pièces, réduisant les options de l'attaque blanche.}  
+24. Qxd5 Rb5 {Les Noirs attaquent avec la Tour sur la colonne ouverte, créant des menaces directes.}  
+25. Rc2 Rd8 {Les Noirs se préparent à doubler les Tours et à mettre la pression sur les Blancs.}  
+26. Qc4 Ra5 {Les Noirs continuent leur attaque sur l'aile dame avec la Tour.}  
+27. Qc3 Raa8 {Les Noirs repositionnent leurs Tours pour une meilleure coordination.}  
+28. c6 b6 {Les Noirs tentent de créer des faiblesses dans la position des Blancs.}  
+29. Rd2 Rxd2 {Les Noirs échangent une paire de Tours, ce qui améliore leur position.}  
+30. Qxd2 Rd4 {La Tour noire est très active, menaçant directement le Roi blanc.}  
+31. Qc2 Rd4 {Les Noirs placent leur Tour sur la colonne ouverte pour exercer une pression maximale.}  
+32. Qe2 Qe6 {Les Noirs renforcent la pression avec la Dame et préparent un coup décisif.}  
+33. Rc1 Qxa2 {Les Noirs gagnent un pion en capturant la tour blanche, ce qui leur donne un avantage décisif.}  
+34. Qa6 Qe6 {Les Noirs préparent à mater avec une série de coups.}  
+35. Qa7 Qe7 {Les Noirs continuent de renforcer leur position, empêchant toute contre-attaque des Blancs.}  
+36. Qa6 Kh7 {Le Roi noir se déplace pour se mettre à l'abri tout en continuant l'attaque.}  
+37. Qc8 h5 {Les Noirs commencent à réduire les possibilités de jeu des Blancs.}  
+38. Rc2 g6 {Les Noirs préparent une défense solide tout en renforçant la pression.}  
+39. Re2 Qd8 {Les Noirs finissent par prendre le contrôle total du jeu.}  
+40. Qa6 Rd1+ {Les Noirs lancent un échec pour forcer le Roi blanc dans une position vulnérable.}  
+41. Kg2 Qd3 {Les Noirs mettent la pression finale sur le Roi blanc, et la partie se termine avec une victoire noire.}  

@@ -16,11 +16,55 @@
 [BlackFideId "1170546"]
 [EventDate "2023.05.06"]
 
-1. Nf3 d5 2. g3 Nd7 3. d4 Nb6 4. Nc3 Bf5 5. Nh4 e6 6. Nxf5 exf5 7. Qd3 g6 8. Bg2
-Nf6 9. Bg5 Bg7 10. Qe3+ Kf8 11. Na4 h6 12. Qa3+ Qe7 13. Qxe7+ Kxe7 14. Nxb6 axb6
-15. Bxf6+ Bxf6 16. Bxd5 c6 17. Bb3 Bxd4 18. c3 Bf6 19. O-O-O Rhd8 20. a4 Rxd1+
-21. Rxd1 b5 22. axb5 Ra1+ 23. Kd2 Rxd1+ 24. Bxd1 cxb5 25. b4 g5 26. f4 gxf4 27.
-gxf4 Bh4 28. Bc2 Ke6 29. Bd3 Bf2 30. e3 h5 31. Ke2 Bh4 32. Bxb5 Bf6 33. Bc4+ Ke7
-34. Kd3 h4 35. Bd5 b6 36. Bg2 Bg7 37. Kc4 Kd6 38. Bh3 Ke6 39. Bf1 Ke7 40. Bg2
-Kd6 41. Kb3 Ke7 42. c4 Bf6 43. Bh3 Ke6 44. e4 Bd4 45. Bxf5+ Kd6 46. e5+ Kc7 47.
-e6 fxe6 48. Bxe6 Kd6 49. Bg4 h3 50. Bxh3 Bg1 51. f5 Bxh2 52. f6 
+1. Nf3 d5 {Les Blancs choisissent une ouverture flexible ; les Noirs répondent classiquement.}
+2. g3 Nd7 {Début du système Barcza ; les Noirs cherchent à réorganiser leurs pièces avec souplesse.}
+3. d4 Nb6 {Les Blancs prennent le centre ; le Cavalier noir prend une case peu commune.}
+4. Nc3 Bf5 {Les Blancs développent, les Noirs sortent leur Fou avant e6, ce qui est typique.}
+5. Nh4 e6 {Le Cavalier blanc chasse le Fou, les Noirs consolident leur structure.}
+6. Nxf5 exf5 {Échange rapide avec une prise du pion f5 qui ouvre la colonne e.}
+7. Qd3 g6 {Les Blancs exercent une pression centrale, les Noirs préparent le fianchetto.}
+8. Bg2 Nf6 {Développement classique, les deux camps ont une structure saine.}
+9. Bg5 Bg7 {Pression blanche sur le Cavalier f6, les Noirs développent leur Fou-roi.}
+10. Qe3+ Kf8 {Rapport provoque un roque empêché ; le roi noir reste au centre.}
+11. Na4 h6 {Le Cavalier blanc vise les cases faibles, les Noirs repoussent le Fou.}
+12. Qa3+ Qe7 {La Dame blanche active, les Noirs proposent un échange pour soulager la pression.}
+13. Qxe7+ Kxe7 {Les Dames sont échangées, les Noirs perdent le droit de roquer.}
+14. Nxb6 axb6 {Rapport échange un Cavalier contre un pion faible ; structure noire détériorée.}
+15. Bxf6+ Bxf6 {Échange de Fous, les Noirs gardent le pion isolé sur b6.}
+16. Bxd5 c6 {Les Blancs poursuivent les échanges en éliminant un bon Fou noir.}
+17. Bb3 Bxd4 {Les Noirs reprennent un pion central, la partie s'équilibre matériellement.}
+18. c3 Bf6 {Les Blancs reprennent le centre ; les Noirs se replient pour défendre.}
+19. O-O-O Rhd8 {Petit roque à l’aile-Dame, les Noirs activent leur Tour sur la colonne d.}
+20. a4 Rxd1+ {Les Blancs gagnent de l’espace, les Noirs échangent immédiatement les Tours.}
+21. Rxd1 b5 {Les Noirs cherchent à activer leur majorité de pions à l’aile-Dame.}
+22. axb5 Ra1+ {Les Noirs exploitent la colonne a ouverte, forçant une défense.}
+23. Kd2 Rxd1+ {Nouvel échange de Tours, la finale approche.}
+24. Bxd1 cxb5 {Les Noirs égalisent le matériel et activent leur majorité à l’aile-Dame.}
+25. b4 g5 {Les deux camps préparent une course de pions : les Noirs débutent une poussée agressive.}
+26. f4 gxf4 {Les échanges de pions libèrent les lignes mais la structure noire reste affaiblie.}
+27. gxf4 Bh4 {Le Fou attaque un point faible ; les Noirs gardent l’initiative.}
+28. Bc2 Ke6 {Les Blancs centralisent leurs pièces, les Noirs activent leur Roi.}
+29. Bd3 Bf2 {Le Fou noir met la pression sur le pion e3.}
+30. e3 h5 {Les Blancs consolident leur centre ; les Noirs créent une majorité à l’aile-Roi.}
+31. Ke2 Bh4 {Le Roi blanc rejoint l’action, le Fou revient menacer.}
+32. Bxb5 Bf6 {Les Blancs grignotent à l’aile-Dame, les Noirs renforcent la défense.}
+33. Bc4+ Ke7 {Les Blancs améliorent la position de leur Fou, les Noirs centralisent leur Roi.}
+34. Kd3 h4 {Les Noirs poursuivent leur poussée à l’aile-Roi, menaçant des pions passés.}
+35. Bd5 b6 {Le Fou contrôle les diagonales, les Noirs verrouillent l’aile-Dame.}
+36. Bg2 Bg7 {Le Fou revient en défense, les deux camps manoeuvrent prudemment.}
+37. Kc4 Kd6 {Les Rois se centralisent, préparant la finale.}
+38. Bh3 Ke6 {Les Blancs gênent la poussée des Noirs ; le Roi noir veut entrer.}
+39. Bf1 Ke7 {Phase de manœuvre : chaque camp cherche à améliorer légèrement.}
+40. Bg2 Kd6 {Le Roi noir revient au centre, toujours sans percée nette.}
+41. Kb3 Ke7 {Les Noirs maintiennent leur position ; aucune faiblesse claire.}
+42. c4 Bf6 {Les Blancs commencent enfin à avancer à l’aile-Dame.}
+43. Bh3 Ke6 {Position critique : les Noirs sont en attente, les Blancs cherchent un plan.}
+44. e4 Bd4 {Percée centrale des Blancs ; le Fou tente de bloquer.}
+45. Bxf5+ Kd6 {Échange critique ; le Roi noir reste actif mais les Blancs dominent le centre.}
+46. e5+ Kc7 {Les Blancs gagnent de l’espace, le Roi noir se replie.}
+47. e6 fxe6 {Les Noirs capturent mais la faiblesse h6 est un problème.}
+48. Bxe6 Kd6 {Le Fou blanc devient très actif, le Roi noir revient.}
+49. Bg4 h3 {Les Noirs poussent leur pion passé, mais c'est trop tard.}
+50. Bxh3 Bg1 {Le pion h3 est perdu, les Noirs tentent un contre-jeu immédiat.}
+51. f5 Bxh2 {Les Noirs capturent un pion, mais les Blancs ont l’initiative décisive.}
+52. f6 {Le pion passé f6 est imparable — victoire blanche.}

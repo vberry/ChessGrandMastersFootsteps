@@ -9,9 +9,46 @@
 [BlackElo "2698"]
 [ECO "A01"]
 
-1.b3 d5 2.Bb2 Bf5 3.d3 Nd7 4.Nd2 Ngf6 5.Ngf3 c6 6.Nh4 Bg6 7.Nxg6 hxg6 8.g3 e5
-9.Bg2 Bc5 10.e3 O-O 11.O-O a5 12.c4 d4 13.exd4 Bxd4 14.Bxd4 exd4 15.Nf3 Qb6
-16.Re1 a4 17.Rb1 axb3 18.axb3 c5 19.Qd2 Ra3 20.b4 cxb4 21.Rxb4 Qd6 22.Bf1 Nc5
-23.Rb5 b6 24.Qd1 Nfd7 25.h4 Rfa8 26.Rb2 Qf6 27.Ng5 Ne5 28.Rd2 Qf5 29.Bh3 Qf6
-30.Bg2 Rf8 31.Ne4 Nxe4 32.Bxe4 Nd7 33.Qb1 Nc5 34.Bd5 Rb3 35.Qd1 Qf5 36.Be4 Qf6
-37.Ra2 Rc3 38.Ra7 g5 39.Bd5 gxh4 40.Rxf7 Rxf7 41.Re8+ Kh7 42.Qh5+ Qh6 43.Qxf7 
+1. b3 d5 {Les Blancs commencent avec l'ouverture Nimzowitsch, cherchant un jeu flexible et dynamique.}  
+2. Bb2 Bf5 {Les Noirs développent leur Fou pour soutenir le centre et préparer leur développement.}  
+3. d3 Nd7 {Les Blancs préparent leur développement tout en contrôlant le centre. Les Noirs déplacent leur Cavalier pour préparer la libération de la position.}  
+4. Nd2 Ngf6 {Les Noirs développent leur Cavalier pour soutenir la structure du centre.}  
+5. Ngf3 c6 {Les Noirs renforcent leur centre avec un coup préparatoire.}  
+6. Nh4 Bg6 {Les Blancs essaient de déstabiliser le développement des Noirs en déplaçant leur Cavalier, tandis que les Noirs placent leur Fou de manière active.}  
+7. Nxg6 hxg6 {Les Blancs échangent un Cavalier pour affaiblir la structure de pions des Noirs.}  
+8. g3 e5 {Les Blancs préparent une attaque sur l'aile roi, et les Noirs prennent le contrôle du centre avec une poussée de pion.}  
+9. Bg2 Bc5 {Les Blancs développent leur Fou sur une case active, tandis que les Noirs font de même en plaçant leur Fou sur une case centrale.}  
+10. e3 O-O {Les Blancs établissent un centre solide, tandis que les Noirs roquent pour mettre leur Roi à l'abri.}  
+11. O-O a5 {Les Blancs sécurisent leur Roi, et les Noirs lancent une expansion sur l'aile dame pour gagner de l'espace.}  
+12. c4 d4 {Les Blancs prennent le contrôle du centre et les Noirs avancent un pion pour créer une tension sur le centre.}  
+13. exd4 Bxd4 {Les Blancs échangent un pion central, et les Noirs capturent avec leur Fou.}  
+14. Bxd4 exd4 {Les Blancs capturent le Fou des Noirs, mais ceux-ci reprennent avec leur pion pour maintenir la pression sur le centre.}  
+15. Nf3 Qb6 {Les Blancs développent leur Cavalier pour renforcer la position centrale, tandis que les Noirs déplacent leur Dame pour menacer le pion b2.}  
+16. Re1 a4 {Les Blancs renforcent leur position avec la Tour, et les Noirs poursuivent leur expansion sur l'aile dame.}  
+17. Rb1 axb3 {Les Blancs protègent leur pion b2, et les Noirs prennent le contrôle de l'aile dame.}  
+18. axb3 c5 {Les Blancs défendent l'aile dame, et les Noirs ouvrent le jeu en avançant un autre pion central.}  
+19. Qd2 Ra3 {Les Blancs préparent un soutien supplémentaire pour l'aile dame, et les Noirs activent leur Tour pour exercer une pression sur la colonne a.}  
+20. b4 cxb4 {Les Blancs repoussent l'attaque des Noirs sur l'aile dame, et les Noirs capturent le pion b4.}  
+21. Rxb4 Qd6 {Les Blancs capturent le pion b4, mais les Noirs déplacent leur Dame pour menacer davantage.}  
+22. Bf1 Nc5 {Les Blancs préparent un développement plus actif pour leurs pièces, et les Noirs placent leur Cavalier sur une case centrale.}  
+23. Rb5 b6 {Les Blancs tentent de reprendre l'initiative, mais les Noirs utilisent cette phase pour consolider leur position.}  
+24. Qd1 Nfd7 {Les Blancs placent leur Dame sur une colonne ouverte, et les Noirs déplacent leur Cavalier pour défendre.}  
+25. h4 Rfa8 {Les Blancs essaient de prendre le contrôle de l'aile roi, et les Noirs activent leur Tour pour renforcer leur défense.}  
+26. Rb2 Qf6 {Les Blancs menacent des attaques sur l'aile roi, et les Noirs placent leur Dame pour soutenir leurs pièces.}  
+27. Ng5 Ne5 {Les Blancs manœuvrent leurs pièces pour l'attaque, et les Noirs déplacent leur Cavalier pour défendre.}  
+28. Rd2 Qf5 {Les Blancs améliorent leur contrôle du centre, et les Noirs ajustent leur Dame pour renforcer leur position.}  
+29. Bh3 Qf6 {Les Blancs menacent des attaques sur la case h7, et les Noirs réorganisent leur Dame pour contrer l'attaque.}  
+30. Bg2 Rf8 {Les Blancs améliorent leur position avec leur Fou, et les Noirs déplacent leur Tour pour renforcer la défense.}  
+31. Ne4 Nxe4 {Les Blancs amènent leur Cavalier dans la position, et les Noirs échangent des pièces pour alléger la pression.}  
+32. Bxe4 Nd7 {Les Blancs capturent un Cavalier, et les Noirs déplacent leur Cavalier pour soutenir leur position.}  
+33. Qb1 Nc5 {Les Blancs déplacent leur Dame pour mettre plus de pression, et les Noirs repositionnent leur Cavalier pour défendre.}  
+34. Bd5 Rb3 {Les Blancs déplacent leur Fou pour attaquer, et les Noirs réagissent en activant leur Tour pour perturber les Blancs.}  
+35. Qd1 Qf5 {Les Blancs préparent l'attaque avec leur Dame et leur Fou, et les Noirs tentent de contre-attaquer.}  
+36. Be4 Qf6 {Les Blancs mettent plus de pression sur la position noire avec leur Fou, et les Noirs déplacent leur Dame pour mieux défendre.}  
+37. Ra2 Rc3 {Les Blancs augmentent la pression avec leur Tour, et les Noirs déplacent leur Tour pour soutenir la position.}  
+38. Ra7 g5 {Les Blancs continuent leur attaque, et les Noirs réagissent avec une poussée de pion pour essayer de déstabiliser la position.}  
+39. Bd5 gxh4 {Les Blancs attaquent le Roi noir, et les Noirs tentent de déséquilibrer la position avec un sacrifice.}  
+40. Rxf7 Rxf7 {Les Blancs capturent un pion et forcent les Noirs à réagir, mais ceux-ci répondent par un échange de Tour.}  
+41. Re8+ Kh7 {Les Blancs continuent à exercer des menaces directes avec leur Tour, et les Noirs déplacent leur Roi pour éviter le mat.}  
+42. Qh5+ Qh6 {Les Blancs menacent un mat, et les Noirs se déplacent pour bloquer l'attaque.}  
+43. Qxf7 {Les Blancs sacrifient une pièce pour forcer le mat et remportent la partie.}  
