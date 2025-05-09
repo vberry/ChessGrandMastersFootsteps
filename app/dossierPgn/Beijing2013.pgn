@@ -15,9 +15,40 @@
 [BlackFideId "8602883"]
 [EventDate "2013.07.04"]
 
-1. d4 d5 2. c4 c6 3. Nc3 dxc4 4. e3 b5 5. a4 b4 6. Ne4 Qd5 7. Ng3 Nf6 8. Be2 e6
-9. e4 Nxe4 10. Bf3 f5 11. Qe2 c3 12. Nxe4 fxe4 13. Bxe4 Qb3 14. Bd3 Ba6 15. Bxa6
-Nxa6 16. Qxa6 cxb2 17. Qxc6+ Kf7 18. Bxb2 Qxb2 19. Rc1 b3 20. Qb7+ Be7 21. Qf3+
-Kg6 22. Ne2 Rhf8 23. Qe4+ Kf7 24. O-O Rac8 25. d5 Qf6 26. Qxh7 Rxc1 27. Nxc1 Rb8
-28. Nd3 b2 29. Rb1 Rb3 30. g3 Bd6 31. dxe6+ Ke7 32. Qe4 Qc3 33. Qf5 Qf6 34. Qd5
-Qc3 35. Qh5 Kd8 36. Nxb2 Rxb2 37. Rd1
+1. d4 d5 {Début classique du jeu de la dame. Les deux camps luttent pour le centre.}
+2. c4 c6 {Défense Slave — les Noirs renforcent leur pion d5 pour maintenir le contrôle du centre.}
+3. Nc3 dxc4 {Les Noirs capturent le pion c4, entrant dans une variante très tranchante de la Slave : la variante du pion pris.}
+4. e3 b5 {Les Noirs défendent leur pion c4 avec b5, indiquant leur volonté de garder le matériel, mais cela affaiblit un peu l’aile dame.}
+5. a4 b4 {Les Blancs cherchent à miner la structure noire sur l’aile dame. Les Noirs repoussent immédiatement avec b4, gagnant de l’espace.}
+6. Ne4 Qd5 {Le Cavalier se redirige vers g3, mais en passant par e4. Les Noirs jouent Qd5 pour exercer une pression sur la colonne d et préparer des échanges.}
+7. Ng3 Nf6 {Le Cavalier arrive sur la case naturelle g3, visant e4 et f5. Nf6 est un développement standard.}
+8. Be2 e6 {Les Blancs poursuivent leur développement ; les Noirs préparent le développement du Fou de cases blanches.}
+9. e4 Nxe4 {Les Blancs sacrifient un pion au centre pour ouvrir la position. Les Noirs acceptent, mais cela comporte des risques tactiques.}
+10. Bf3 f5 {Les Blancs activent leur Fou, visant e4. Les Noirs défendent avec f5, mais cela affaiblit encore leur roi.}
+11. Qe2 c3 {Les Blancs centralisent leur Dame. Les Noirs poussent c3 pour conserver le matériel et poser des problèmes positionnels.}
+12. Nxe4 fxe4 {Les Blancs éliminent le Cavalier en e4 pour mieux activer leurs pièces. Les Noirs reprennent, maintenant un centre dangereux mais instable.}
+13. Bxe4 Qb3 {Les Blancs reprennent avec le Fou, mettant de la pression sur la case c6. Qb3 vise b2 et menace d’échanger des Dames.}
+14. Bd3 Ba6 {Les Blancs retirent leur Fou pour éviter l’échange de Dames et menacent sur a6. Les Noirs développent leur Fou en attaquant le Fou a6.}
+15. Bxa6 Nxa6 {Les Blancs échangent leur Fou contre le Fou adverse. Les Noirs reprennent avec le Cavalier, qui reste un peu passif.}
+16. Qxa6 cxb2 {La Dame blanche s’empare du pion faible. Les Noirs poussent un pion passé dangereux.}
+17. Qxc6+ Kf7 {Les Blancs capturent le pion b2. Les Noirs doivent déplacer leur roi car la tour est clouée.}
+18. Bxb2 Qxb2 {Les Blancs reprennent un pion, les Noirs échangent immédiatement avec la Dame. Position matérielle équilibrée, mais le roi noir est vulnérable.}
+19. Rc1 b3 {Les Blancs activent leur Tour sur la colonne ouverte. Les Noirs poussent leur pion b3, créant un pion passé dangereux.}
+20. Qb7+ Be7 {Menace directe sur le Roi. Les Noirs doivent se défendre avec leur Fou.}
+21. Qf3+ Kg6 {Les Blancs menacent le Roi. Les Noirs doivent le déplacer vers g6 — une case dangereuse.}
+22. Ne2 Rhf8 {Les Blancs préparent un renforcement par f4 ou Qe4+. Les Noirs centralisent une Tour.}
+23. Qe4+ Kf7 {Les Blancs préparent un renforcement par f4 ou Qe4+. Les Noirs centralisent une Tour.}
+24. O-O Rac8 {Petit roque tardif mais crucial pour la coordination des pièces blanches. Les Noirs mobilisent leur dernière Tour.}
+25. d5 Qf6 {Les Blancs lancent leur pion central. Les Noirs défendent la case critique f6.}
+26. Qxh7 Rxc1 {Le pion h7 tombe. Les Noirs échangent une Tour pour soulager la pression.}
+27. Nxc1 Rb8 {Reprise avec le Cavalier. Les Noirs préparent la poussée du pion b3.}
+28. Nd3 b2 {Le Cavalier défend les cases critiques. Le pion noir b2 est très avancé.}
+29. Rb1 Rb3 {Les Blancs bloquent le pion b2. Les Noirs doublent pour le pousser.}
+30. g3 Bd6 {Les Blancs créent de l’espace autour de leur roi. Les Noirs activent leur Fou.}
+31. dxe6+ Ke7 {Les Blancs sacrifient au centre pour ouvrir la diagonale. Les Noirs doivent bouger le Roi.}
+32. Qe4 Qc3 {Les Blancs activent leur Dame. Les Noirs répondent avec une contre-attaque centrale.}
+33. Qf5 Qf6 {Pression maintenue. Les Noirs proposent un échange de Dames.}
+34. Qd5 Qc3 {Refus de l’échange, les Blancs gardent l’initiative. Nouvelle tentative noire de contre-attaque.}
+35. Qh5 Kd8 {La Dame se positionne pour des menaces décisives. Le Roi noir tente de s’enfuir.}
+36. Nxb2 Rxb2 {Les Blancs sacrifient leur Cavalier pour éliminer le pion b2. Les Noirs reprennent.}
+37. Rd1 {Les Blancs activent la Tour avec menace mate sur d7 ou attaque sur la 7e rangée. La menace est irrésistible. Les Noirs abandonnent.}
