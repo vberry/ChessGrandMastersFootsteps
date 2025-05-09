@@ -121,11 +121,11 @@ Pour générer et consulter la documentation du projet, suivez ces étapes :
    ```
 ---
 
-## Lancer mypy
+## ✅ Lancer mypy
 
 Pour tester les codes avec mypy :
 
-    mypy --disable-error-code import-not-found .
+    mypy --disable-error-code import-untyped .
     (à exécuter dans la racine du projet)
 
 Si on exécute seulement mypy, il y a des problèmes d'import pour tout ce qui concerne chess et flask.
