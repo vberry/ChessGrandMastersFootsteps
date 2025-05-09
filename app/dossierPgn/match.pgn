@@ -6,42 +6,42 @@
 [Black "Veselin Topalov"]
 [Result "1-0"]
 
-e4 d6 {Défense Pirc, une ouverture dynamique où les Noirs cherchent un jeu hypermoderne.}
-d4 Nf6
-Nc3 g6
-Be3 Bg7
-Qd2 O-O  {Les Noirs roquent rapidement et préparent un contre-jeu sur l'aile dame.}
-f3 c6 {Une approche solide, contrôlant la case d5 et limitant l'expansion des Blancs.}
-Nge2 b5 {Les Noirs initient un plan d'expansion sur l'aile dame.}
-Bh6 e5 {Un coup central pour contester l'emprise blanche.}
-Bxg7 Kxg7 {Kasparov échange immédiatement son fou de cases blanches pour affaiblir la structure noire.}
-O-O-O Nbd7
-g4 Nb6  {Les Noirs cherchent à repositionner leur cavalier sur une case plus active.}
-Ng3 Qe7
-g5 Ne8 {Le cavalier noir recule pour éviter l'échange et soutenir la défense.}
-h4 Be6 {Les Noirs développent leur fou pour contrer l'attaque.}
-h5 b4 {Topalov contre-attaque sur l'aile dame pour perturber l'attaque blanche.}
-Nb1 Bxa2 {Un sacrifice matériel audacieux pour l'activité et la contre-attaque.}
-Qh2 Kg8 {Kasparov place sa dame en position idéale pour une attaque décisive.}
-b3 Bxb1 {Les Noirs continuent avec le sacrifice pour affaiblir la structure blanche.}
-Kxb1 a5
-f4 exf4
-Nf5 gxf5
-exf5 a4 {Les Noirs essaient de créer du contre-jeu.}
-f6 Qa7
-Bd3 axb3
-Kc1 Qa3+
-Kd2 Qb2 {Une position critique où Kasparov doit faire attention aux menaces noires.}
-Ke2 Qxd4
-Kf1 Qe3
-Re1 Qf3+ {Les Noirs forcent le roi blanc à une marche risquée.}
-Kg1 Qg4+
-Kf2 Nd5
-g6 Nexf6 {Les Noirs cherchent à exploiter la position exposée du roi blanc.}
-Rhg1 Qd7
-gxh7+ Kh8
-Qh4 Qa7+
-Kf3 Qd4
-Qg5 Nxh7
-Qh6 Ndf6 {Un moment critique où Kasparov trouve le coup gagnant.}
-Qg7# {Mat final ! Une magnifique démonstration de la puissance de l'attaque blanche.} 1-0
+1. e4 d6 {Défense Pirc, une ouverture dynamique où les Noirs cherchent un jeu hypermoderne.}  
+2. d4 Nf6 {Les Noirs commencent à développer leurs pièces tout en restant flexibles.}  
+3. Nc3 g6 {La défense Pirc avec un plan de fianchetto du Fou.}  
+4. Be3 Bg7 {Le Fou noir se développe, renforçant la position du roi noir.}  
+5. Qd2 O-O {Les Noirs roquent rapidement et préparent un contre-jeu sur l'aile dame.}  
+6. f3 c6 {Les Blancs renforcent leur centre et empêchent l'attaque du Cavalier noir sur d4.}  
+7. Nge2 b5 {Les Noirs initient un plan d'expansion sur l'aile dame.}  
+8. Bh6 e5 {Un coup central pour contester l'emprise blanche. Les Noirs veulent bousculer l'attaque blanche.}  
+9. Bxg7 Kxg7 {Kasparov échange immédiatement son fou de cases blanches pour affaiblir la structure noire.}  
+10. O-O-O Nbd7 {Les Noirs cherchent à consolider leur position avec un développement plus lent du Cavalier.}  
+11. g4 Nb6 {Les Noirs cherchent à repositionner leur Cavalier sur une case plus active, à c4.}  
+12. Ng3 Qe7 {Préparation d'un contre-jeu à l’aile dame, avec une pression sur e5.}  
+13. g5 Ne8 {Le Cavalier noir recule pour éviter l'échange et soutenir la défense.}  
+14. h4 Be6 {Les Noirs développent leur Fou pour contrer l'attaque et réduire la pression.}  
+15. h5 b4 {Topalov contre-attaque sur l'aile dame pour perturber l'attaque blanche.}  
+16. Nb1 Bxa2 {Un sacrifice audacieux pour l'activité et la contre-attaque. Les Noirs cherchent à ouvrir la position.}  
+17. Qh2 Kg8 {Kasparov place sa Dame en position idéale pour une attaque décisive sur le Roi noir.}  
+18. b3 Bxb1 {Les Noirs continuent avec leur sacrifice pour affaiblir la structure blanche.}  
+19. Kxb1 a5 {Les Noirs essaient de créer du contre-jeu avec la poussée a5.}  
+20. f4 exf4 {Kasparov ouvre le jeu pour exploiter la position affaiblie du Roi noir.}  
+21. Nf5 gxf5 {Les Noirs sont contraints d'accepter le sacrifice, mais leur position est affaiblie.}  
+22. exf5 a4 {Les Noirs tentent d'exploiter l'aile dame, mais la pression blanche augmente.}  
+23. f6 Qa7 {La Dame noire tente de s'activer pour défendre, mais elle est à la merci de l'attaque blanche.}  
+24. Bd3 axb3 {Les Noirs continuent leur tentative de contre-attaque, mais les Blancs maintiennent une forte pression.}  
+25. Kc1 Qa3+ {Les Noirs cherchent à mettre la pression sur le Roi blanc, mais celui-ci reste relativement en sécurité.}  
+26. Kd2 Qb2 {Une position critique où Kasparov doit faire attention aux menaces noires.}  
+27. Ke2 Qxd4 {Les Noirs saisissent une opportunité pour capturer un pion.}  
+28. Kf1 Qe3 {Les Noirs forcent le Roi blanc à une marche risquée.}  
+29. Re1 Qf3+ {Les Noirs continuent à harceler le Roi blanc avec des menaces de mat.}  
+30. Kg1 Qg4+ {Les Noirs poursuivent avec la menace de mat, mais Kasparov reste calme.}  
+31. Kf2 Nd5 {Les Noirs essaient d'exploiter la position exposée du Roi blanc.}  
+32. g6 Nexf6 {Les Noirs sacrifient un Cavalier pour ouvrir la position.}  
+33. Rhg1 Qd7 {Les Noirs cherchent à neutraliser les menaces de la Dame blanche.}  
+34. gxh7+ Kh8 {Les Blancs poursuivent l'attaque avec l'objectif de mat.}  
+35. Qh4 Qa7+ {Les Noirs tentent une dernière tentative de défense, mais cela ne suffit pas.}  
+36. Kf3 Qd4 {Les Noirs tentent de bloquer la pression, mais le mat est inévitable.}  
+37. Qg5 Nxh7 {Les Noirs capturent le pion, mais cela mène directement à la fin de la partie.}  
+38. Qh6 Ndf6 {Un moment critique où Kasparov trouve le coup gagnant.}  
+39. Qg7# {Mat final ! Une magnifique démonstration de la puissance de l'attaque blanche. Kasparov gagne.}  

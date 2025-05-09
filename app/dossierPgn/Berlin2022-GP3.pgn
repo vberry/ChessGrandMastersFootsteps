@@ -2,16 +2,48 @@
 [Site "Berlin GER"]
 [Date "2022.03.27"]
 [Round "5.2"]
-[White "Predke A"]
-[Black "Shankland S"]
+[White "Predke, Alexander"]
+[Black "Shankland, Sam"]
 [Result "0-1"]
 [WhiteElo "2682"]
 [BlackElo "2704"]
 [ECO "A34"]
+[Opening "English Opening: Symmetrical Variation"]
 
-1.Nf3 c5 2.c4 Nf6 3.Nc3 d5 4.cxd5 Nxd5 5.b3 Nc6 6.Nxd5 Qxd5 7.e3 Bf5 8.Bc4 Qd7
-9.Bb2 e6 10.O-O Bd3 11.Bxd3 Qxd3 12.Rc1 Rd8 13.b4 Qb5 14.Ne5 cxb4 15.Nxc6 bxc6
-16.Qc2 f6 17.d4 Rc8 18.Rfd1 Be7 19.e4 Kf7 20.Qb3 Rhd8 21.Qh3 Qe2 22.Qb3 Qxe4
-23.Re1 Qd5 24.Qh3 h5 25.Re2 Qf5 26.Qb3 Qd5 27.Qh3 c5 28.Rce1 Rc6 29.f4 cxd4
-30.f5 e5 31.Qxh5+ Kg8 32.Re4 Rc2 33.Bxd4 exd4 34.Qh3 Rc3 35.g3 Bc5 36.Re8+ Rxe8
-37.Rxe8+ Bf8 
+1. Nf3 c5 {Début par l'anglaise avec une structure symétrique ; chacun développe en douceur.}
+2. c4 Nf6 {Les Blancs consolident le centre, les Noirs développent naturellement le Cavalier roi.}
+3. Nc3 d5 {Les Blancs accentuent leur contrôle central ; les Noirs cherchent l’égalité en occupant le centre.}
+4. cxd5 Nxd5 {Échange central ; les Noirs ont un bon développement mais la colonne c est désormais ouverte.}
+5. b3 Nc6 {Les Blancs préparent un fianchetto, les Noirs accentuent la pression centrale.}
+6. Nxd5 Qxd5 {Échange du Cavalier central, et la Dame noire occupe le centre tôt dans la partie.}
+7. e3 Bf5 {Les Blancs préparent un développement sain, les Noirs sortent le Fou avant de fermer avec e6.}
+8. Bc4 Qd7 {Le Fou se développe sur une diagonale active, la Dame se repositionne pour connecter les Tours.}
+9. Bb2 e6 {Le Fou blanc prend une bonne diagonale, et les Noirs verrouillent leur centre.}
+10. O-O Bd3 {Petit roque des Blancs ; les Noirs développent leur Fou de manière agressive.}
+11. Bxd3 Qxd3 {Échange des Fous, la Dame noire reste très active au centre.}
+12. Rc1 Rd8 {Les deux camps placent leurs Tours sur les colonnes centrales — un moment stratégique clé.}
+13. b4 Qb5 {Les Blancs cherchent à gagner de l’espace à l’aile-Dame ; les Noirs reculent leur Dame prudemment.}
+14. Ne5 cxb4 {Les Blancs occupent le centre avec un Cavalier ; les Noirs prennent le pion en b4.}
+15. Nxc6 bxc6 {Échange tactique : les Noirs se retrouvent avec un pion doublé mais central.}
+16. Qc2 f6 {La Dame blanche vise c6 ; les Noirs renforcent leur centre et empêchent Ne5.}
+17. d4 Rc8 {Les Blancs veulent ouvrir la position ; les Noirs mettent la Tour sur la colonne semi-ouverte.}
+18. Rfd1 Be7 {Les Blancs centralisent leurs Tours ; les Noirs développent leur dernier Fou.}
+19. e4 Kf7 {Le centre blanc devient très fort ; les Noirs roquent artificiellement.}
+20. Qb3 Rhd8 {Positionnement stratégique : les Noirs doublent leurs Tours sur la colonne d.}
+21. Qh3 Qe2 {Attaque latérale blanche ; la Dame noire pénètre en e2.}
+22. Qb3 Qxe4 {Les Blancs protègent leur Roi ; les Noirs prennent un pion central.}
+23. Re1 Qd5 {Les Blancs activent leur Tour, les Noirs centralisent leur Dame pour défendre et attaquer.}
+24. Qh3 h5 {Tentative des Noirs de créer du contre-jeu à l’aile-Roi.}
+25. Re2 Qf5 {Les Blancs soutiennent e4, les Noirs exercent une pression tactique.}
+26. Qb3 Qd5 {Les Noirs répètent pour gagner du temps ou poser des pièges.}
+27. Qh3 c5 {Les Noirs décident d’ouvrir la position en sacrifiant potentiellement un pion.}
+28. Rce1 Rc6 {Les deux camps mobilisent leurs Tours pour les colonnes ouvertes — tension maximale.}
+29. f4 cxd4 {Les Blancs attaquent, les Noirs ouvrent le jeu au centre.}
+30. f5 e5 {Les Blancs veulent percer le Roi noir, mais les Noirs ferment le centre juste à temps.}
+31. Qxh5+ Kg8 {Les Blancs donnent un pion pour attaquer, les Noirs gardent leur Roi en sécurité.}
+32. Re4 Rc2 {La Tour blanche attaque latéralement, la Tour noire infiltre la position blanche.}
+33. Bxd4 exd4 {Les Blancs éliminent une pièce importante, les Noirs reprennent avec force.}
+34. Qh3 Rc3 {La Dame blanche maintient l’attaque, la Tour noire devient très active sur la 3e rangée.}
+35. g3 Bc5 {Les Blancs se protègent, les Noirs menacent de conclure sur cases noires.}
+36. Re8+ Rxe8 {Les Blancs jouent un échec tactique, mais les Noirs échangent avec précision.}
+37. Rxe8+ Bf8 {La finale tourne à l’avantage noir, avec Tour et activité contre un Roi affaibli.}
