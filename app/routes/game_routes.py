@@ -8,7 +8,7 @@ from app.models.game_modelNormal import ChessGameNormal
 from app.models.game_modelEasy import ChessGameEasy
 from app.models.game_model1min import ChessGame1Min
 from app.models.game_model3min import ChessGame3Min  
-from app.models.game_model30sec import ChessGame30sec
+from app.models.game_model_30sec import ChessGame30sec
 
 game_bp = Blueprint("game", __name__)
 
@@ -112,6 +112,7 @@ def start_game():
     game_file = request.form.get("game_file")
     user_side = request.form.get("user_side")
     game_mode = request.form.get("game_mode", "lives")  # Mode par défaut: vies
+    display_mode = request.form.get("display_mode", "2D")
     # Création d'un identifiant unique pour la partie
     # game_id = str(len(games) + 1)
     game_id = str(uuid.uuid4())
@@ -153,7 +154,7 @@ def start_game():
         template = "game_lives.html"
     
     # À la fin, utilisez cette approche simplifiée
-    rendered_template = render_template(template, game_id=game_id, game_state=games[game_id].get_game_state())
+    rendered_template = render_template(template, game_id=game_id, game_state=games[game_id].get_game_state(),display_mode=display_mode )
     resp = make_response(rendered_template)
     resp.set_cookie('current_game_id', game_id, max_age=3600)
     return resp

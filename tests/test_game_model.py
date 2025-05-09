@@ -7,6 +7,7 @@ import sys
 # Ajustez ce chemin d'importation pour qu'il corresponde à votre structure de projet
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.models.game_model import ChessGame
+from stockfish import Stockfish
 
 class TestChessGame(unittest.TestCase):
     

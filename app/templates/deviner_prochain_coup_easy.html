@@ -68,8 +68,14 @@
     var userSide = "{{ game_state['user_side'] }}"; 
 </script>
 
+{% if display_mode == '3D' %}
+<script src="{{ url_for('static', filename='js/board3D.js') }}"></script>
+<script src="{{ url_for('static', filename='js/move3D.js') }}"></script>
+{% else %}
 <script src="{{ url_for('static', filename='js/board.js') }}"></script>
 <script src="{{ url_for('static', filename='js/moves.js') }}"></script>
+{% endif %}
+
 <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
 <script src="{{ url_for('static', filename='js/alternatives.js') }}"></script>
 

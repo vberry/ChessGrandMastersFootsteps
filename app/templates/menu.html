@@ -12,6 +12,13 @@
   <h3 class="sidebar-title">Modes de jeu</h3>
   <a href="?mode=lives" class="mode-option" id="lives-mode">Mode Vies</a>
   <a href="?mode=timer" class="mode-option" id="timer-mode">Mode Timer</a>
+  
+  <!-- Nouveau bouton pour basculer entre 2D et 3D -->
+  <h3 class="sidebar-title">Affichage</h3>
+  <a href="?display=2D" class="mode-option" id="display-2D">Affichage 2D</a>
+  <a href="?display=3D" class="mode-option" id="display-3D">Affichage 3D</a>
+  
+  <h3 class="sidebar-title">Informations</h3>
   <a href="{{ url_for('game.rules') }}" class="mode-option">Règles</a>
 </div>
 
@@ -62,6 +69,8 @@
         </div>
         <!-- Champ caché pour stocker le mode sélectionné -->
         <input type="hidden" name="game_mode" id="game_mode" value="lives">
+        <!-- Nouveau champ caché pour stocker le mode d'affichage -->
+        <input type="hidden" name="display_mode" id="display_mode" value="2D">
         <button type="submit" class="btn">
           <span class="btn-main">Commencer</span>
           <span class="btn-motivation">Trouvez le meilleur coup !</span>
