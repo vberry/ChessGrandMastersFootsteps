@@ -39,8 +39,8 @@ body {
 }
 
 #board {
-    width: 55vw;
-    height: 55vw;
+    width: 48vw;
+    height: 48vw;
     max-width: 800px;
     max-height: 800px;
     min-width: 300px;
