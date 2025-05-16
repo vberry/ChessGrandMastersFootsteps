@@ -14,9 +14,9 @@ Elle permet aux utilisateurs de se perfectionner en analysant des positions, en 
 Réalisé dans le cadre du module HAI606I de la **Licence 3 Informatique** à l'**Université de Montpellier**, ce projet est développé par :
 
 - Reda AMMARI — *22207235*
-- Kevin HARAUT — *N° étudiant*
-- Reyam KADDOUR — *N° étudiant*
-- Dounghwi SHIN — *N° étudiant*
+- Kevin HARAUT — *22104933*
+- Reyam KADDOUR — *22101281*
+- Dounghwi SHIN — *22110635*
 
 **Encadrant :** Vincent BERRY
 
