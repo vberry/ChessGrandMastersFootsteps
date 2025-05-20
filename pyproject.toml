@@ -19,3 +19,17 @@ dependencies = [
     "stockfish>=3.28.0",
 ]
 
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# Spécification explicite des packages trouvés dans votre projet
+packages = ["app", "fen_saves"]
+
+# Configuration pour éviter les erreurs de découverte automatique
+[tool.setuptools.packages.find]
+where = ["."]  # Chercher les packages à la racine
+include = ["app*", "fen_saves*"]  # Inclure ces packages
+exclude = ["tests*", "docs*"]  # Exclure ces packages
