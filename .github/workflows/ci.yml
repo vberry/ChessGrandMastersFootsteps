@@ -23,8 +23,7 @@ jobs:
         run: |
           uv venv
           source .venv/bin/activate
-          uv add flask
-          uv add pytest mypy
+          uv add pytest mypy flask
           # Installation en mode développement avec -e pour éviter les problèmes de build
           uv pip install -e .
       - name: Run tests
