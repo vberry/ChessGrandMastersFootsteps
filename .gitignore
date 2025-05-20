@@ -9,6 +9,7 @@ __pycache__/
 *$py.class
 .pytest_cache/
 app/__pycache__/
+.mypy_cache/
 
 # Distribution / packaging
 dist/
