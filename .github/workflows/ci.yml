@@ -33,4 +33,4 @@ jobs:
       - name: Run mypy
         run: |
           source .venv/bin/activate
-          mypy --disable-error-code .
+          mypy --disable-error-code import-untyped .
