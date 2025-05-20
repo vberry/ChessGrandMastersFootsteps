@@ -30,6 +30,7 @@ jobs:
         uv venv
         source .venv/bin/activate
         uv add pytest mypy
+        uv add flask
         uv pip install .
 
     - name: Run tests
