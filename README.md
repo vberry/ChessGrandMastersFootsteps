@@ -135,7 +135,22 @@ puis:
     (à exécuter dans la racine du projet)
 
 Si on exécute seulement mypy, il y a des problèmes d'import pour tout ce qui concerne chess et flask.
+---
 
+
+### ✅ Lancer les tests unitaires avec `pytest`
+
+Pour exécuter les tests unitaires du projet :
+
+Eventuellement installer pytest :
+   ```bash
+   uv add pytest
+   ```
+puis:
+   ```bash
+   pytest
+   (à executer depuis la racine du projet)
+   ```
 ---
 
 ## ➕ Ajouter de nouvelles parties
