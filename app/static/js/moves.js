@@ -184,9 +184,90 @@ function updateMoveHistory(playerMove, correctMove, opponentMove, comment, oppon
     scrollMoveHistoryToBottom();
 }
 
+// Fonctions pour verrouiller/déverrouiller le plateau
+let boardLocked = false;
+
+function lockBoard() {
+    boardLocked = true;
+    
+    // Ajout visuel pour indiquer que le plateau est verrouillé
+    const boardElement = document.getElementById('board');
+    if (boardElement) {
+        // Créer un overlay s'il n'existe pas déjà
+        let overlay = document.getElementById('board-lock-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'board-lock-overlay';
+            overlay.style.position = 'absolute';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+            overlay.style.display = 'flex';
+            overlay.style.justifyContent = 'center';
+            overlay.style.alignItems = 'center';
+            overlay.style.zIndex = '1000';
+            
+            // Ajout d'un indicateur de chargement
+            const spinner = document.createElement('div');
+            spinner.className = 'spinner';
+            spinner.style.border = '4px solid rgba(0, 0, 0, 0.1)';
+            spinner.style.borderLeft = '4px solid #8a2be2';
+            spinner.style.borderRadius = '50%';
+            spinner.style.width = '30px';
+            spinner.style.height = '30px';
+            spinner.style.animation = 'spin 1s linear infinite';
+            overlay.appendChild(spinner);
+            
+            // Ajouter l'animation CSS si elle n'existe pas déjà
+            if (!document.getElementById('spinner-animation')) {
+                const style = document.createElement('style');
+                style.id = 'spinner-animation';
+                style.textContent = `
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            boardElement.style.position = 'relative';
+            boardElement.appendChild(overlay);
+        } else {
+            overlay.style.display = 'flex';
+        }
+    }
+    
+    console.log('Plateau verrouillé');
+}
+
+function unlockBoard() {
+    boardLocked = false;
+    
+    // Retirer l'overlay visuel
+    const overlay = document.getElementById('board-lock-overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+    
+    console.log('Plateau déverrouillé');
+}
+
+// Modifier la fonction handleMove pour inclure le verrouillage
 function handleMove(source, target) {
-    let moveToSubmit = source + target;  // Envoie simplement le coup en UCI
-    const previousPosition = board.fen(); // Sauvegarde la position avant le coup
+    // Si le plateau est déjà verrouillé, ignorer la demande de mouvement
+    if (boardLocked) {
+        console.log("Le plateau est verrouillé, mouvement ignoré");
+        return false;
+    }
+    
+    // Verrouiller le plateau immédiatement
+    lockBoard();
+    
+    let moveToSubmit = source + target;
+    const previousPosition = board.fen();
 
     console.log("Coup à soumettre:", moveToSubmit);
 
@@ -215,7 +296,6 @@ function handleMove(source, target) {
         console.log("Réponse du serveur:", data);
         
         if (data.error) {
-
             // Annuler immédiatement le coup illégal
             setTimeout(() => board.position(previousPosition), 100);
 
@@ -229,6 +309,9 @@ function handleMove(source, target) {
             if (typeof window.startTimer === 'function') {
                 window.startTimer();
             }
+            
+            // Déverrouiller le plateau
+            unlockBoard();
             return;
         }
 
@@ -238,19 +321,16 @@ function handleMove(source, target) {
         }
 
         // Mise à jour du score
-        // Mise à jour du score
         if (data.score !== undefined) {
             document.getElementById("score").textContent = data.score;
-            // Vérifier si score_percentage est défini avant de l'afficher
             if (data.score_percentage !== undefined) {
                 document.getElementById("score-percentage").textContent = data.score_percentage + "%";
             }
-            // Ne pas mettre à jour score_percentage s'il n'est pas défini
         }
 
         if (data.move_evaluation) {
-        data.move_evaluation.attemptsUsed = data.attempts_used || 0;
-        data.move_evaluation.isLastChance = data.is_last_chance || false;
+            data.move_evaluation.attemptsUsed = data.attempts_used || 0;
+            data.move_evaluation.isLastChance = data.is_last_chance || false;
         }
 
         // Vérifier si le coup soumis est différent du coup correct
@@ -261,7 +341,6 @@ function handleMove(source, target) {
             // 1. D'abord, annuler le coup incorrect et revenir à la position précédente
             setTimeout(() => {
                 board.position(previousPosition);
-                //showMessage("Coup incorrect. Le coup correct est: " + data.correct_move, false);
                 
                 // Effet de tremblement sur la pièce
                 if (typeof animateShakePiece === 'function') {
@@ -271,7 +350,6 @@ function handleMove(source, target) {
                 // 2. Après 1 seconde, jouer le coup correct (sans la réponse de l'adversaire)
                 setTimeout(() => {
                     // On a besoin d'une position intermédiaire avec uniquement le coup correct
-                    // Si le serveur la fournit, utiliser cette position, sinon utiliser board_fen
                     const correctMoveFen = data.correct_move_fen || data.board_fen;
                     board.position(correctMoveFen);
                     
@@ -280,10 +358,8 @@ function handleMove(source, target) {
                         // Position finale avec la réponse de l'adversaire
                         board.position(data.board_fen);
                         
-                    
                         // Mettre à jour l'historique des coups
                         if (userSide === 'black') {
-                            // Si le joueur est noir, mettre à jour avec le coup du joueur seulement
                             updateMoveHistory(
                                 data.submitted_move,
                                 data.correct_move,
@@ -293,7 +369,6 @@ function handleMove(source, target) {
                                 data.move_evaluation
                             );
                             
-                            // Si le bot (blanc) a joué un coup
                             if (data.opponent_move) {
                                 updateMoveHistory(
                                     null,
@@ -304,7 +379,6 @@ function handleMove(source, target) {
                                 );
                             }
                         } else {
-                            // Si le joueur est blanc, mettre à jour avec le coup du joueur et la réponse du bot
                             updateMoveHistory(
                                 data.submitted_move,
                                 data.correct_move,
@@ -319,30 +393,30 @@ function handleMove(source, target) {
                         if (data.game_over) {
                             document.getElementById("status").textContent = "🎉 Partie terminée !";
                             if (typeof window.stopTimer === 'function') {
-                                window.stopTimer(); // Arrêter le timer définitivement
+                                window.stopTimer();
                             }
                         } else {
-                            // Réinitialiser le timer avec le nouveau temps de départ
                             if (data.move_start_time && typeof window.resetTimer === 'function') {
                                 window.resetTimer(data.move_start_time);
                             }
                             
-                            // Émettre un événement personnalisé pour le timer
                             const event = new CustomEvent('moveSubmitted', { 
                                 detail: { result: data } 
                             });
                             document.dispatchEvent(event);
                         }
-                    }, 1000); // 3 secondes de délai avant de montrer la réponse de l'adversaire
-                }, 500); // 1 seconde de délai avant de jouer le coup correct
-            }, 100); // Un court délai initial
+                        
+                        // Déverrouiller le plateau seulement à la fin de toutes les animations
+                        unlockBoard();
+                    }, 1000);
+                }, 500);
+            }, 100);
         } else {
             // Si le coup est correct, simplement mettre à jour le plateau
             board.position(data.board_fen);
             
             // Mettre à jour l'historique des coups
             if (userSide === 'black') {
-                // Si le joueur est noir, mettre à jour avec le coup du joueur seulement
                 updateMoveHistory(
                     data.submitted_move,
                     data.correct_move,
@@ -352,7 +426,6 @@ function handleMove(source, target) {
                     data.move_evaluation
                 );
                 
-                // Si le bot (blanc) a joué un coup
                 if (data.opponent_move) {
                     setTimeout(() => {
                         updateMoveHistory(
@@ -362,10 +435,14 @@ function handleMove(source, target) {
                             null,
                             data.opponent_comment
                         );
-                    }, 500); // Petit délai pour que l'UI se mette à jour correctement
+                        // Déverrouiller le plateau après l'affichage de la réponse de l'adversaire
+                        unlockBoard();
+                    }, 500);
+                } else {
+                    // Déverrouiller le plateau si pas de coup de l'adversaire
+                    unlockBoard();
                 }
             } else {
-                // Si le joueur est blanc, mettre à jour avec le coup du joueur et la réponse du bot
                 updateMoveHistory(
                     data.submitted_move,
                     data.correct_move,
@@ -374,21 +451,22 @@ function handleMove(source, target) {
                     data.opponent_comment,
                     data.move_evaluation
                 );
+                
+                // Déverrouiller le plateau après traitement complet
+                unlockBoard();
             }
             
             // Vérifier si la partie est terminée
             if (data.game_over) {
                 document.getElementById("status").textContent = "🎉 Partie terminée !";
                 if (typeof window.stopTimer === 'function') {
-                    window.stopTimer(); // Arrêter le timer définitivement
+                    window.stopTimer();
                 }
             } else {
-                // Réinitialiser le timer avec le nouveau temps de départ
                 if (data.move_start_time && typeof window.resetTimer === 'function') {
                     window.resetTimer(data.move_start_time);
                 }
                 
-                // Émettre un événement personnalisé pour le timer
                 const event = new CustomEvent('moveSubmitted', { 
                     detail: { result: data } 
                 });
@@ -398,7 +476,7 @@ function handleMove(source, target) {
     })
     .catch(error => {
         console.error('Erreur:', error);
-        showMessage("Une erreur est survenue move.js: " + error.message, false);
+        showMessage("Une erreur est survenue: " + error.message, false);
 
         // Annuler immédiatement le coup illégal
         setTimeout(() => board.position(previousPosition), 100);
@@ -414,6 +492,9 @@ function handleMove(source, target) {
         if (typeof window.startTimer === 'function') {
             window.startTimer();
         }
+        
+        // Déverrouiller le plateau en cas d'erreur
+        unlockBoard();
     });
 
     return false;
