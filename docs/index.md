@@ -59,14 +59,12 @@ C’est dans cette optique que nous développons notre **application d’entraî
 Cette plateforme interactive a pour objectif de proposer aux joueurs une nouvelle approche pédagogique : au lieu de simplement observer des parties de grands maîtres, ils devront **deviner les meilleurs coups possibles à chaque étape**.  
 L’application calculera un **score de précision** qui évaluera la qualité de leurs choix et leur permettra de mieux comprendre les subtilités du jeu.
 
-> 📝 **À intégrer plus tard** : mentionner les aspects ludiques comme les scores, le temps limité, etc.
 
 Le développement de cette application repose sur plusieurs étapes clés :
 - **Phase d’analyse des besoins** pour définir les fonctionnalités essentielles
 - **Collecte et stockage de parties d’échecs** depuis Internet
 - **Déroulement structuré** et interactif de la partie
 
-> 📝 **À intégrer plus tard** : mentionner les aspects qualité logicielle (tests unitaires, documentation...).
 
 L’application sera publiée en **open source** sur GitHub, afin de garantir une **continuité du projet**.  
 L’objectif final est de concevoir une plateforme **intuitive** et **accessible à tous**, permettant aux joueurs de s’exercer tout en découvrant les raisonnements des plus grands champions.
