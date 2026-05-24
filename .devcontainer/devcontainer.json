@@ -1,14 +1,14 @@
-{
-    "name": "Python Chess Project",
-    "image": "mcr.microsoft.com/devcontainers/python:3",
-    "features": {},
-    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y stockfish && echo 'export STOCKFISH_PATH=/usr/games/stockfish' >> ~/.bashrc",
-    "customizations": {
+  {
+  "name": "Python venv with uv for chess project",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  // Exécute les commandes une fois le conteneur créé
+  "postCreateCommand": "pip install --user uv && uv sync"
+  "customizations": {
       "vscode": {
         "extensions": [
           "ms-python.python",
           "ms-python.vscode-pylance"
         ]
       }
-    }
-  }
+    }  
+}

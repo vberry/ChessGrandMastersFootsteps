@@ -76,23 +76,9 @@ Votre objectif est d'identifier le meilleur coup dans des positions critiques, a
 
 ## ⚙️ Lancer le projet dans GitHub Codespaces
 
-1. Installer `uv` :
-   ```bash
-   pip install uv
-   ```
-2. Créer un environnement virtuel :
-   ```bash
-   uv venv
-   ```
-3. Activer l'environnement :
-   ```bash
-   source .venv/bin/activate
-   ```
-4. Réinstaller Flask (si nécessaire) :
-   ```bash
-   uv add flask
-   ```
-5. Lancer le serveur :
+1. Le fichier `devcontainer/devcontainer.json`installe automatiquement ce qu'il faut au démarrage du codespace.
+
+2. Lancer le serveur :
    ```bash
    python3 run.py
    ```
@@ -100,7 +86,7 @@ Votre objectif est d'identifier le meilleur coup dans des positions critiques, a
 
 ---
 
-## 📚 Lancer la documentation
+## 📚 Générer la documentation
 
 Pour générer et consulter la documentation du projet, suivez ces étapes :
 
@@ -130,11 +116,10 @@ Eventuellement installer mypy :
    uv add mypy
    ```
 puis:
-
     mypy --disable-error-code import-untyped .
     (à exécuter depuis la racine du projet)
 
-Si on exécute seulement mypy, il y a des problèmes d'import pour tout ce qui concerne chess et flask.
+A régler : si on exécute seulement mypy, il y a des problèmes d'import pour tout ce qui concerne chess et flask.
 ---
 
 
@@ -151,26 +136,10 @@ puis:
    pytest
    (à executer depuis la racine du projet)
    ```
----
-
-
-### ✅ Lancer les tests unitaires avec `pytest`
-
-Pour exécuter les tests unitaires du projet :
-
-Eventuellement installer pytest :
-   ```bash
-   uv add pytest
-   ```
-puis:
-   ```bash
-   pytest
-   (à executer depuis la racine du projet)
-   ```
 
 ---
 
-## ➕ Ajouter de nouvelles parties
+## ➕ Ajouter de nouvelles parties à suivre
 
 Pour l'instant, il n'est pas possible d'ajouter une partie PGN depuis l'interface utilisateur.
 Pour enrichir la base de données, placez simplement vos fichiers .pgn dans le dossier :
